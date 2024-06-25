@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentPipelines", "src\FluentPipelines\FluentPipelines.csproj", "{1407047B-9A5E-400C-9F86-E4DC931BBE48}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentPipelines.Tests", "tests\FluentPipelines.Tests\FluentPipelines.Tests.csproj", "{507D8A5E-D35E-4DCF-9E8B-0D8EBA2E7E9C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1407047B-9A5E-400C-9F86-E4DC931BBE48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1407047B-9A5E-400C-9F86-E4DC931BBE48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1407047B-9A5E-400C-9F86-E4DC931BBE48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1407047B-9A5E-400C-9F86-E4DC931BBE48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{507D8A5E-D35E-4DCF-9E8B-0D8EBA2E7E9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{507D8A5E-D35E-4DCF-9E8B-0D8EBA2E7E9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{507D8A5E-D35E-4DCF-9E8B-0D8EBA2E7E9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{507D8A5E-D35E-4DCF-9E8B-0D8EBA2E7E9C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
