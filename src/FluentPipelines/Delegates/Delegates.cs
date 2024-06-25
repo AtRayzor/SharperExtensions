@@ -8,8 +8,3 @@ public delegate Task<Result<TResponse>> StepHandlerDelegate<TRequest, TResponse,
 public delegate Task<Result<TResponse>> StepHandlerDelegate<TRequest, TResponse>(TRequest request,
     CancellationToken cancellationToken);
 public delegate Task<TResponse> StepHandlerExecutionsDelegate<TResponse>();
-
-
-public static class Check
-{
-}
