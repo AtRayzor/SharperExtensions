@@ -4,21 +4,18 @@ using FluentPipelines.Primitives;
 
 namespace FluentPipelines.Builders;
 
-public interface IPipelineStepRegistration<TRequest> where TRequest : notnull
+public interface IPipelineStepRegistration<TRequest, TFinal> where TRequest : notnull
 {
-    IPipelineStepRegistration<TRequest> AddPipelineStep<TResponse, TNext>(
+    IPipelineStepRegistration<TRequest, TFinal> AddPipelineStep<TResponse, TNext>(
         StepHandlerDelegate<TRequest, TResponse, TNext> handler)
         where TResponse : notnull;
 
-    IPipelineStepRegistration<TRequest> AddPipelineStep<TResponse>(
-        StepHandlerDelegate<TRequest, TResponse, TResponse> handler)
-        where TResponse : notnull;
-    
-    void AddPipelineStep<TResponse>(
-        StepHandlerDelegate<TRequest, TResponse> handler)
-        where TResponse : notnull;
-    
-    void AddPipelineStep<TResponse, THandler>()
+    void AddPipelineStep(
+        StepHandlerDelegate<TRequest, TFinal> handler);
+
+    IPipelineStepRegistration<TRequest, TFinal> AddPipelineStep<TResponse, TNext, THandler>()
         where TResponse : notnull
-        where THandler : IStepHandler<TRequest, TResponse>;
+        where THandler : IStepHandler<TRequest, TResponse, TNext>;
+
+    void AddPipelineStep<THandler>() where THandler : IStepHandler<TRequest, TFinal>;
 }
