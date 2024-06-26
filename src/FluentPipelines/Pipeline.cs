@@ -15,19 +15,20 @@ public abstract class Pipeline<TRequest, TResponse> : IPipeline<TRequest, TRespo
         _delegateCollection = delegateCollection;
         _isInitialized = true;
     }
-    
+
     protected internal abstract void RegisterPipelineSteps(IPipelineStepRegistration<TRequest, TResponse> registration);
 
     protected virtual Result<TResponse> HandleExceptions(Exception exception)
-        => Results.Error<TResponse>("Something went wrong while trying to retrieve the requested data.");
-    
+        => Results.Error<TResponse, string>("Something went wrong while trying to retrieve the requested data.");
+
     public async Task<Result<TResponse>> Execute(TRequest request, CancellationToken cancellationToken = default)
     {
         if (!_isInitialized)
         {
-            return Results.Error<TResponse>("Something went wrong while trying to retrieve the requested data.");
+            return Results.Error<TResponse, string>(
+                "Something went wrong while trying to retrieve the requested data.");
         }
-        
+
         try
         {
             var finalDelegate =
@@ -44,7 +45,8 @@ public abstract class Pipeline<TRequest, TResponse> : IPipeline<TRequest, TRespo
         }
         catch (Exception e)
         {
-            return Results.Error<TResponse>("Something went wrong while trying to retrieve the requested data.");
+            return Results.Error<TResponse, string>(
+                "Something went wrong while trying to retrieve the requested data.");
         }
     }
 }
