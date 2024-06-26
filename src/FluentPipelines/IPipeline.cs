@@ -1,7 +1,4 @@
-using System.Runtime.CompilerServices;
 using FluentPipelines.Primitives;
-
-[assembly: InternalsVisibleTo("FluentPipelines.Tests")]
 
 namespace FluentPipelines;
 
