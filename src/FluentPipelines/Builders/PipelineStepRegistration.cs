@@ -11,26 +11,26 @@ internal class PipelineStepRegistration<TRequest, TFinal> : IPipelineStepRegistr
     public IPipelineStepRegistration<TRequest, TFinal> AddPipelineStep<TResponse, TNext>(
         StepHandlerDelegate<TRequest, TResponse, TNext> handler) where TResponse : notnull
     {
-        _delegateCollection.AddStepHandlerDelegateOrThrow(handler);
+        _delegateCollection.AddStepHandlerDelegate(handler);
         return this;
     }
 
     public void AddPipelineStep(StepHandlerDelegate<TRequest, TFinal> handler)
     {
-        _delegateCollection.AddStepHandlerDelegateOrThrow(handler);
+        _delegateCollection.AddStepHandlerDelegate(handler);
     }
 
     public IPipelineStepRegistration<TRequest, TFinal> AddPipelineStep<TResponse, TNext, THandler>()
         where TResponse : notnull where THandler : IStepHandler<TRequest, TResponse, TNext>
     {
-        _delegateCollection.AddStepHandlerDelegateOrThrow<TRequest, TResponse, TNext, THandler>();
+        _delegateCollection.AddStepHandlerDelegate<TRequest, TResponse, TNext, THandler>();
 
         return this;
     }
 
     public void AddPipelineStep<THandler>() where THandler : IStepHandler<TRequest, TFinal>
     {
-        _delegateCollection.AddStepHandlerDelegateOrThrow<TRequest, TFinal, THandler>();
+        _delegateCollection.AddStepHandlerDelegate<TRequest, TFinal, THandler>();
     }
 
     internal DelegateCollection<IStepHandlerDelegateWrapper> Build(DelegateFactory delegateFactory)
