@@ -18,12 +18,12 @@ internal sealed class PipelineFactory
         where TRequest : notnull
     {
         var handlerDelegateFactoryFactory = new DelegateFactory(_serviceProvider);
-        var registration = new PipelineStepRegistration<TRequest, TResponse>(handlerDelegateFactoryFactory);
+        var registration = new PipelineStepRegistration<TRequest, TResponse>();
 
 
         var pipelineInstance = Activator.CreateInstance<TPipeline>();
         pipelineInstance.RegisterPipelineSteps(registration);
-        pipelineInstance.Initialize(registration.Build());
+        pipelineInstance.Initialize(registration.Build(handlerDelegateFactoryFactory));
 
         return pipelineInstance;
     }

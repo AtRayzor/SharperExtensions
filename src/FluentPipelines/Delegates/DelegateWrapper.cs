@@ -25,6 +25,12 @@ internal interface
 {
 }
 
+internal interface INeedsInitialization
+{
+    void Initialize(DelegateFactory factory);
+    bool IsInitialized { get; }
+}
+
 internal sealed class
     StepHandlerDelegateWrapper<TRequest, TResponse, TNext>(StepHandlerDelegate<TRequest, TResponse, TNext> @delegate)
     : IStepHandlerDelegateWrapper<TRequest, TResponse, TNext>, IExecutorDelegateCreator
@@ -65,10 +71,12 @@ internal sealed class FinalStepDelegateWrapper<TRequest, TFinal>(StepHandlerDele
         $"{GetType().FullName}<{string.Join(", ", GetType().GetGenericArguments().Select(t => t.Name))}>";
 }
 
-internal sealed class StepHandlerDelegateWrapper<TRequest, TResponse, TNext, THandler>(DelegateFactory factory)
-    : IStepHandlerDelegateWrapper<StepHandlerDelegate<TRequest, TResponse, TNext>>, IExecutorDelegateCreator
+internal sealed class StepHandlerDelegateWrapper<TRequest, TResponse, TNext, THandler>
+    : IStepHandlerDelegateWrapper<StepHandlerDelegate<TRequest, TResponse, TNext>>, IExecutorDelegateCreator,
+        INeedsInitialization
     where THandler : IStepHandler<TRequest, TResponse, TNext>
 {
+    private DelegateFactory _factory = null!;
     Delegate IDelegateWrapper.Delegate => Delegate;
 
     private StepHandlerDelegate<TRequest, TResponse, TNext>? _delegate;
@@ -77,7 +85,14 @@ internal sealed class StepHandlerDelegateWrapper<TRequest, TResponse, TNext, THa
     {
         get
         {
-            _delegate ??= factory.CreateDelegate<TRequest, TResponse, TNext, THandler>();
+            if (!IsInitialized)
+            {
+                throw new InvalidOperationException(
+                    $"Attempted to access delegate for handler of type " +
+                    $"{typeof(THandler).FullName} before the wrapper was initialized.");
+            }
+
+            _delegate ??= _factory.CreateDelegate<TRequest, TResponse, TNext, THandler>();
             return _delegate;
         }
     }
@@ -93,12 +108,22 @@ internal sealed class StepHandlerDelegateWrapper<TRequest, TResponse, TNext, THa
 
     public override string ToString() =>
         $"{GetType().FullName}<{string.Join(", ", GetType().GetGenericArguments().Select(t => t.Name))}>";
+
+    public void Initialize(DelegateFactory factory)
+    {
+        _factory = factory;
+        IsInitialized = true;
+    }
+
+    public bool IsInitialized { get; private set; }
 }
 
-internal sealed class FinalStepHandlerDelegateWrapper<TRequest, TFinal, THandler>(DelegateFactory factory)
-    : IStepHandlerDelegateWrapper<StepHandlerDelegate<TRequest, TFinal>>
-    where THandler : IStepHandler<TRequest, TFinal>, IFinalExecutorDelegateCreator
+internal sealed class FinalStepHandlerDelegateWrapper<TRequest, TFinal, THandler>
+    : IStepHandlerDelegateWrapper<StepHandlerDelegate<TRequest, TFinal>>, IFinalExecutorDelegateCreator,
+        INeedsInitialization
+    where THandler : IStepHandler<TRequest, TFinal>
 {
+    private DelegateFactory _factory = null!;
     Delegate IDelegateWrapper.Delegate => Delegate;
 
     private StepHandlerDelegate<TRequest, TFinal>? _delegate;
@@ -107,10 +132,24 @@ internal sealed class FinalStepHandlerDelegateWrapper<TRequest, TFinal, THandler
     {
         get
         {
-            _delegate ??= factory.CreateDelegate<TRequest, TFinal, THandler>();
+            if (!IsInitialized)
+            {
+                throw new InvalidOperationException(
+                    $"Attempted to access delegate for handler of type " +
+                    $"{typeof(THandler).FullName} before the wrapper was initialized.");
+            }
+
+            _delegate ??= _factory.CreateDelegate<TRequest, TFinal, THandler>();
             return _delegate;
         }
     }
+
+    public void Initialize(DelegateFactory factory)
+    {
+        _factory = factory;
+        IsInitialized = true;
+    }
+
 
     public Delegate CreateExecutor(object request, CancellationToken cancellationToken)
         => CreateExecutor((TRequest)request, cancellationToken);
@@ -123,6 +162,8 @@ internal sealed class FinalStepHandlerDelegateWrapper<TRequest, TFinal, THandler
 
     public override string ToString() =>
         $"{GetType().FullName}<{string.Join(", ", GetType().GetGenericArguments().Select(t => t.Name))}>";
+
+    public bool IsInitialized { get; private set; }
 }
 
 internal interface IStepHandlerExecutionDelegateWrapper : IDelegateWrapper
