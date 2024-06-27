@@ -5,7 +5,7 @@ namespace FluentPipelines.Delegates;
 
 internal static class DelegateCollectionExtensions
 {
-    public static void ThrowIfAllReadyExists<TWrapper>(this DelegateCollection<TWrapper> collection,
+    public static void ThrowIfAlreadyExists<TWrapper>(this DelegateCollection<TWrapper> collection,
         IDelegateWrapper wrapper) where TWrapper : IDelegateWrapper
     {
         var equivalentTypes = collection.Where(dw => dw.IsEquivalent(wrapper)).ToArray();
@@ -25,7 +25,7 @@ internal static class DelegateCollectionExtensions
         StepHandlerDelegate<TRequest, TResponse, TNext> handlerDelegate)
     {
         var wrapper = new StepHandlerDelegateWrapper<TRequest, TResponse, TNext>(handlerDelegate);
-        collection.ThrowIfAllReadyExists(wrapper);
+        collection.ThrowIfAlreadyExists(wrapper);
         collection.Add(wrapper);
     }
 
@@ -34,7 +34,7 @@ internal static class DelegateCollectionExtensions
         StepHandlerDelegate<TRequest, TFinal> handlerDelegate)
     {
         var wrapper = new FinalStepDelegateWrapper<TRequest, TFinal>(handlerDelegate);
-        collection.ThrowIfAllReadyExists(wrapper);
+        collection.ThrowIfAlreadyExists(wrapper);
         collection.Add(wrapper);
     }
 
@@ -43,7 +43,7 @@ internal static class DelegateCollectionExtensions
         where THandler : IStepHandler<TRequest, TResponse, TNext>
     {
         var wrapper = new StepHandlerDelegateWrapper<TRequest, TResponse, TNext, THandler>();
-        collection.ThrowIfAllReadyExists(wrapper);
+        collection.ThrowIfAlreadyExists(wrapper);
         collection.Add(wrapper);
     }
 
@@ -52,7 +52,7 @@ internal static class DelegateCollectionExtensions
         where THandler : IStepHandler<TRequest, TFinal>
     {
         var wrapper = new FinalStepHandlerDelegateWrapper<TRequest, TFinal, THandler>();
-        collection.ThrowIfAllReadyExists(wrapper);
+        collection.ThrowIfAlreadyExists(wrapper);
         collection.Add(wrapper);
     }
 
