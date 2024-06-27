@@ -49,4 +49,17 @@ internal static class DelegateCollectionExtensions
             }
         }
     }
+
+    public static void ValidateCollection(this DelegateCollection<IStepHandlerDelegateWrapper> collection)
+    {
+        if (collection.Count == 0)
+        {
+            throw new NoHandlersRegisteredException("Please register a pipeline handler");
+        }
+
+        if (!collection.Last().GetType().IsAssignableTo(typeof(IFinalExecutorDelegateCreator)))
+        {
+            throw new NoFinalHandlerException("No final delegate was registered");
+        }
+    }
 }

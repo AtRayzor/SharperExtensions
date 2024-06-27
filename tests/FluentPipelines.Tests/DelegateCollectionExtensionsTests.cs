@@ -39,7 +39,6 @@ public class DelegateCollectionExtensionsTests
     [Fact]
     public void AddStepHandlerDelegateOrThrow_PassClassHandler_RegistersHandlerDelegate()
     {
-
         var collection = new DelegateCollection<IStepHandlerDelegateWrapper>();
         collection.AddStepHandlerDelegate<string, string, string, DummyStepHandler>();
 
@@ -56,5 +55,24 @@ public class DelegateCollectionExtensionsTests
 
         collection.Should()
             .ContainItemsAssignableTo<FinalStepHandlerDelegateWrapper<string, string, DummyFinalStepHandler>>();
+    }
+
+    [Fact]
+    public void ValidateCollection_ValidateEmptyCollection_ThrowsException()
+    {
+        var collection = new DelegateCollection<IStepHandlerDelegateWrapper>();
+        collection.Invoking(c => c.ValidateCollection())
+            .Should()
+            .Throw<NoHandlersRegisteredException>();
+    }
+    
+    [Fact]
+    public void ValidateCollection_NoFinalHandlerRegistered_ThrowsException()
+    {
+        var collection = new DelegateCollection<IStepHandlerDelegateWrapper>();
+        collection.AddStepHandlerDelegate<string, string, string, DummyStepHandler>();
+        collection.Invoking(c => c.ValidateCollection())
+            .Should()
+            .Throw<NoFinalHandlerException>();
     }
 }
