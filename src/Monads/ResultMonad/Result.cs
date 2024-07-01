@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace Monads.Result;
+namespace Monads.ResultMonad;
 
 public static class Result
 {

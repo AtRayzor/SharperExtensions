@@ -1,4 +1,4 @@
-namespace Monads.Result;
+namespace Monads.ResultMonad;
 
 public static class ReturnResultExtensions
 {
