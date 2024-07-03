@@ -29,13 +29,24 @@ public abstract record Option<TValue> where TValue : notnull
             Some someValue => fSome(someValue),
             None => fNone()
         };
-
+    
     public Option<TNewValue> Map<TNewValue>(Func<TValue, Option<TNewValue>> fSome) where TNewValue : notnull =>
         Map(fSome, () => new Option<TNewValue>.None());
+    
+    public bool IsSome() => this is Some;
+    public bool IsNone() => this is None;
+
     public bool GetValueIfSome([NotNullWhen(returnValue: true)] out TValue? value)
     {
         value = this is Some some ? some.Value : default;
         return value is not null;
+    }
+
+    public TValue GetValueOrThrow<TException>(string errorMessage) where TException : Exception
+    {
+        ThrowExceptionIfIsNone<TException>([errorMessage]);
+
+        return (Some)this;
     }
 
     public void ThrowIfNone<TException>() where TException : Exception => ThrowExceptionIfIsNone<TException>();

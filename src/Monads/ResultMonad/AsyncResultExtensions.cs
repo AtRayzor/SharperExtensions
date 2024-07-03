@@ -100,4 +100,10 @@ public static class AsyncResultExtensions
         Result<TValue>.Ok okValue => fValue(okValue),
         Result<TValue>.Error message => fError(message)
     });
+
+    public static Task<Result<TValue, TError>> ToResultTask<TValue, TError>(this Result<TValue, TError> result)
+        where TValue : notnull where TError : notnull => Task.FromResult(result);
+
+    public static Task<Result<TValue>> ToResultTask<TValue>(this Result<TValue> result)
+        where TValue : notnull => Task.FromResult(result);
 }

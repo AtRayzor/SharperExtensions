@@ -4,6 +4,17 @@ namespace Monads.ResultMonad;
 
 public static class Result
 {
+    public static Result<TValue, TError> ReturnResult<TValue, TError>(TValue? value,
+        TError fallaback)
+        where TValue : notnull where TError : notnull =>
+        value is not null ? ReturnOk<TValue, TError>(value) : ReturnError<TValue, TError>(fallaback);
+
+    public static Result<TValue, TError> ReturnResult<TValue, TError>(TValue? value,
+        Func<Result<TValue, TError>> handleNull)
+        where TValue : notnull where TError : notnull =>
+        value is not null ? ReturnOk<TValue, TError>(value) : handleNull();
+
+
     public static Result<TValue, TError> ReturnOk<TValue, TError>(TValue value)
         where TValue : notnull where TError : notnull => new Result<TValue, TError>.Ok(value);
 
@@ -25,6 +36,32 @@ public static class Result
 
     public static Result<TValue> Return<TValue>(TValue? value) where TValue : notnull =>
         Return(value, "Error! Null value.");
+
+    public static Task<Result<TValue>> ReturnResultTask<TValue>(TValue? value) where TValue : notnull =>
+        Task.FromResult(Return(value));
+
+    public static Task<Result<TValue>> ReturnOkTask<TValue>(TValue value) where TValue : notnull =>
+        ReturnResultTask(value);
+
+    public static Task<Result<TValue>> ReturnErrorTask<TValue>(string message) where TValue : notnull =>
+        Task.FromResult(ReturnError<TValue>(message));
+
+    public static Task<Result<TValue, TError>> ReturnResultTask<TValue, TError>(TValue? value,
+        TError fallaback)
+        where TValue : notnull where TError : notnull =>
+        value is not null ? ReturnOkTask<TValue, TError>(value) : ReturnErrorTask<TValue, TError>(fallaback);
+
+    public static Task<Result<TValue, TError>> ReturnResultTask<TValue, TError>(TValue? value,
+        Func<Task<Result<TValue, TError>>> handleNull)
+        where TValue : notnull where TError : notnull =>
+        value is not null ? ReturnOkTask<TValue, TError>(value) : handleNull();
+
+
+    public static Task<Result<TValue, TError>> ReturnOkTask<TValue, TError>(TValue value)
+        where TValue : notnull where TError : notnull => Task.FromResult(ReturnOk<TValue, TError>(value));
+
+    public static Task<Result<TValue, TError>> ReturnErrorTask<TValue, TError>(TError error)
+        where TError : notnull where TValue : notnull => Task.FromResult(ReturnError<TValue, TError>(error));
 }
 
 public abstract record Result<TValue, TError> where TValue : notnull where TError : notnull
