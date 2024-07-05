@@ -29,12 +29,12 @@ public class OptionTraitTests
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
-    
+
     private class IsNoneTestData : IEnumerable<object[]>
     {
         public IEnumerator<object[]> GetEnumerator()
         {
-            yield return [SomeOptionFunctor,  false];
+            yield return [SomeOptionFunctor, false];
             yield return [NoneOptionFunctor, true];
         }
 
@@ -48,7 +48,7 @@ public class OptionTraitTests
     {
         option.IsSome().Should().Be(expected);
     }
-    
+
     [Theory]
     [ClassData(typeof(IsNoneTestData))]
     public void IsNone_Tests(IFunctor<OptionType<DummyValue>> option, bool expected)
@@ -56,19 +56,42 @@ public class OptionTraitTests
         option.IsNone().Should().Be(expected);
     }
 
-    
+
     [Fact]
     public void TryGetValue_CallOnSome_GetsValue()
     {
         SomeOptionFunctor.TryGetValue(out var value).Should().BeTrue();
         value.Should().BeEquivalentTo(Value);
     }
-    
-    
+
+
     [Fact]
     public void TryGetValue_CallOnNone_DoesNotGetValue()
     {
         NoneOptionFunctor.TryGetValue(out var value).Should().BeFalse();
         value.Should().BeNull();
     }
+
+    [Fact]
+    public void AsOption_CallOnFunctor_ConvertToOption()
+    {
+        SomeOptionFunctor.AsOption()
+            .Should().BeAssignableTo<IOption<DummyValue>>();
+    }
+    
+    [Fact]
+    public void AsFunctor_CallOnFunctor_ConvertToOption()
+    {
+        var someOption = IOption<DummyValue>.Construct(SomeValue);
+        someOption.AsFunctor()
+            .Should().BeAssignableTo<IFunctor<OptionType<DummyValue>>>();
+    }
+    
+    [Fact]
+    public void AsMonad_CallOnFunctor_ConvertToOption()
+    {
+        SomeOptionFunctor.AsMonad()
+            .Should().BeAssignableTo<IMonad<OptionType<DummyValue>>>();
+    }
+
 }
