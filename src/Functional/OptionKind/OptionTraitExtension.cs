@@ -50,6 +50,10 @@ public static class OptionTraitExtension
     public static IOption<T> AsOption<T>(this ITrait<OptionType<T>> optionTrait) where T : notnull
         => optionTrait.AsConstableTrait<T, Option<T>>();
 
+    public static IOptionWithSideEffects<T> AsOptionWithSideEffects<T>(this ITrait<OptionType<T>> optionTrait)
+        where T : notnull
+        => optionTrait.AsConstableTrait<T, OptionWithSideEffects<T>>();
+
     public static IFunctor<OptionType<T>> AsFunctor<T>(this ITrait<OptionType<T>> optionTrait) where T : notnull
         => optionTrait.AsConstableTrait<T, IFunctor<OptionType<T>>>();
 
