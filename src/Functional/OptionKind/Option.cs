@@ -8,16 +8,16 @@ public interface IOption<T> : IFunctor<OptionType<T>>, IMonad<OptionType<T>>
     static IConstructableTrait<OptionType<T>> IConstructableTrait<OptionType<T>>.Construct(OptionType<T> type) =>
         Create(type);
 
-    new static IOption<T> Create(OptionType<T> type) => new Option<T>(type);
+    new static IOption<T> Construct(OptionType<T> type) => new Option<T>(type);
 }
 
 public interface IOptionWithSideEffects<T> : IOption<T>, ISideEffects<OptionType<T>>
     where T : notnull
 {
     static IConstructableTrait<OptionType<T>> IConstructableTrait<OptionType<T>>.Construct(OptionType<T> type) =>
-        Create(type);
+        Construct(type);
 
-    new static IOptionWithSideEffects<T> Create(OptionType<T> type) => new OptionWithSideEffects<T>(type);
+    new static IOptionWithSideEffects<T> Construct(OptionType<T> type) => new OptionWithSideEffects<T>(type);
 }
 
 public static class Option
