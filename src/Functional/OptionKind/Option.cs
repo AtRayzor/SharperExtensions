@@ -3,40 +3,35 @@ using Monads.Traits;
 namespace Monads.OptionKind;
 
 public interface IOption<T> : IFunctor<OptionType<T>>, IMonad<OptionType<T>>
-    where T : notnull
-{
-    static IConstructableTrait<OptionType<T>> IConstructableTrait<OptionType<T>>.Construct(OptionType<T> type) =>
-        Create(type);
-
-    new static IOption<T> Construct(OptionType<T> type) => new Option<T>(type);
-}
+    where T : notnull;
 
 public interface IOptionWithSideEffects<T> : IOption<T>, ISideEffects<OptionType<T>>
-    where T : notnull
-{
-    static IConstructableTrait<OptionType<T>> IConstructableTrait<OptionType<T>>.Construct(OptionType<T> type) =>
-        Construct(type);
+    where T : notnull;
 
-    new static IOptionWithSideEffects<T> Construct(OptionType<T> type) => new OptionWithSideEffects<T>(type);
-}
+public abstract class OptionFactory<T> : TraitFactory<OptionType<T>, IOption<T>> where T : notnull;
 
 public static class Option
 {
-    public static IOption<T> Create<T>(T? value) where T : notnull => OptionTraitExtension.Create<T, IOption<T>>(value);
-    public static IOption<T> Some<T>(T value) where T : notnull => OptionTraitExtension.Some<T, IOption<T>>(value);
-    public static IOption<T> None<T>() where T : notnull => OptionTraitExtension.None<T, IOption<T>>();
+    public static IOption<T> Create<T>(T? value) where T : notnull => value is not null ? Some(value) : None<T>();
+    public static IOption<T> Some<T>(T value) where T : notnull => OptionFactory<T>.Construct<Option<T>>(value);
+
+    public static IOption<T> None<T>() where T : notnull =>
+        OptionFactory<T>.Construct<Option<T>>(new OptionType<T>.None());
 }
+
+public abstract class OptionsWithSideEffectsFactory<T> : TraitFactory<OptionType<T>, IOptionWithSideEffects<T>>
+    where T : notnull;
 
 public static class OptionWithSideEffects
 {
     public static IOptionWithSideEffects<T> Create<T>(T? value) where T : notnull =>
-        OptionTraitExtension.Create<T, IOptionWithSideEffects<T>>(value);
+        value is not null ? Some(value) : None<T>();
 
     public static IOptionWithSideEffects<T> Some<T>(T value) where T : notnull =>
-        OptionTraitExtension.Some<T, IOptionWithSideEffects<T>>(value);
+        OptionsWithSideEffectsFactory<T>.Construct<OptionWithSideEffects<T>>(value);
 
     public static IOptionWithSideEffects<T> None<T>() where T : notnull =>
-        OptionTraitExtension.None<T, IOptionWithSideEffects<T>>();
+        OptionsWithSideEffectsFactory<T>.Construct<OptionWithSideEffects<T>>(new OptionType<T>.None());
 }
 
 internal readonly record struct Option<T>(OptionType<T> Type) : IOption<T> where T : notnull;

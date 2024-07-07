@@ -82,7 +82,7 @@ public class OptionTraitTests
     [Fact]
     public void AsFunctor_CallOnFunctor_ConvertToOption()
     {
-        var someOption = IOption<DummyValue>.Construct(SomeValue);
+        var someOption = OptionFactory<DummyValue>.Construct<Option<DummyValue>>(Value);
         someOption.AsFunctor()
             .Should().BeAssignableTo<IFunctor<OptionType<DummyValue>>>();
     }

@@ -4,25 +4,17 @@ namespace Monads.Traits;
 
 public interface IImplementsMonad : IKind;
 
-public interface IMonad<T> : IConstructableTrait<T> where T : IImplementsMonad
+public interface IMonad<out T> : ITrait<T> where T : IImplementsMonad;
+
+public abstract class MonadFactory<T> : TraitFactory<T, IMonad<T>> where T : IImplementsMonad;
+
+public static partial class Monad
 {
-    static IConstructableTrait<T> IConstructableTrait<T>.Construct(T type) => Create(type);
-    new static IMonad<T> Create(T type) => new Monad<T>(type);
-}
+    internal static IMonad<T> Construct<T, TMonad>(T type) where TMonad : struct, IMonad<T> where T : IImplementsMonad
+        => MonadFactory<T>.Construct<TMonad>(type);
 
-public static class Monad
-{
-    public static class Option
-    {
-        public static IMonad<OptionType<T>> Create<T>(T? value) where T : notnull =>
-            OptionTraitExtension.Create<T, IMonad<OptionType<T>>>(value);
-
-        public static IMonad<OptionType<T>> Some<T>(T value) where T : notnull =>
-            OptionTraitExtension.Some<T, IMonad<OptionType<T>>>(value);
-
-        public static IMonad<OptionType<T>> None<T>() where T : notnull =>
-            OptionTraitExtension.None<T, IMonad<OptionType<T>>>();
-    }
+    internal static IMonad<T> ConstructDefault<T>(T type) where T : IImplementsMonad
+        => Construct<T, Monad<T>>(type);
 }
 
 internal readonly record struct Monad<T>(T Type) : IMonad<T> where T : IImplementsMonad;

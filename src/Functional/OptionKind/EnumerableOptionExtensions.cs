@@ -8,33 +8,39 @@ public static class EnumerableOptionExtensions
         => optionTraits.Where(t => t.IsSome())
             .Select(ot => ((OptionType<T>.Some)ot.Type).Value);
 
-    private static TReturn Extract<T, TConstructable, TReturn>(
-        this IEnumerable<TConstructable> optionTraits)
+    private static TReturn Extract<T, TTrait, TReturn, TStruct>(
+        this IEnumerable<TTrait> optionTraits)
         where T : notnull
-        where TConstructable : IConstructableTrait<OptionType<T>>
-        where TReturn : IConstructableTrait<OptionType<IEnumerable<T>>>
+        where TTrait : ITrait<OptionType<T>>
+        where TReturn : ITrait<OptionType<IEnumerable<T>>>
+        where TStruct : struct, TReturn
     {
-        var enumerable = optionTraits as TConstructable[] ?? optionTraits.ToArray();
+        var enumerable = optionTraits as TTrait[] ?? optionTraits.ToArray();
 
         return enumerable.All(ot => ot.IsSome())
-            ? (TReturn)TReturn.Construct(new OptionType<IEnumerable<T>>.Some(
+            ? TraitFactory<OptionType<IEnumerable<T>>, TReturn>.Construct<TStruct>(new OptionType<IEnumerable<T>>.Some(
                 enumerable.Select(ot => ((OptionType<T>.Some)ot.Type).Value)))
-            : (TReturn)TReturn.Construct(new OptionType<IEnumerable<T>>.None());
+            : TraitFactory<OptionType<IEnumerable<T>>, TReturn>.Construct<TStruct>(
+                new OptionType<IEnumerable<T>>.None());
     }
 
     public static IFunctor<OptionType<IEnumerable<T>>> Extract<T>(
         this IEnumerable<IFunctor<OptionType<T>>> optionFunctors)
-        where T : notnull => optionFunctors.Extract<T, IFunctor<OptionType<T>>, IFunctor<OptionType<IEnumerable<T>>>>();
+        where T : notnull => optionFunctors
+        .Extract<T, IFunctor<OptionType<T>>, IFunctor<OptionType<IEnumerable<T>>>,
+            Functor<OptionType<IEnumerable<T>>>>();
 
     public static IMonad<OptionType<IEnumerable<T>>> Extract<T>(
         this IEnumerable<IMonad<OptionType<T>>> optionMonads)
-        where T : notnull => optionMonads.Extract<T, IMonad<OptionType<T>>, IMonad<OptionType<IEnumerable<T>>>>();
+        where T : notnull => optionMonads.Extract<T, IMonad<OptionType<T>>, IMonad<OptionType<IEnumerable<T>>>,
+        Monad<OptionType<IEnumerable<T>>>>();
 
     public static IOption<IEnumerable<T>> Extract<T>(
         this IEnumerable<IOption<T>> optionFunctors)
-        where T : notnull => optionFunctors.Extract<T, IOption<T>, IOption<IEnumerable<T>>>();
-    
+        where T : notnull => optionFunctors.Extract<T, IOption<T>, IOption<IEnumerable<T>>, Option<IEnumerable<T>>>();
+
     public static IOptionWithSideEffects<IEnumerable<T>> Extract<T>(
         this IEnumerable<IOptionWithSideEffects<T>> optionFunctors)
-        where T : notnull => optionFunctors.Extract<T, IOption<T>, IOptionWithSideEffects<IEnumerable<T>>>();
+        where T : notnull => optionFunctors
+        .Extract<T, IOption<T>, IOptionWithSideEffects<IEnumerable<T>>, OptionWithSideEffects<IEnumerable<T>>>();
 }
