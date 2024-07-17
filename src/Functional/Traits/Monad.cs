@@ -4,7 +4,7 @@ namespace Monads.Traits;
 
 public interface IImplementsMonad : IKind;
 
-public interface IMonad<out T> : ITrait<T> where T : IImplementsMonad;
+public interface IMonad<out T> : IConstructableTrait<T> where T : IImplementsMonad;
 
 public abstract class MonadFactory<T> : TraitFactory<T, IMonad<T>> where T : IImplementsMonad;
 

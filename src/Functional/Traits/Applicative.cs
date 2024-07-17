@@ -2,7 +2,7 @@ namespace Monads.Traits;
 
 public interface IImplementsApplicative : IKind;
 
-public interface IApplicative<out T> : ITrait<T> where T : IImplementsApplicative
+public interface IApplicative<out T> : IConstructableTrait<T> where T : IImplementsApplicative
 {
 }
 

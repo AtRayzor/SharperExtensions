@@ -5,7 +5,7 @@ namespace Monads.Traits;
 public interface IImplementsFunctor : IKind;
 
 
-public interface IFunctor<out T> : ITrait<T> where T : IImplementsFunctor
+public interface IFunctor<out T> : IConstructableTrait<T> where T : IImplementsFunctor
 {
 }
 
