@@ -2,7 +2,7 @@ using Monads.Traits;
 
 namespace Monads.OptionKind;
 
-public interface IOption<T> : IFunctor<OptionType<T>>, IMonad<OptionType<T>>
+public interface IOption<T> : IFunctor<OptionType<T>>, IMonad<OptionType<T>>, IApplicative<OptionType<T>>
     where T : notnull;
 
 public interface IOptionWithSideEffects<T> : IOption<T>, ISideEffects<OptionType<T>>

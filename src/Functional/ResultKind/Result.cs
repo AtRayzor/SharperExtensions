@@ -3,12 +3,13 @@ using Monads.Traits;
 
 namespace Monads.ResultMonad;
 
-public interface IResult<T, TE> : IFunctor<ResultType<T, TE>>, IMonad<ResultType<T, TE>>
+public interface IResult<T, TE> : IFunctor<ResultType<T, TE>>, IMonad<ResultType<T, TE>>,
+    IApplicative<ResultType<T, TE>>
     where T : notnull where TE : notnull
 {
 }
 
-public interface IResult<T> : IFunctor<ResultType<T>>, IMonad<ResultType<T>>
+public interface IResult<T> : IFunctor<ResultType<T>>, IMonad<ResultType<T>>, IApplicative<ResultType<T>>
     where T : notnull
 {
 }

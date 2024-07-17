@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Monads.ResultMonad;
 using Monads.Traits;
 
 namespace Monads.OptionKind;
@@ -20,29 +21,23 @@ public static class OptionTraitExtension
         return value is not null;
     }
 
-    private static TConstructable AsConstableTrait<T, TConstructable, TStruct>(this ITrait<OptionType<T>> optionTrait)
-        where T : notnull where TConstructable : ITrait<OptionType<T>> where TStruct : struct, TConstructable
-    {
-        var optionTraitType = optionTrait.GetType();
+    public static IOption<T> AsOption<T>(this IConstructableTrait<OptionType<T>> optionTrait) where T : notnull
+        => optionTrait.AsConstructableTrait<OptionType<T>, IOption<T>, Option<T>>();
 
-        if (optionTraitType.IsAssignableTo(typeof(TConstructable)))
-        {
-            return (TConstructable)optionTrait;
-        }
-
-        return TraitFactory<OptionType<T>, TConstructable>.Construct<TStruct>(optionTrait.Type);
-    }
-
-    public static IOption<T> AsOption<T>(this ITrait<OptionType<T>> optionTrait) where T : notnull
-        => optionTrait.AsConstableTrait<T, IOption<T>, Option<T>>();
-
-    public static IOptionWithSideEffects<T> AsOptionWithSideEffects<T>(this ITrait<OptionType<T>> optionTrait)
+    public static IOptionWithSideEffects<T> AsOptionWithSideEffects<T>(
+        this IConstructableTrait<OptionType<T>> optionTrait)
         where T : notnull
-        => optionTrait.AsConstableTrait<T, IOptionWithSideEffects<T>, OptionWithSideEffects<T>>();
+        => optionTrait.AsConstructableTrait<OptionType<T>, IOptionWithSideEffects<T>, OptionWithSideEffects<T>>();
 
-    public static IFunctor<OptionType<T>> AsFunctor<T>(this ITrait<OptionType<T>> optionTrait) where T : notnull
-        => optionTrait.AsConstableTrait<T, IFunctor<OptionType<T>>, Functor<OptionType<T>>>();
+    public static IFunctor<OptionType<T>> AsFunctor<T>(this IConstructableTrait<OptionType<T>> optionTrait)
+        where T : notnull
+        => optionTrait.AsConstructableTrait<OptionType<T>, IFunctor<OptionType<T>>, Functor<OptionType<T>>>();
 
-    public static IMonad<OptionType<T>> AsMonad<T>(this ITrait<OptionType<T>> optionTrait) where T : notnull =>
-        optionTrait.AsConstableTrait<T, IMonad<OptionType<T>>, Monad<OptionType<T>>>();
+    public static IMonad<OptionType<T>> AsMonad<T>(this IConstructableTrait<OptionType<T>> optionTrait)
+        where T : notnull =>
+        optionTrait.AsConstructableTrait<OptionType<T>, IMonad<OptionType<T>>, Monad<OptionType<T>>>();
+
+    public static IApplicative<OptionType<T>> AsApplicative<T>(this IConstructableTrait<OptionType<T>> optionTrait)
+        where T : notnull
+        => optionTrait.AsConstructableTrait<OptionType<T>, IApplicative<OptionType<T>>, Applicative<OptionType<T>>>();
 }

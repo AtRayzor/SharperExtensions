@@ -2,7 +2,8 @@ using Monads.Traits;
 
 namespace Monads.OptionKind;
 
-public abstract record OptionType<T> : IImplementsFunctor, IImplementsMonad, IImplementsSideEffects where T : notnull
+public abstract record OptionType<T> : IImplementsApplicative, IImplementsFunctor, IImplementsMonad,
+    IImplementsSideEffects where T : notnull
 {
     public record Some(T Value) : OptionType<T>
     {

@@ -20,8 +20,7 @@ public static class ResultTraitExtensions
 
         return value is not null;
     }
-
-
+    
     public static bool TryGetError<T, TE>(this ITrait<ResultType<T, TE>> resultTrait,
         [NotNullWhen(returnValue: true)] out TE? error)
         where T : notnull where TE : notnull
@@ -30,4 +29,21 @@ public static class ResultTraitExtensions
 
         return error is not null;
     }
+
+    public static IResult<T, TE> AsResult<T, TE>(this IConstructableTrait<ResultType<T, TE>> resultTrait)
+        where T : notnull where TE : notnull => resultTrait
+        .AsConstructableTrait<ResultType<T, TE>, IResult<T, TE>, Result<T, TE>>();
+
+    public static IFunctor<ResultType<T, TE>> AsFunctor<T, TE>(this IConstructableTrait<ResultType<T, TE>> resultTrait)
+        where T : notnull where TE : notnull => resultTrait
+        .AsConstructableTrait<ResultType<T, TE>, IFunctor<ResultType<T, TE>>, Functor<ResultType<T, TE>>>();
+
+    public static IMonad<ResultType<T, TE>> AsMonad<T, TE>(this IConstructableTrait<ResultType<T, TE>> resultTrait)
+        where T : notnull where TE : notnull => resultTrait
+        .AsConstructableTrait<ResultType<T, TE>, IMonad<ResultType<T, TE>>, Monad<ResultType<T, TE>>>();
+
+    public static IApplicative<ResultType<T, TE>> AsApplicative<T, TE>(
+        this IConstructableTrait<ResultType<T, TE>> resultTrait)
+        where T : notnull where TE : notnull => resultTrait
+        .AsConstructableTrait<ResultType<T, TE>, IApplicative<ResultType<T, TE>>, Applicative<ResultType<T, TE>>>();
 }

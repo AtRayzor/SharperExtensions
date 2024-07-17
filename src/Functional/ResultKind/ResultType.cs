@@ -2,14 +2,15 @@ using Monads.Traits;
 
 namespace Monads.ResultMonad;
 
-public abstract record ResultType<T, TE> : IImplementsFunctor, IImplementsMonad where T : notnull where TE : notnull
+public abstract record ResultType<T, TE> : IImplementsApplicative, IImplementsFunctor, IImplementsMonad
+    where T : notnull where TE : notnull
 {
     public record Ok(T Value) : ResultType<T, TE>;
 
     public record Error(TE Err) : ResultType<T, TE>;
 }
 
-public abstract record ResultType<T> : IImplementsFunctor, IImplementsMonad where T : notnull
+public abstract record ResultType<T> : IImplementsFunctor, IImplementsMonad, IImplementsApplicative where T : notnull
 {
     internal abstract ResultType<T, string> BaseResultType { get; }
 
