@@ -46,7 +46,7 @@ public class ResultMonadTests
     }
 }
 
-internal static class TestData
+file static class TestData
 {
     public static DummyValue Value => new() { Name = "Jack Black", Email = "jack.black@example.com" };
     public static DummyNewValue NewValue => new() { NameAllCaps = "JACK BLACK" };
@@ -70,7 +70,7 @@ internal static class TestData
         new Monad<ResultType<DummyValue, DummyError>>(new ResultType<DummyValue, DummyError>.Error(Error));
 }
 
-internal static class TestFunctions
+file static class TestFunctions
 {
     public static IMonad<ResultType<DummyNewValue, DummyError>> Binder(DummyValue value) =>
         new Monad<ResultType<DummyNewValue, DummyError>>(
@@ -78,7 +78,7 @@ internal static class TestFunctions
                 new DummyNewValue { NameAllCaps = value.Name.ToUpper() }
             ));
 
-    public static Task<IMonad<ResultType<DummyNewValue, DummyError>>> BinderAsync(DummyValue value) =>
+     public static Task<IMonad<ResultType<DummyNewValue, DummyError>>> BinderAsync(DummyValue value) =>
         Task.FromResult(
             (IMonad<ResultType<DummyNewValue, DummyError>>)new Monad<ResultType<DummyNewValue, DummyError>>(
                 new ResultType<DummyNewValue, DummyError>.Ok(
