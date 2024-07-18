@@ -50,3 +50,27 @@ public static partial class Monad
         }
     }
 }
+
+public static partial class Applicative
+{
+    public static class Option
+    {
+        public static IApplicative<OptionType<T>> Create<T>(T? value)
+            where T : notnull
+        {
+            return value is not null ? Some(value) : None<T>();
+        }
+
+        public static IApplicative<OptionType<T>> Some<T>(T value)
+            where T : notnull
+        {
+            return ApplicativeFactory<OptionType<T>>.Construct<Option<T>>(value);
+        }
+
+        public static IApplicative<OptionType<T>> None<T>()
+            where T : notnull
+        {
+            return ApplicativeFactory<OptionType<T>>.Construct<Option<T>>(new OptionType<T>.None());
+        }
+    }
+}

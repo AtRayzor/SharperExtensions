@@ -8,7 +8,7 @@ public interface IApplicative<out T> : IConstructableTrait<T>
 public abstract class ApplicativeFactory<T> : TraitFactory<T, IApplicative<T>>
     where T : IImplementsApplicative;
 
-public static class Applicative
+public static partial class Applicative
 {
     internal static IApplicative<T> Construct<T, TApplicative>(T type)
         where TApplicative : struct, IApplicative<T>
