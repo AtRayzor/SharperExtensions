@@ -104,23 +104,5 @@ namespace Analyzers {
                 return ResourceManager.GetString("NF0003MessageFormat", resourceCulture);
             }
         }
-        
-        internal static string NF0004Title {
-            get {
-                return ResourceManager.GetString("NF0004Title", resourceCulture);
-            }
-        }
-        
-        internal static string NF0004Description {
-            get {
-                return ResourceManager.GetString("NF0004Description", resourceCulture);
-            }
-        }
-        
-        internal static string NF0004MessageFormat {
-            get {
-                return ResourceManager.GetString("NF0004MessageFormat", resourceCulture);
-            }
-        }
     }
 }

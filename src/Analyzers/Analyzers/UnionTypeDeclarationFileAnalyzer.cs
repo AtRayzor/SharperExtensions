@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Analyzers;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class DiscriminatedUnionDeclarationFileAnalyzer : DiagnosticAnalyzer
+public class UnionTypeDeclarationFileAnalyzer : DiagnosticAnalyzer
 {
     private const string DiagnosticId = "NF0003";
     private const string Category = "Unkown";
@@ -31,7 +31,7 @@ public class DiscriminatedUnionDeclarationFileAnalyzer : DiagnosticAnalyzer
         typeof(Resources)
     );
 
-    private static readonly DiagnosticDescriptor Rule =
+    internal static readonly DiagnosticDescriptor Rule =
         new(
             DiagnosticId,
             Title,
@@ -53,19 +53,20 @@ public class DiscriminatedUnionDeclarationFileAnalyzer : DiagnosticAnalyzer
 
         context.RegisterSyntaxNodeAction(
             AnalyzeCaseDefinitionFile,
-            SyntaxKind.RecordStructDeclaration
+            SyntaxKind.ClassDeclaration, 
+            SyntaxKind.RecordDeclaration
         );
     }
 
     private void AnalyzeCaseDefinitionFile(SyntaxNodeAnalysisContext context)
     {
         if (
-            context.Node is not RecordDeclarationSyntax recordDeclarationSyntax
-            || recordDeclarationSyntax.Kind() is not SyntaxKind.RecordStructDeclaration
-            || context.SemanticModel.GetDeclaredSymbol(recordDeclarationSyntax)
-                is not { } caseDeclaredSymbol
-            || GetInterfaceSymbolOrDefault(caseDeclaredSymbol) is not { } interfaceDeclaredSymbol
-            || FilePathsMatch(caseDeclaredSymbol, interfaceDeclaredSymbol)
+            context.Node is not TypeDeclarationSyntax typeDeclarationSyntax
+            || typeDeclarationSyntax.Kind() is not (SyntaxKind.ClassDeclaration or SyntaxKind.RecordDeclaration)
+            || context.SemanticModel.GetDeclaredSymbol(typeDeclarationSyntax)
+                is not { BaseType: { } caseDeclarationBaseSymbol } caseDeclarationSymbol
+            || caseDeclarationBaseSymbol.GetAttributes().All(att => att is not { AttributeClass.Name: "ClosedAttribute"})
+            || FilePathsMatch(caseDeclarationSymbol,caseDeclarationBaseSymbol)
         )
         {
             return;
@@ -73,31 +74,20 @@ public class DiscriminatedUnionDeclarationFileAnalyzer : DiagnosticAnalyzer
 
         var diagnostic = Diagnostic.Create(
             Rule,
-            recordDeclarationSyntax.GetLocation(),
-            caseDeclaredSymbol.Name,
-            interfaceDeclaredSymbol.Name
+            typeDeclarationSyntax.GetLocation(),
+            caseDeclarationSymbol.Name,
+            caseDeclarationBaseSymbol.Name
         );
         context.ReportDiagnostic(diagnostic);
     }
-
-    private static INamedTypeSymbol? GetInterfaceSymbolOrDefault(INamedTypeSymbol declaredSymbol) =>
-        declaredSymbol
-            .Interfaces
-            .FirstOrDefault(
-                i =>
-                    i.GetAttributes()
-                        .Any(
-                            a => (bool)a.AttributeClass?.Name.Equals("DiscriminatedUnionAttribute")
-                        )
-            );
-
+    
     private static bool FilePathsMatch(
         INamedTypeSymbol caseDeclaredSymbol,
-        INamedTypeSymbol interfaceDeclaredSymbol
+        INamedTypeSymbol baseDeclaredSymbol
     ) =>
-        interfaceDeclaredSymbol.Locations.Length == 1
-        && caseDeclaredSymbol.Locations.Length == 1
-        && caseDeclaredSymbol.Locations[0].SourceTree?.FilePath is { } caseFilePath
-        && interfaceDeclaredSymbol.Locations[0].SourceTree?.FilePath is { } interfaceFilePath
-        && caseFilePath.Equals(interfaceFilePath);
+        baseDeclaredSymbol is { Locations.Length: 1}
+        && caseDeclaredSymbol is { Locations.Length: 1 }
+        && caseDeclaredSymbol.Locations[0] is { SourceTree.FilePath: {} caseFilePath }
+        && baseDeclaredSymbol.Locations[0] is { SourceTree.FilePath: {} baseFilePath }
+        && caseFilePath.Equals(baseFilePath);
 }

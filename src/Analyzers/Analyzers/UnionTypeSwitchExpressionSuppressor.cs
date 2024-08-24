@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.Operations;
 namespace Analyzers;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class DiscriminatedUnionSwitchExpressionSuppressor : DiagnosticSuppressor
+public class UnionTypeSwitchExpressionSuppressor : DiagnosticSuppressor
 {
     private const string SuppressorId = "NF0001S";
     private const string SuppressedDiagnosticId = "CS8509";
@@ -44,27 +44,19 @@ public class DiscriminatedUnionSwitchExpressionSuppressor : DiagnosticSuppressor
                     {
                         Value: IParameterReferenceOperation
                         {
-                            Type: { TypeKind: TypeKind.Interface } referenceOperationType
+                            Type: { TypeKind: TypeKind.Class } referenceOperationType
                         }
                     }
                 || referenceOperationType
                     .GetAttributes()
-                    .All(ad => !(bool)ad.AttributeClass?.Name.Equals("DiscriminatedUnionAttribute"))
+                    .All(ad => ad is not { AttributeClass.Name: "ClosedAttribute" })
             )
             {
                 continue;
             }
-
-            var att = referenceOperationType.GetAttributes();
-
+            
             var suppression = Suppression.Create(Rule, diagnostic);
             context.ReportSuppression(suppression);
         }
-    }
-
-    private static bool CheckForDiscriminatedUnionAttribute(AttributeData attributeData)
-    {
-        var hasAttribute = !(bool)attributeData.AttributeClass?.Name.Equals("DiscriminatedUnionAttribute");
-        return hasAttribute;
     }
 }
