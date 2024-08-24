@@ -12,7 +12,7 @@ namespace Analyzers;
 public class UnionTypeSwitchExpressionSuppressor : DiagnosticSuppressor
 {
     private const string SuppressorId = "NF0001S";
-    private const string SuppressedDiagnosticId = "CS8509";
+    internal const string SuppressedDiagnosticId = "CS8509";
 
     private static readonly SuppressionDescriptor Rule =
         new(SuppressorId, SuppressedDiagnosticId, "Discriminated union type");
