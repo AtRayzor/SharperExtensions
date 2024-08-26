@@ -1,5 +1,3 @@
-using System;
-
 namespace Analyzers.Tests.TestSources;
 
 public class MissingCaseSwitch
@@ -13,12 +11,13 @@ public class MissingCaseSwitch
         };
     }
 
-    public object GetGenericCaseValue<T>(GenericClosedTestType<T> testType) where T : notnull
+    public object GetGenericCaseValue<T>(GenericClosedTestType<T> testType)
+        where T : notnull
     {
         return testType switch
         {
             Case1<T> case1 => case1.Value,
-            Case2<T> case2 => case2.Values,
+            Case2<T> case2 => case2.Values
         };
     }
 
@@ -34,8 +33,9 @@ public class MissingCaseSwitch
                 break;
         }
     }
-    
-    public void GenericCases<T>(GenericClosedTestType<T> testType) where T : notnull
+
+    public void GenericCases<T>(GenericClosedTestType<T> testType)
+        where T : notnull
     {
         switch (testType)
         {

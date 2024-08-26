@@ -1,5 +1,3 @@
-using System;
-
 namespace Analyzers.Tests.TestSources;
 
 public class AllCasesSwitch
@@ -14,7 +12,8 @@ public class AllCasesSwitch
         };
     }
 
-    public object GetGenericCaseValue<T>(GenericClosedTestType<T> testType) where T : notnull
+    public object GetGenericCaseValue<T>(GenericClosedTestType<T> testType)
+        where T : notnull
     {
         return testType switch
         {
@@ -40,8 +39,8 @@ public class AllCasesSwitch
         }
     }
 
-
-    public void GenericCases<T>(GenericClosedTestType<T> testType) where T : notnull
+    public void GenericCases<T>(GenericClosedTestType<T> testType)
+        where T : notnull
     {
         switch (testType)
         {

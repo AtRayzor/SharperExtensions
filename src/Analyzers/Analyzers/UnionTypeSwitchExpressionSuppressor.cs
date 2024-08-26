@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -32,9 +31,7 @@ public class UnionTypeSwitchExpressionSuppressor : DiagnosticSuppressor
                 || rootNode.FindNode(location.SourceSpan)
                     is not SwitchExpressionSyntax switchExpressionSyntax
             )
-            {
                 continue;
-            }
 
             var semanticModel = context.GetSemanticModel(sourceTree);
 
@@ -51,10 +48,8 @@ public class UnionTypeSwitchExpressionSuppressor : DiagnosticSuppressor
                     .GetAttributes()
                     .All(ad => ad is not { AttributeClass.Name: "ClosedAttribute" })
             )
-            {
                 continue;
-            }
-            
+
             var suppression = Suppression.Create(Rule, diagnostic);
             context.ReportSuppression(suppression);
         }

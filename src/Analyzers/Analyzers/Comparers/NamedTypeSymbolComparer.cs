@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 
 namespace Analyzers.Comparers;
@@ -21,13 +20,15 @@ internal sealed class NamedTypeSymbolComparer : IEqualityComparer<INamedTypeSymb
         var typeY = y.GetType();
 
         return typeX == typeY
-               || (
-                   typeX.IsGenericType
-                   && typeY.IsGenericType
-                   && typeX.MakeGenericType() == typeY.MakeGenericType()
-               );
+            || (
+                typeX.IsGenericType
+                && typeY.IsGenericType
+                && typeX.MakeGenericType() == typeY.MakeGenericType()
+            );
     }
 
-    public int GetHashCode(INamedTypeSymbol? obj) =>
-        obj is null ? 0 : obj.Name.GetHashCode();
+    public int GetHashCode(INamedTypeSymbol? obj)
+    {
+        return obj is null ? 0 : obj.Name.GetHashCode();
+    }
 }

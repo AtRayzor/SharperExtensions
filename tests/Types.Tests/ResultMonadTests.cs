@@ -16,11 +16,13 @@ public class MonadTests
         Result<DummyNewValue, DummyError> expected
     )
     {
-        Result.Monad.Bind(result, binder)
+        Result
+            .Monad
+            .Bind(result, binder)
             .Should()
             .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
-    
+
     [Theory]
     [ClassData(typeof(FlattenTestCases))]
     public void FlattenTests(
@@ -28,11 +30,13 @@ public class MonadTests
         Result<DummyValue, DummyError> expected
     )
     {
-        Result.Monad.Flatten(wrappedResult)
+        Result
+            .Monad
+            .Flatten(wrappedResult)
             .Should()
             .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
-    
+
     [Theory]
     [ClassData(typeof(BindAsyncTestCases))]
     public async Task BindAsyncTests(
@@ -45,11 +49,13 @@ public class MonadTests
             .Should()
             .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
-    
+
     [Theory]
     [ClassData(typeof(FlattenAsyncTestCases))]
     public async Task FlattenAsyncTests(
-        Func<Task<Result<Task<Result<DummyValue, DummyError>>, DummyError>>> wrappedResultTaskFactory,
+        Func<
+            Task<Result<Task<Result<DummyValue, DummyError>>, DummyError>>
+        > wrappedResultTaskFactory,
         Result<DummyValue, DummyError> expected
     )
     {
@@ -74,7 +80,7 @@ file class BindTestCases : IEnumerable<object[]>
         [
             Result.Error<DummyValue, DummyError>(ResultTestData.Error),
             (Func<DummyValue, Result<DummyNewValue, DummyError>>)ResultTestMethods.TestBinder,
-            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error),
+            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error)
         ];
     }
 
@@ -124,15 +130,17 @@ file class BindAsyncTestCases : IEnumerable<object[]>
         yield return
         [
             () => Task.FromResult(Result.Ok<DummyValue, DummyError>(ResultTestData.Value)),
-            (Func<DummyValue, Task<Result<DummyNewValue, DummyError>>>)ResultTestMethods.AsyncTestBinder,
+            (Func<DummyValue, Task<Result<DummyNewValue, DummyError>>>)
+                ResultTestMethods.AsyncTestBinder,
             Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue)
         ];
 
         yield return
         [
             () => Task.FromResult(Result.Error<DummyValue, DummyError>(ResultTestData.Error)),
-            (Func<DummyValue, Task<Result<DummyNewValue, DummyError>>>)ResultTestMethods.AsyncTestBinder,
-            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error),
+            (Func<DummyValue, Task<Result<DummyNewValue, DummyError>>>)
+                ResultTestMethods.AsyncTestBinder,
+            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error)
         ];
     }
 
@@ -148,23 +156,34 @@ file class FlattenAsyncTestCases : IEnumerable<object[]>
     {
         yield return
         [
-            () => Task.FromResult(Result.Ok<Task<Result<DummyValue, DummyError>>, DummyError>(
-                Task.FromResult(Result.Ok<DummyValue, DummyError>(ResultTestData.Value)))
-            ),
+            () =>
+                Task.FromResult(
+                    Result.Ok<Task<Result<DummyValue, DummyError>>, DummyError>(
+                        Task.FromResult(Result.Ok<DummyValue, DummyError>(ResultTestData.Value))
+                    )
+                ),
             Result.Ok<DummyValue, DummyError>(ResultTestData.Value)
         ];
 
         yield return
         [
-            () => Task.FromResult(Result.Ok<Task<Result<DummyValue, DummyError>>, DummyError>(
-                Task.FromResult(Result.Error<DummyValue, DummyError>(ResultTestData.Error)))
-            ),
+            () =>
+                Task.FromResult(
+                    Result.Ok<Task<Result<DummyValue, DummyError>>, DummyError>(
+                        Task.FromResult(Result.Error<DummyValue, DummyError>(ResultTestData.Error))
+                    )
+                ),
             Result.Error<DummyValue, DummyError>(ResultTestData.Error)
         ];
 
         yield return
         [
-            () => Task.FromResult(Result.Error<Task<Result<DummyValue, DummyError>>, DummyError>(ResultTestData.Error)),
+            () =>
+                Task.FromResult(
+                    Result.Error<Task<Result<DummyValue, DummyError>>, DummyError>(
+                        ResultTestData.Error
+                    )
+                ),
             Result.Error<DummyValue, DummyError>(ResultTestData.Error)
         ];
     }

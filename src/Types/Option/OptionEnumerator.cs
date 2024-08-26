@@ -1,9 +1,9 @@
 using System.Collections;
-using static System.GC;
 
 namespace NetFunctional.Types;
 
-public class OptionEnumerator<T> : IEnumerator<T> where T : notnull
+public class OptionEnumerator<T> : IEnumerator<T>
+    where T : notnull
 {
     private readonly T[] _values;
     private int _index = -1;
@@ -12,7 +12,7 @@ public class OptionEnumerator<T> : IEnumerator<T> where T : notnull
     {
         _values = values.ToArray();
     }
-    
+
     public OptionEnumerator(Option<T> option)
     {
         _values = option switch
@@ -21,15 +21,19 @@ public class OptionEnumerator<T> : IEnumerator<T> where T : notnull
             _ => []
         };
     }
-    
-    public void Dispose()
+
+    public void Dispose() { }
+
+    public bool MoveNext()
     {
-   
+        return ++_index < _values.Length;
     }
 
-    public bool MoveNext() => ++_index < _values.Length;
+    public void Reset()
+    {
+        _index = -1;
+    }
 
-    public void Reset() => _index = -1;
     public T Current => _values[_index];
 
     object? IEnumerator.Current => Current;

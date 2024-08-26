@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root"
+                xmlns="">
         <xsd:element name="root" msdata:IsDataSet="true">
-            
+
         </xsd:element>
     </xsd:schema>
     <resheader name="resmimetype">
@@ -13,39 +14,50 @@
         <value>1.3</value>
     </resheader>
     <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
     </resheader>
     <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
     </resheader>
     <data name="NF0001Title" xml:space="preserve">
         <value>The types have not ben exhausted</value>
     </data>
     <data name="NF0001Description" xml:space="preserve">
-        <value>The types have not ben exhausted.</value><comment>An error when not all DU types have been included.</comment>
+        <value>The types have not ben exhausted.</value>
+        <comment>An error when not all DU types have been included.</comment>
     </data>
     <data name="NF0001MessageFormat" xml:space="preserve">
-        <value>Not all subtypes of {0} were included</value><comment>The format-able message displayed when a DU switch expression is not complete.</comment>
+        <value>Not all subtypes of {0} were included</value>
+        <comment>The format-able message displayed when a DU switch expression is not complete.</comment>
     </data>
     <data name="NF0002Title" xml:space="preserve">
         <value>Closed union type must be abstract</value>
     </data>
     <data name="NF0002Description" xml:space="preserve">
-        <value>Type declarations marked with the 'Closed' attribute are required to be abstract.</value><comment>An error when Discriminated Union cases are not readonly record structs.</comment>
+        <value>Type declarations marked with the 'Closed' attribute are required to be abstract.</value>
+        <comment>An error when Discriminated Union cases are not readonly record structs.</comment>
     </data>
     <data name="NF0002MessageFormat" xml:space="preserve">
-        <value>The non-abstract {0} '{1}' has been marked as closed. All closed union type are required to be abstract.</value><comment>Message by diagnostic.</comment>
+        <value>The non-abstract {0} '{1}' has been marked as closed. All closed union type are required to be abstract.</value>
+        <comment>Message by diagnostic.</comment>
     </data>
     <data name="NF0002CodeFixTitle" xml:space="preserve">
-        <value>Change case declaration to 'readonly record struct'</value><comment>The title of the code fix.</comment>
+        <value>Change case declaration to 'readonly record struct'</value>
+        <comment>The title of the code fix.</comment>
     </data>
     <data name="NF0003Title" xml:space="preserve">
         <value>Discriminated Union case declared outside of file</value>
     </data>
     <data name="NF0003Description" xml:space="preserve">
-        <value>Discriminated Union case declared outside of file.</value><comment>An error discriminated union cases are not declare in the same file as the base interface.</comment>
+        <value>Discriminated Union case declared outside of file.</value>
+        <comment>An error discriminated union cases are not declare in the same file as the base interface.</comment>
     </data>
     <data name="NF0003MessageFormat" xml:space="preserve">
-        <value>The case '{0}' was defined in a different file than the discriminated union type '{1}'. All cases are required to be defined inside the same file a the base interface.</value><comment>The format-able message displayed when a DU switch expression is not complete.</comment>
+        <value>The case '{0}' was defined in a different file than the discriminated union type '{1}'. All cases are required to be defined inside the same file a the base interface.</value>
+        <comment>The format-able message displayed when a DU switch expression is not complete.</comment>
     </data>
 </root>

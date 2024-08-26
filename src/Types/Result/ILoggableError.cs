@@ -1,4 +1,3 @@
-using Microsoft.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace NetFunctional.Types;

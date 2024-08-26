@@ -7,7 +7,6 @@ namespace Analyzers.Tests;
 
 public class UnionTypeSwitchAnalyzerTests
 {
-
     [Theory]
     [ClassData(typeof(UnionTypeSwitchAnalyzerTestCases))]
     public async Task Test(CSharpAnalyzerTest<UnionTypeSwitchAnalyzer, DefaultVerifier> context)
@@ -15,4 +14,3 @@ public class UnionTypeSwitchAnalyzerTests
         await context.RunAsync();
     }
 }
-

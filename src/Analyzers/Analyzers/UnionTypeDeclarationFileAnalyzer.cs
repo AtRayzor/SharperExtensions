@@ -53,7 +53,7 @@ public class UnionTypeDeclarationFileAnalyzer : DiagnosticAnalyzer
 
         context.RegisterSyntaxNodeAction(
             AnalyzeCaseDefinitionFile,
-            SyntaxKind.ClassDeclaration, 
+            SyntaxKind.ClassDeclaration,
             SyntaxKind.RecordDeclaration
         );
     }
@@ -62,15 +62,16 @@ public class UnionTypeDeclarationFileAnalyzer : DiagnosticAnalyzer
     {
         if (
             context.Node is not TypeDeclarationSyntax typeDeclarationSyntax
-            || typeDeclarationSyntax.Kind() is not (SyntaxKind.ClassDeclaration or SyntaxKind.RecordDeclaration)
+            || typeDeclarationSyntax.Kind()
+                is not (SyntaxKind.ClassDeclaration or SyntaxKind.RecordDeclaration)
             || context.SemanticModel.GetDeclaredSymbol(typeDeclarationSyntax)
                 is not { BaseType: { } caseDeclarationBaseSymbol } caseDeclarationSymbol
-            || caseDeclarationBaseSymbol.GetAttributes().All(att => att is not { AttributeClass.Name: "ClosedAttribute"})
-            || FilePathsMatch(caseDeclarationSymbol,caseDeclarationBaseSymbol)
+            || caseDeclarationBaseSymbol
+                .GetAttributes()
+                .All(att => att is not { AttributeClass.Name: "ClosedAttribute" })
+            || FilePathsMatch(caseDeclarationSymbol, caseDeclarationBaseSymbol)
         )
-        {
             return;
-        }
 
         var diagnostic = Diagnostic.Create(
             Rule,
@@ -80,14 +81,16 @@ public class UnionTypeDeclarationFileAnalyzer : DiagnosticAnalyzer
         );
         context.ReportDiagnostic(diagnostic);
     }
-    
+
     private static bool FilePathsMatch(
         INamedTypeSymbol caseDeclaredSymbol,
         INamedTypeSymbol baseDeclaredSymbol
-    ) =>
-        baseDeclaredSymbol is { Locations.Length: 1}
-        && caseDeclaredSymbol is { Locations.Length: 1 }
-        && caseDeclaredSymbol.Locations[0] is { SourceTree.FilePath: {} caseFilePath }
-        && baseDeclaredSymbol.Locations[0] is { SourceTree.FilePath: {} baseFilePath }
-        && caseFilePath.Equals(baseFilePath);
+    )
+    {
+        return baseDeclaredSymbol is { Locations.Length: 1 }
+            && caseDeclaredSymbol is { Locations.Length: 1 }
+            && caseDeclaredSymbol.Locations[0] is { SourceTree.FilePath: { } caseFilePath }
+            && baseDeclaredSymbol.Locations[0] is { SourceTree.FilePath: { } baseFilePath }
+            && caseFilePath.Equals(baseFilePath);
+    }
 }

@@ -8,7 +8,7 @@ public interface IMonad<out T> : IConstructableTrait<T>
 public abstract class MonadFactory<T> : TraitFactory<T, IMonad<T>>
     where T : IImplementsMonad;
 
-public static partial class Monad
+public static class Monad
 {
     internal static IMonad<T> Construct<T, TMonad>(T type)
         where TMonad : struct, IMonad<T>

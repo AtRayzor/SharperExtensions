@@ -25,7 +25,7 @@ public class GenericInterfaceSymbolEqualityComparerTests
                     SyntaxFactory.ParseTypeName("int"),
                     SyntaxFactory.Identifier("Count")
                 )
-                .AddModifiers([publicKeywordToken])
+                .AddModifiers(publicKeywordToken)
                 .AddAccessorListAccessors(accessorDeclarations)
         ];
         var interfaceSyntax = SyntaxFactory
@@ -36,7 +36,7 @@ public class GenericInterfaceSymbolEqualityComparerTests
         var implementationSyntax1 = SyntaxFactory
             .StructDeclaration(SyntaxFactory.Identifier("Implementation1"))
             .AddBaseListTypes(
-                [SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("DummyInterface1"))]
+                SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("DummyInterface1"))
             )
             .AddModifiers(modifiers)
             .AddMembers(members);
@@ -44,7 +44,7 @@ public class GenericInterfaceSymbolEqualityComparerTests
         var implementationSyntax2 = SyntaxFactory
             .StructDeclaration(SyntaxFactory.Identifier("Implementation2"))
             .AddBaseListTypes(
-                [SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("DummyInterface1"))]
+                SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("DummyInterface1"))
             )
             .AddModifiers(modifiers)
             .AddMembers(members);

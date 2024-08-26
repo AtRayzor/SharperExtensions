@@ -8,7 +8,8 @@ internal static class TestContextFactory
 {
     public static CSharpAnalyzerTest<TAnalyzer, DefaultVerifier> CreateContext<TAnalyzer>()
         where TAnalyzer : DiagnosticAnalyzer, new()
-        => new()
+    {
+        return new CSharpAnalyzerTest<TAnalyzer, DefaultVerifier>
         {
             ReferenceAssemblies = ReferenceAssemblies
                 .Net
@@ -18,9 +19,18 @@ internal static class TestContextFactory
             {
                 Sources =
                 {
-                    ("Closed.cs", SourceTextFactory.CreateSourceText("../../../../../Core/UnionTypes/Closed.cs")),
-                    ("GlobalUsings", SourceTextFactory.CreateSourceText("../../../TestSources/GlobalUsings.cs")),
-                },
-            },
+                    (
+                        "Closed.cs",
+                        SourceTextFactory.CreateSourceText(
+                            "../../../../../Core/UnionTypes/Closed.cs"
+                        )
+                    ),
+                    (
+                        "GlobalUsings",
+                        SourceTextFactory.CreateSourceText("../../../TestSources/GlobalUsings.cs")
+                    )
+                }
+            }
         };
+    }
 }

@@ -7,6 +7,6 @@ public abstract class TraitFactory<T, TTrait>
     public static TTrait Construct<TStruct>(T type)
         where TStruct : struct, TTrait
     {
-        return (TTrait)Activator.CreateInstance(typeof(TStruct), [type])!;
+        return (TTrait)Activator.CreateInstance(typeof(TStruct), type)!;
     }
 }

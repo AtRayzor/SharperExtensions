@@ -1,8 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using Analyzers.Tests.TestSources;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Testing;
@@ -13,41 +10,25 @@ namespace Analyzers.Tests;
 
 internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
 {
-    private (string, SourceText)[]? _sourceTexts;
+    private readonly string[] _sources =
+    [
+        "../../../TestSources/ClosedTestType.cs",
+        "../../../TestSources/GenericClosedTestType.cs"
+    ];
 
     private readonly string[] _testFiles =
     [
         "../../../TestSources/AllCasesSwitch.cs",
         "../../../TestSources/MissingCasesExpression.cs",
-        "../../../TestSources/DefaultCaseSwitch.cs",
+        "../../../TestSources/DefaultCaseSwitch.cs"
     ];
 
-    private readonly string[] _sources =
-    [
-        "../../../TestSources/ClosedTestType.cs",
-        "../../../TestSources/GenericClosedTestType.cs",
-    ];
+    private (string, SourceText)[]? _sourceTexts;
 
     private (string, SourceText)[] SourceTexts =>
-        _sourceTexts ??= _sources.Select(s => (s.Split('/').Last(), SourceTextFactory.CreateSourceText(s))).ToArray();
-
-
-    private CSharpAnalyzerTest<UnionTypeSwitchAnalyzer, DefaultVerifier> CreateAnalyzer(
-        string source,
-        CompilerDiagnostics compilerDiagnostics,
-        params DiagnosticResult[] expected)
-    {
-        var context = TestContextFactory.CreateContext<UnionTypeSwitchAnalyzer>();
-
-
-        context.CompilerDiagnostics = compilerDiagnostics;
-        context.ExpectedDiagnostics.AddRange(expected);
-        context.TestState.Sources.Add((source.Split('/').Last(), SourceTextFactory.CreateSourceText(source)));
-        context.TestState.Sources.AddRange(SourceTexts);
-
-        return context;
-    }
-
+        _sourceTexts ??= _sources
+            .Select(s => (s.Split('/').Last(), SourceTextFactory.CreateSourceText(s)))
+            .ToArray();
 
     public IEnumerator<object[]> GetEnumerator()
     {
@@ -59,9 +40,14 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
             .WithArguments($"{typeof(GenericClosedTestType<>).FullName!.Split('`').First()}<T>")
             .WithSeverity(DiagnosticSeverity.Error);
 
-
-        yield return [CreateAnalyzer("../../../TestSources/AllCasesSwitch.cs", CompilerDiagnostics.Errors)];
-        yield return [CreateAnalyzer("../../../TestSources/DefaultCaseSwitch.cs", CompilerDiagnostics.Errors)];
+        yield return
+        [
+            CreateAnalyzer("../../../TestSources/AllCasesSwitch.cs", CompilerDiagnostics.Errors)
+        ];
+        yield return
+        [
+            CreateAnalyzer("../../../TestSources/DefaultCaseSwitch.cs", CompilerDiagnostics.Errors)
+        ];
         yield return
         [
             CreateAnalyzer(
@@ -78,5 +64,24 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+
+    private CSharpAnalyzerTest<UnionTypeSwitchAnalyzer, DefaultVerifier> CreateAnalyzer(
+        string source,
+        CompilerDiagnostics compilerDiagnostics,
+        params DiagnosticResult[] expected
+    )
+    {
+        var context = TestContextFactory.CreateContext<UnionTypeSwitchAnalyzer>();
+
+        context.CompilerDiagnostics = compilerDiagnostics;
+        context.ExpectedDiagnostics.AddRange(expected);
+        context
+            .TestState
+            .Sources
+            .Add((source.Split('/').Last(), SourceTextFactory.CreateSourceText(source)));
+        context.TestState.Sources.AddRange(SourceTexts);
+
+        return context;
     }
 }

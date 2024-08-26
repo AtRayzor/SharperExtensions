@@ -1,7 +1,6 @@
 using System.Collections;
 using FluentAssertions;
 using NetFunction.Types.Tests.DummyTypes;
-using NetFunctional.Core.UnionTypes;
 using NetFunctional.Types;
 using Xunit;
 
@@ -25,7 +24,11 @@ public class ResultTests
 
     [Theory]
     [ClassData(typeof(TryGetValueTestCases))]
-    public void TestTryGetValue(Result<DummyValue, DummyError> result, bool expected, DummyValue? expectedValue)
+    public void TestTryGetValue(
+        Result<DummyValue, DummyError> result,
+        bool expected,
+        DummyValue? expectedValue
+    )
     {
         Result.Unsafe.TryGetValue(result, out var valueOut).Should().Be(expected);
         valueOut.Should().Be(expectedValue);
@@ -33,7 +36,11 @@ public class ResultTests
 
     [Theory]
     [ClassData(typeof(TryGetErrorTestCases))]
-    public void TestTryGetError(Result<DummyValue, DummyError> result, bool expected, DummyError? expectedError)
+    public void TestTryGetError(
+        Result<DummyValue, DummyError> result,
+        bool expected,
+        DummyError? expectedError
+    )
     {
         Result.Unsafe.TryGetError(result, out var errorOut).Should().Be(expected);
         errorOut.Should().Be(expectedError);
@@ -43,51 +50,71 @@ public class ResultTests
     public void DoIfOk_OkResult()
     {
         string? testString = default;
-        
-        Result.Unsafe.DoIfOk(
-            Result.Ok<DummyValue,DummyError>(ResultTestData.Value),
-            value => { testString = value.Name; }
-        );
-        
+
+        Result
+            .Unsafe
+            .DoIfOk(
+                Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
+                value =>
+                {
+                    testString = value.Name;
+                }
+            );
+
         testString.Should().Be(ResultTestData.Value.Name);
     }
-    
+
     [Fact]
     public void DoIfOk_ErrorResult()
     {
         string? testString = default;
-        
-        Result.Unsafe.DoIfOk(
-            Result.Error<DummyValue,DummyError>(ResultTestData.Error),
-            value => { testString = value.Name; }
-        );
-        
+
+        Result
+            .Unsafe
+            .DoIfOk(
+                Result.Error<DummyValue, DummyError>(ResultTestData.Error),
+                value =>
+                {
+                    testString = value.Name;
+                }
+            );
+
         testString.Should().BeNull();
     }
-    
+
     [Fact]
     public void DoIfError_ErrorResult()
     {
         string? testString = default;
-        
-        Result.Unsafe.DoIfError(
-            Result.Error<DummyValue,DummyError>(ResultTestData.Error),
-            error => { testString = error.Message; }
-        );
-        
+
+        Result
+            .Unsafe
+            .DoIfError(
+                Result.Error<DummyValue, DummyError>(ResultTestData.Error),
+                error =>
+                {
+                    testString = error.Message;
+                }
+            );
+
         testString.Should().Be(ResultTestData.Error.Message);
     }
-    
+
     [Fact]
     public void DoIfError_OkResult()
     {
         string? testString = default;
-        
-        Result.Unsafe.DoIfError(
-            Result.Ok<DummyValue,DummyError>(ResultTestData.Value),
-            error => { testString = error.Message; }
-        );
-        
+
+        Result
+            .Unsafe
+            .DoIfError(
+                Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
+                error =>
+                {
+                    testString = error.Message;
+                }
+            );
+
         testString.Should().BeNull();
     }
 }
@@ -100,7 +127,10 @@ file class IsOkTestCases : IEnumerable<object[]>
         yield return [Result.Error<DummyValue, DummyError>(ResultTestData.Error), false];
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }
 
 file class IsErrorTestCases : IEnumerable<object[]>
@@ -111,14 +141,22 @@ file class IsErrorTestCases : IEnumerable<object[]>
         yield return [Result.Ok<DummyValue, DummyError>(ResultTestData.Value), false];
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }
 
 file class TryGetValueTestCases : IEnumerable<object?[]>
 {
     public IEnumerator<object?[]> GetEnumerator()
     {
-        yield return [Result.Ok<DummyValue, DummyError>(ResultTestData.Value), true, ResultTestData.Value];
+        yield return
+        [
+            Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
+            true,
+            ResultTestData.Value
+        ];
         yield return [Result.Error<DummyValue, DummyError>(ResultTestData.Error), false, null];
     }
 
@@ -132,7 +170,12 @@ file class TryGetErrorTestCases : IEnumerable<object?[]>
 {
     public IEnumerator<object?[]> GetEnumerator()
     {
-        yield return [Result.Error<DummyValue, DummyError>(ResultTestData.Error), true, ResultTestData.Error];
+        yield return
+        [
+            Result.Error<DummyValue, DummyError>(ResultTestData.Error),
+            true,
+            ResultTestData.Error
+        ];
         yield return [Result.Ok<DummyValue, DummyError>(ResultTestData.Value), false, null];
     }
 
@@ -146,7 +189,7 @@ file class DoIfOkTestCases : IEnumerable<object[]>
 {
     public IEnumerator<object[]> GetEnumerator()
     {
-        yield return [Result.Ok<DummyValue, DummyError>(ResultTestData.Value), ];
+        yield return [Result.Ok<DummyValue, DummyError>(ResultTestData.Value)];
     }
 
     IEnumerator IEnumerable.GetEnumerator()

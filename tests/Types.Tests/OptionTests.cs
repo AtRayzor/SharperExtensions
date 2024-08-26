@@ -8,9 +8,6 @@ namespace NetFunction.Types.Tests;
 
 public class OptionTests
 {
-  
-    
-    
     [Theory]
     [ClassData(typeof(IsSomeTestCases))]
     public void IsSome_Tests(Option<DummyValue> option, bool expected)
@@ -38,7 +35,7 @@ public class OptionTests
         Option.Unsafe.TryGetValue(OptionTestData.SomeValue, out var value).Should().BeTrue();
         value.Should().BeEquivalentTo(OptionTestData.Value);
     }
-    
+
     [Fact]
     public void TryGetValue_CallWithNone_ReturnsFalseAndOutputsValue()
     {
@@ -46,8 +43,6 @@ public class OptionTests
         value.Should().BeNull();
     }
 }
-
-
 
 file class IsSomeTestCases : IEnumerable<object[]>
 {
@@ -57,7 +52,10 @@ file class IsSomeTestCases : IEnumerable<object[]>
         yield return [OptionTestData.NoneValue, false];
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }
 
 file class IsNoneTestCases : IEnumerable<object[]>
@@ -68,7 +66,10 @@ file class IsNoneTestCases : IEnumerable<object[]>
         yield return [OptionTestData.SomeValue, false];
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }
 
 file class GetValueOrdDefaultTestCases : IEnumerable<object?[]>
@@ -79,5 +80,8 @@ file class GetValueOrdDefaultTestCases : IEnumerable<object?[]>
         yield return [OptionTestData.NoneValue, default];
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }

@@ -8,7 +8,7 @@ public interface IFunctor<out T> : IConstructableTrait<T>
 public abstract class FunctorFactory<T> : TraitFactory<T, IFunctor<T>>
     where T : IImplementsFunctor;
 
-public static partial class Functor
+public static class Functor
 {
     internal static IFunctor<T> Construct<T, TFunctor>(T type)
         where TFunctor : struct, IFunctor<T>

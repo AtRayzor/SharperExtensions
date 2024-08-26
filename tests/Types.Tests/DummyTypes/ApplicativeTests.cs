@@ -15,7 +15,9 @@ public class ApplicativeTests
         Result<DummyNewValue, DummyError> expected
     )
     {
-        Result.Applicative.Apply(result, wrappedMapping)
+        Result
+            .Applicative
+            .Apply(result, wrappedMapping)
             .Should()
             .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
@@ -80,29 +82,44 @@ file class ApplyAsyncTestsCases : IEnumerable<object[]>
         yield return
         [
             () => Task.FromResult(Result.Ok<DummyValue, DummyError>(ResultTestData.Value)),
-            () => Task.FromResult(Result.Ok<Func<DummyValue, DummyNewValue>, DummyError>(ResultTestMethods.TestMapping)),
+            () =>
+                Task.FromResult(
+                    Result.Ok<Func<DummyValue, DummyNewValue>, DummyError>(
+                        ResultTestMethods.TestMapping
+                    )
+                ),
             Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue)
         ];
 
         yield return
         [
             () => Task.FromResult(Result.Ok<DummyValue, DummyError>(ResultTestData.Value)),
-            () => Task.FromResult(Result.Error<Func<DummyValue, DummyNewValue>, DummyError>(ResultTestData.Error)),
+            () =>
+                Task.FromResult(
+                    Result.Error<Func<DummyValue, DummyNewValue>, DummyError>(ResultTestData.Error)
+                ),
             Result.Error<DummyNewValue, DummyError>(ResultTestData.Error)
         ];
 
         yield return
         [
             () => Task.FromResult(Result.Error<DummyValue, DummyError>(ResultTestData.Error)),
-            () => Task.FromResult(
-                Result.Ok<Func<DummyValue, DummyNewValue>, DummyError>(ResultTestMethods.TestMapping)),
+            () =>
+                Task.FromResult(
+                    Result.Ok<Func<DummyValue, DummyNewValue>, DummyError>(
+                        ResultTestMethods.TestMapping
+                    )
+                ),
             Result.Error<DummyNewValue, DummyError>(ResultTestData.Error)
         ];
 
         yield return
         [
             () => Task.FromResult(Result.Error<DummyValue, DummyError>(ResultTestData.Error)),
-            () => Task.FromResult(Result.Error<Func<DummyValue, DummyNewValue>, DummyError>(ResultTestData.Error)),
+            () =>
+                Task.FromResult(
+                    Result.Error<Func<DummyValue, DummyNewValue>, DummyError>(ResultTestData.Error)
+                ),
             Result.Error<DummyNewValue, DummyError>(ResultTestData.Error)
         ];
     }

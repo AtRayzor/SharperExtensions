@@ -10,10 +10,16 @@ public class OptionFunctorTests
 {
     [Theory]
     [ClassData(typeof(MapTestCases))]
-    public void MapTests(Option<DummyValue> option, Func<DummyValue, DummyNewValue> mapping,
-        Option<DummyNewValue> expected, Type expectedType)
+    public void MapTests(
+        Option<DummyValue> option,
+        Func<DummyValue, DummyNewValue> mapping,
+        Option<DummyNewValue> expected,
+        Type expectedType
+    )
     {
-        Option.Functor.Map(option, mapping)
+        Option
+            .Functor
+            .Map(option, mapping)
             .Should()
             .BeOfType(expectedType)
             .And
@@ -23,7 +29,10 @@ public class OptionFunctorTests
 
 file static class TestFunctions
 {
-    public static DummyNewValue Mapping(DummyValue value) => new() { NameAllCaps = value.Name.ToUpper() };
+    public static DummyNewValue Mapping(DummyValue value)
+    {
+        return new DummyNewValue { NameAllCaps = value.Name.ToUpper() };
+    }
 }
 
 file class MapTestCases : IEnumerable<object[]>
@@ -32,19 +41,22 @@ file class MapTestCases : IEnumerable<object[]>
     {
         yield return
         [
-            OptionTestData.SomeValue, 
+            OptionTestData.SomeValue,
             (Func<DummyValue, DummyNewValue>)TestFunctions.Mapping,
-            OptionTestData.SomeNewValue, 
+            OptionTestData.SomeNewValue,
             typeof(Some<DummyNewValue>)
         ];
         yield return
         [
-            OptionTestData.NoneValue, 
+            OptionTestData.NoneValue,
             (Func<DummyValue, DummyNewValue>)TestFunctions.Mapping,
-            OptionTestData.NoneNewValue, 
+            OptionTestData.NoneNewValue,
             typeof(None<DummyNewValue>)
         ];
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }

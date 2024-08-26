@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 
@@ -21,11 +20,11 @@ internal class TypeSymbolComparer : IEqualityComparer<ITypeSymbol?>
         var typeY = y.GetType();
 
         return typeX == typeY
-               || (
-                   typeX.IsGenericType
-                   && typeY.IsGenericType
-                   && typeX.MakeGenericType() == typeY.MakeGenericType()
-               );
+            || (
+                typeX.IsGenericType
+                && typeY.IsGenericType
+                && typeX.MakeGenericType() == typeY.MakeGenericType()
+            );
     }
 
     public int GetHashCode(ITypeSymbol? obj)

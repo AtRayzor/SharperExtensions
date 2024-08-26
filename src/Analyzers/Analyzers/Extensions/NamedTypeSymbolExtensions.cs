@@ -13,12 +13,17 @@ public static class NamedTypeSymbolExtensions
         this IEnumerable<INamedTypeSymbol> first,
         IEnumerable<INamedTypeSymbol> second
     )
-        where TComparer : IEqualityComparer<INamedTypeSymbol>, new() =>
-        first.Intersect(second, new TComparer());
+        where TComparer : IEqualityComparer<INamedTypeSymbol>, new()
+    {
+        return first.Intersect(second, new TComparer());
+    }
 
     [Pure]
     internal static IEnumerable<INamedTypeSymbol> IntersectNamedTypeSymbols(
         this IEnumerable<INamedTypeSymbol> first,
         IEnumerable<INamedTypeSymbol> second
-    ) => first.IntersectNamedTypeSymbols<NamedTypeSymbolComparer>(second);
+    )
+    {
+        return first.IntersectNamedTypeSymbols<NamedTypeSymbolComparer>(second);
+    }
 }

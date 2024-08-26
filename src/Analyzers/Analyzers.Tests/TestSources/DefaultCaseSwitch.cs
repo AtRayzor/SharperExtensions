@@ -1,5 +1,3 @@
-using System;
-
 namespace Analyzers.Tests.TestSources;
 
 public class DefaultCaseSwitch
@@ -9,11 +7,12 @@ public class DefaultCaseSwitch
         return testType switch
         {
             Animal animal => animal.Name,
-            _ => string.Empty,
+            _ => string.Empty
         };
     }
 
-    public object GetGenericCaseValue<T>(GenericClosedTestType<T> testType) where T : notnull
+    public object GetGenericCaseValue<T>(GenericClosedTestType<T> testType)
+        where T : notnull
     {
         return testType switch
         {
@@ -34,8 +33,9 @@ public class DefaultCaseSwitch
                 break;
         }
     }
-    
-    public void GenericCases<T>(GenericClosedTestType<T> testType) where T : notnull
+
+    public void GenericCases<T>(GenericClosedTestType<T> testType)
+        where T : notnull
     {
         switch (testType)
         {

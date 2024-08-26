@@ -30,17 +30,17 @@ public class ClosedUnionTypeDeclarationAnalyzer : DiagnosticAnalyzer
         Resources.ResourceManager,
         typeof(Resources)
     );
-    
 
-    internal static readonly DiagnosticDescriptor Rule = new(
-        DiagnosticId,
-        Title,
-        MessageFormat,
-        Category,
-        DiagnosticSeverity.Error,
-        true,
-        Description
-    );
+    internal static readonly DiagnosticDescriptor Rule =
+        new(
+            DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Error,
+            true,
+            Description
+        );
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
         ImmutableArray.Create(Rule);
@@ -50,32 +50,33 @@ public class ClosedUnionTypeDeclarationAnalyzer : DiagnosticAnalyzer
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.EnableConcurrentExecution();
 
-        context.RegisterSyntaxNodeAction(AnalyzeClosedUnionTypeDeclaration, SyntaxKind.ClassDeclaration,
-            SyntaxKind.RecordDeclaration);
+        context.RegisterSyntaxNodeAction(
+            AnalyzeClosedUnionTypeDeclaration,
+            SyntaxKind.ClassDeclaration,
+            SyntaxKind.RecordDeclaration
+        );
     }
 
     private void AnalyzeClosedUnionTypeDeclaration(SyntaxNodeAnalysisContext context)
     {
-        if (context.Node is not TypeDeclarationSyntax typeDeclarationSyntax
+        if (
+            context.Node is not TypeDeclarationSyntax typeDeclarationSyntax
             || context.SemanticModel.GetDeclaredSymbol(typeDeclarationSyntax) is not { } typeSymbol
             || typeSymbol
                 .GetAttributes()
                 .All(att => att is not { AttributeClass.Name: "ClosedAttribute" })
-            || typeDeclarationSyntax.Modifiers.Any(mod =>
-                mod.IsKind(SyntaxKind.AbstractKeyword))
-           )
-        {
+            || typeDeclarationSyntax.Modifiers.Any(mod => mod.IsKind(SyntaxKind.AbstractKeyword))
+        )
             return;
-        }
-        
+
         var typeModifier = typeDeclarationSyntax is RecordDeclarationSyntax ? "record" : "class";
-        
+
         var diagnostic = Diagnostic.Create(
-            Rule, 
+            Rule,
             typeDeclarationSyntax.GetLocation(),
             typeModifier,
             typeSymbol.ToDisplayString()
-            );
+        );
         context.ReportDiagnostic(diagnostic);
     }
 }

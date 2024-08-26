@@ -1,7 +1,6 @@
 using System.Collections;
 using FluentAssertions;
 using NetFunction.Types.Tests.DummyTypes;
-using NetFunctional.Core.UnionTypes;
 using NetFunctional.Types;
 using Xunit;
 
@@ -14,14 +13,14 @@ public class ResultFunctorTests
     public void MapTests(
         Result<DummyValue, DummyError> result,
         Func<DummyValue, DummyNewValue> mapper,
-        Result<DummyNewValue, DummyError> expected)
+        Result<DummyNewValue, DummyError> expected
+    )
     {
-        Result.Functor.Map(result, mapper)
+        Result
+            .Functor
+            .Map(result, mapper)
             .Should()
-            .BeEquivalentTo(
-                expected,
-                config => config.RespectingRuntimeTypes()
-            );
+            .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
 
     [Theory]
@@ -32,12 +31,11 @@ public class ResultFunctorTests
         Result<DummyValue, DummyNewError> expected
     )
     {
-        Result.Functor.MapError(result, mapper)
+        Result
+            .Functor
+            .MapError(result, mapper)
             .Should()
-            .BeEquivalentTo(
-                expected,
-                config => config.RespectingRuntimeTypes()
-            );
+            .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
 
     [Theory]
@@ -49,12 +47,11 @@ public class ResultFunctorTests
         Result<DummyNewValue, DummyNewError> expected
     )
     {
-        Result.Functor.Match(result, okMapper, errorMapper)
+        Result
+            .Functor
+            .Match(result, okMapper, errorMapper)
             .Should()
-            .BeEquivalentTo(
-                expected,
-                config => config.RespectingRuntimeTypes()
-            );
+            .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
 
     [Theory]
@@ -62,14 +59,12 @@ public class ResultFunctorTests
     public async Task MapAsyncTests(
         Func<Task<Result<DummyValue, DummyError>>> resultTaskFactory,
         Func<DummyValue, DummyNewValue> mapper,
-        Result<DummyNewValue, DummyError> expected)
+        Result<DummyNewValue, DummyError> expected
+    )
     {
         (await Result.Functor.MapAsync(resultTaskFactory(), mapper))
             .Should()
-            .BeEquivalentTo(
-                expected,
-                config => config.RespectingRuntimeTypes()
-            );
+            .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
 
     [Theory]
@@ -82,10 +77,7 @@ public class ResultFunctorTests
     {
         (await Result.Functor.MapErrorAsync(resultTaskFactory(), mapper))
             .Should()
-            .BeEquivalentTo(
-                expected,
-                config => config.RespectingRuntimeTypes()
-            );
+            .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
 
     [Theory]
@@ -99,10 +91,7 @@ public class ResultFunctorTests
     {
         (await Result.Functor.MatchAsync(resultTaskFactory(), okMapper, errorMapper))
             .Should()
-            .BeEquivalentTo(
-                expected,
-                config => config.RespectingRuntimeTypes()
-            );
+            .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
 }
 
