@@ -1,101 +1,176 @@
+using System.Collections;
 using FluentAssertions;
 using NetFunction.Types.Tests.DummyTypes;
-using NetFunctional.Types.ResultKind;
-using NetFunctional.Types.Traits;
+using NetFunctional.Types;
+using Xunit;
 
 namespace NetFunction.Types.Tests;
 
-public class ResultMonadTests
+public class MonadTests
 {
-    [Fact]
-    public void Bind_CallOnOkResult_ReturnsOk()
+    [Theory]
+    [ClassData(typeof(BindTestCases))]
+    public void BindTests(
+        Result<DummyValue, DummyError> result,
+        Func<DummyValue, Result<DummyNewValue, DummyError>> binder,
+        Result<DummyNewValue, DummyError> expected
+    )
     {
-        var boundMonad =
-            TestData.ValueResultMonad.Bind(TestFunctions.Binder)
-            as Monad<ResultType<DummyNewValue, DummyError>.Ok>?;
-        boundMonad?.Type.Should().BeEquivalentTo(TestData.NewValueResult);
+        Result.Monad.Bind(result, binder)
+            .Should()
+            .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
-
-    [Fact]
-    public void Bind_CallOnErrorResult_ReturnsError()
+    
+    [Theory]
+    [ClassData(typeof(FlattenTestCases))]
+    public void FlattenTests(
+        Result<Result<DummyValue, DummyError>, DummyError> wrappedResult,
+        Result<DummyValue, DummyError> expected
+    )
     {
-        var boundMonad =
-            TestData.ErrorResultMonad.Bind(TestFunctions.Binder)
-            as Monad<ResultType<DummyNewValue, DummyError>.Error>?;
-        boundMonad?.Type.Should().BeEquivalentTo(TestData.NewErrorResult);
+        Result.Monad.Flatten(wrappedResult)
+            .Should()
+            .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
-
-    [Fact]
-    public async Task BindAsync_CallOnOkResult_ReturnsOk()
+    
+    [Theory]
+    [ClassData(typeof(BindAsyncTestCases))]
+    public async Task BindAsyncTests(
+        Func<Task<Result<DummyValue, DummyError>>> resultTaskFactory,
+        Func<DummyValue, Task<Result<DummyNewValue, DummyError>>> asyncBinder,
+        Result<DummyNewValue, DummyError> expected
+    )
     {
-        var boundMonad =
-            await Task.FromResult(TestData.ValueResultMonad).BindAsync(TestFunctions.BinderAsync)
-            as Monad<ResultType<DummyNewValue, DummyError>.Ok>?;
-        boundMonad?.Type.Should().BeEquivalentTo(TestData.NewValueResult);
+        (await Result.Monad.BindAsync(resultTaskFactory(), asyncBinder))
+            .Should()
+            .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
-
-    [Fact]
-    public async Task BindAsync_CallOnErrorResult_ReturnsError()
+    
+    [Theory]
+    [ClassData(typeof(FlattenAsyncTestCases))]
+    public async Task FlattenAsyncTests(
+        Func<Task<Result<Task<Result<DummyValue, DummyError>>, DummyError>>> wrappedResultTaskFactory,
+        Result<DummyValue, DummyError> expected
+    )
     {
-        var boundMonad =
-            await Task.FromResult(TestData.ErrorResultMonad).BindAsync(TestFunctions.BinderAsync)
-            as Monad<ResultType<DummyNewValue, DummyError>.Error>?;
-        boundMonad?.Type.Should().BeEquivalentTo(TestData.NewErrorResult);
+        (await Result.Monad.FlattenAsync(wrappedResultTaskFactory()))
+            .Should()
+            .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
 }
 
-file static class TestData
+file class BindTestCases : IEnumerable<object[]>
 {
-    public static DummyValue Value =>
-        new() { Name = "Jack Black", Email = "jack.black@example.com" };
-
-    public static DummyNewValue NewValue => new() { NameAllCaps = "JACK BLACK" };
-    public static string ErrorMessage => "error message";
-    public static DummyError Error => new() { Message = "error message" };
-
-    public static ResultType<DummyValue, DummyError> ValueResult =>
-        new ResultType<DummyValue, DummyError>.Ok(Value);
-
-    public static ResultType<DummyValue, DummyError> ErrorResult =>
-        new ResultType<DummyValue, DummyError>.Error(Error);
-
-    public static ResultType<DummyNewValue, DummyError> NewValueResult =>
-        new ResultType<DummyNewValue, DummyError>.Ok(NewValue);
-
-    public static ResultType<DummyNewValue, DummyError> NewErrorResult =>
-        new ResultType<DummyNewValue, DummyError>.Error(Error);
-
-    public static IMonad<ResultType<DummyValue, DummyError>> ValueResultMonad =>
-        new Monad<ResultType<DummyValue, DummyError>>(
-            new ResultType<DummyValue, DummyError>.Ok(Value)
-        );
-
-    public static IMonad<ResultType<DummyValue, DummyError>> ErrorResultMonad =>
-        new Monad<ResultType<DummyValue, DummyError>>(
-            new ResultType<DummyValue, DummyError>.Error(Error)
-        );
-}
-
-file static class TestFunctions
-{
-    public static IMonad<ResultType<DummyNewValue, DummyError>> Binder(DummyValue value)
+    public IEnumerator<object[]> GetEnumerator()
     {
-        return new Monad<ResultType<DummyNewValue, DummyError>>(
-            new ResultType<DummyNewValue, DummyError>.Ok(
-                new DummyNewValue { NameAllCaps = value.Name.ToUpper() }
-            )
-        );
+        yield return
+        [
+            Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
+            (Func<DummyValue, Result<DummyNewValue, DummyError>>)ResultTestMethods.TestBinder,
+            Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue)
+        ];
+
+        yield return
+        [
+            Result.Error<DummyValue, DummyError>(ResultTestData.Error),
+            (Func<DummyValue, Result<DummyNewValue, DummyError>>)ResultTestMethods.TestBinder,
+            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error),
+        ];
     }
 
-    public static Task<IMonad<ResultType<DummyNewValue, DummyError>>> BinderAsync(DummyValue value)
+    IEnumerator IEnumerable.GetEnumerator()
     {
-        return Task.FromResult(
-            (IMonad<ResultType<DummyNewValue, DummyError>>)
-                new Monad<ResultType<DummyNewValue, DummyError>>(
-                    new ResultType<DummyNewValue, DummyError>.Ok(
-                        new DummyNewValue { NameAllCaps = value.Name.ToUpper() }
-                    )
-                )
-        );
+        return GetEnumerator();
+    }
+}
+
+file class FlattenTestCases : IEnumerable<object[]>
+{
+    public IEnumerator<object[]> GetEnumerator()
+    {
+        yield return
+        [
+            Result.Ok<Result<DummyValue, DummyError>, DummyError>(
+                Result.Ok<DummyValue, DummyError>(ResultTestData.Value)
+            ),
+            Result.Ok<DummyValue, DummyError>(ResultTestData.Value)
+        ];
+
+        yield return
+        [
+            Result.Ok<Result<DummyValue, DummyError>, DummyError>(
+                Result.Error<DummyValue, DummyError>(ResultTestData.Error)
+            ),
+            Result.Error<DummyValue, DummyError>(ResultTestData.Error)
+        ];
+
+        yield return
+        [
+            Result.Error<Result<DummyValue, DummyError>, DummyError>(ResultTestData.Error),
+            Result.Error<DummyValue, DummyError>(ResultTestData.Error)
+        ];
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+}
+
+file class BindAsyncTestCases : IEnumerable<object[]>
+{
+    public IEnumerator<object[]> GetEnumerator()
+    {
+        yield return
+        [
+            () => Task.FromResult(Result.Ok<DummyValue, DummyError>(ResultTestData.Value)),
+            (Func<DummyValue, Task<Result<DummyNewValue, DummyError>>>)ResultTestMethods.AsyncTestBinder,
+            Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue)
+        ];
+
+        yield return
+        [
+            () => Task.FromResult(Result.Error<DummyValue, DummyError>(ResultTestData.Error)),
+            (Func<DummyValue, Task<Result<DummyNewValue, DummyError>>>)ResultTestMethods.AsyncTestBinder,
+            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error),
+        ];
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+}
+
+file class FlattenAsyncTestCases : IEnumerable<object[]>
+{
+    public IEnumerator<object[]> GetEnumerator()
+    {
+        yield return
+        [
+            () => Task.FromResult(Result.Ok<Task<Result<DummyValue, DummyError>>, DummyError>(
+                Task.FromResult(Result.Ok<DummyValue, DummyError>(ResultTestData.Value)))
+            ),
+            Result.Ok<DummyValue, DummyError>(ResultTestData.Value)
+        ];
+
+        yield return
+        [
+            () => Task.FromResult(Result.Ok<Task<Result<DummyValue, DummyError>>, DummyError>(
+                Task.FromResult(Result.Error<DummyValue, DummyError>(ResultTestData.Error)))
+            ),
+            Result.Error<DummyValue, DummyError>(ResultTestData.Error)
+        ];
+
+        yield return
+        [
+            () => Task.FromResult(Result.Error<Task<Result<DummyValue, DummyError>>, DummyError>(ResultTestData.Error)),
+            Result.Error<DummyValue, DummyError>(ResultTestData.Error)
+        ];
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }
