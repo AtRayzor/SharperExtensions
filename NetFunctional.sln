@@ -10,12 +10,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analyzers.Tests", "src\Anal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "src\Core\Core.csproj", "{F3BE2DCB-C807-410E-8756-A3BEF89D6713}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceGenerators", "SourceGenerators\SourceGenerators\SourceGenerators.csproj", "{186912BA-7D43-45E3-8CB3-53C6A79B7905}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceGenerators.Sample", "SourceGenerators\SourceGenerators.Sample\SourceGenerators.Sample.csproj", "{C96E4574-5517-4CA7-A0C9-D7EA1F9400CB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceGenerators.Tests", "SourceGenerators\SourceGenerators.Tests\SourceGenerators.Tests.csproj", "{A509B17C-F35B-4EE9-A24A-DB859ADE5D1E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,17 +36,5 @@ Global
 		{F3BE2DCB-C807-410E-8756-A3BEF89D6713}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3BE2DCB-C807-410E-8756-A3BEF89D6713}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3BE2DCB-C807-410E-8756-A3BEF89D6713}.Release|Any CPU.Build.0 = Release|Any CPU
-		{186912BA-7D43-45E3-8CB3-53C6A79B7905}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{186912BA-7D43-45E3-8CB3-53C6A79B7905}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{186912BA-7D43-45E3-8CB3-53C6A79B7905}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{186912BA-7D43-45E3-8CB3-53C6A79B7905}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C96E4574-5517-4CA7-A0C9-D7EA1F9400CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C96E4574-5517-4CA7-A0C9-D7EA1F9400CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C96E4574-5517-4CA7-A0C9-D7EA1F9400CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C96E4574-5517-4CA7-A0C9-D7EA1F9400CB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A509B17C-F35B-4EE9-A24A-DB859ADE5D1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A509B17C-F35B-4EE9-A24A-DB859ADE5D1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A509B17C-F35B-4EE9-A24A-DB859ADE5D1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A509B17C-F35B-4EE9-A24A-DB859ADE5D1E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
