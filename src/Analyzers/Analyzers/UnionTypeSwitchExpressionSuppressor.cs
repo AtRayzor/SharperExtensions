@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
+using Microsoft.CodeAnalysis.Options;
 
 namespace Analyzers;
 
@@ -36,19 +37,18 @@ public class UnionTypeSwitchExpressionSuppressor : DiagnosticSuppressor
             var semanticModel = context.GetSemanticModel(sourceTree);
 
             if (
-                semanticModel.GetOperation(switchExpressionSyntax)
-                    is not ISwitchExpressionOperation
-                    {
-                        Value: IParameterReferenceOperation
-                        {
-                            Type: { TypeKind: TypeKind.Class } referenceOperationType
-                        }
-                    }
+                semanticModel.GetOperation(switchExpressionSyntax) is not ISwitchExpressionOperation
+                {
+                    Value.Type:
+                    { TypeKind: TypeKind.Class } referenceOperationType
+                }
                 || referenceOperationType
-                    .GetAttributes()
-                    .All(ad => ad is not { AttributeClass.Name: "ClosedAttribute" })
-            )
+                    .GetAttributes() 
+                    .All(ad => ad is not { AttributeClass.Name: "ClosedAttribute" }
+                ))
+            {
                 continue;
+            }
 
             var suppression = Suppression.Create(Rule, diagnostic);
             context.ReportSuppression(suppression);
