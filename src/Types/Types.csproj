@@ -7,7 +7,6 @@
         <RootNamespace>NetFunctional.Types</RootNamespace>
         <NullableReferenceTypes>true</NullableReferenceTypes>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <WarningsNotAsErrors>CS8509</WarningsNotAsErrors>
     </PropertyGroup>
     
     <PropertyGroup>
