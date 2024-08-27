@@ -1,6 +1,6 @@
-using NetFunctional.Core.UnionTypes;
+using DotNetCoreFunctional.UnionTypes;
 
-namespace Analyzers.Tests.TestSources;
+namespace DotNetCoreFunctional.Analyzers.Tests.TestSources;
 
 [Closed]
 public record NonAbstractClosedDeclaration;

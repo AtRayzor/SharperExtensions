@@ -1,3 +1,3 @@
-namespace NetFunctional.Types.Internal;
+namespace DotNetCoreFunctional.Option.Internal;
 
 internal static class EnumerableExtensions { }

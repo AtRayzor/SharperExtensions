@@ -1,6 +1,9 @@
-using NetFunctional.Core;
+using DotNetCoreFunctional.Helpers;
+using DotNetCoreFunctional.Option;
 
-namespace NetFunctional.Types.ResultType;
+namespace DotNetCoreFunctional.Result;
+
+
 
 public static class Result
 {
@@ -73,7 +76,7 @@ public static class Result
             )
                 return errorMessage.ToSome();
 
-            return Option.None<string>();
+            return Option.Option.None<string>();
         }
 
         private static TException DefaultExceptionFactory<TError, TException>(TError error)

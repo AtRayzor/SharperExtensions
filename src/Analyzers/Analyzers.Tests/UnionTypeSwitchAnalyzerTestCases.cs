@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Linq;
-using Analyzers.Tests.TestSources;
+using DotNetCoreFunctional.Analyzers.Tests.TestSources;
+using DotNetCoreFunctional.UnionTypes.Analyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Analyzers.Tests;
+namespace DotNetCoreFunctional.Analyzers.Tests;
 
 internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
 {

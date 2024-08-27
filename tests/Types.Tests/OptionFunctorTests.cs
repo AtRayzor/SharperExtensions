@@ -1,4 +1,5 @@
 using System.Collections;
+using DotNetCoreFunctional.Option;
 using FluentAssertions;
 using NetFunction.Types.Tests.DummyTypes;
 using NetFunctional.Types;

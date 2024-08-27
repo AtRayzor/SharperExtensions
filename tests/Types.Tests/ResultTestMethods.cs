@@ -1,3 +1,4 @@
+using DotNetCoreFunctional.Result;
 using NetFunction.Types.Tests.DummyTypes;
 using NetFunctional.Types;
 

@@ -1,6 +1,6 @@
 using System.Diagnostics.Contracts;
 
-namespace NetFunctional.Types;
+namespace DotNetCoreFunctional.Option;
 
 public static class EnumerableOptionExtensions
 {

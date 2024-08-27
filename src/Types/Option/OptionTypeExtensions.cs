@@ -1,4 +1,4 @@
-namespace NetFunctional.Types;
+namespace DotNetCoreFunctional.Option;
 
 public static class OptionTypeExtensions
 {

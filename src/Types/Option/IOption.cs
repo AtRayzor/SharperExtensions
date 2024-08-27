@@ -1,4 +1,4 @@
-namespace NetFunctional.Types;
+namespace DotNetCoreFunctional.Option;
 
 public interface IOption<out T> : IEnumerable<T>
     where T : notnull;

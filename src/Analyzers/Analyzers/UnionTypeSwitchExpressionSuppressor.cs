@@ -4,9 +4,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
-using Microsoft.CodeAnalysis.Options;
 
-namespace Analyzers;
+namespace DotNetCoreFunctional.UnionTypes.Analyzers;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class UnionTypeSwitchExpressionSuppressor : DiagnosticSuppressor

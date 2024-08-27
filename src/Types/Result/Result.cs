@@ -1,8 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using NetFunctional.Core.UnionTypes;
+using DotNetCoreFunctional.UnionTypes;
 
-namespace NetFunctional.Types;
+namespace DotNetCoreFunctional.Result;
 
 [Closed]
 public abstract record Result<T, TError>

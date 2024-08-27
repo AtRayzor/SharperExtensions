@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Xunit;
 
-namespace Analyzers.Tests;
+namespace DotNetCoreFunctional.Analyzers.Tests;
 
 public class GenericInterfaceSymbolEqualityComparerTests
 {

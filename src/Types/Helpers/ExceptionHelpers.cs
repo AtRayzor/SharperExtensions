@@ -1,4 +1,4 @@
-namespace NetFunctional.Core;
+namespace DotNetCoreFunctional.Helpers;
 
 public static class ExceptionHelpers
 {

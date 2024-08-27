@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace NetFunctional.Types;
+namespace DotNetCoreFunctional.Result;
 
 public static partial class Result
 {

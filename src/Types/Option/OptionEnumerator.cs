@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace NetFunctional.Types;
+namespace DotNetCoreFunctional.Option;
 
 public class OptionEnumerator<T> : IEnumerator<T>
     where T : notnull

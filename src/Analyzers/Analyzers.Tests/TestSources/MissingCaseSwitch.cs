@@ -1,4 +1,4 @@
-namespace Analyzers.Tests.TestSources;
+namespace DotNetCoreFunctional.Analyzers.Tests.TestSources;
 
 public class MissingCaseSwitch
 {

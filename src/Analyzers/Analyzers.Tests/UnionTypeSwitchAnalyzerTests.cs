@@ -1,9 +1,10 @@
 using System.Threading.Tasks;
+using DotNetCoreFunctional.UnionTypes.Analyzers;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
 using Xunit;
 
-namespace Analyzers.Tests;
+namespace DotNetCoreFunctional.Analyzers.Tests;
 
 public class UnionTypeSwitchAnalyzerTests
 {

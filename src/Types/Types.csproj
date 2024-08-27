@@ -4,16 +4,16 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>NetFunctional.Types</RootNamespace>
+        <RootNamespace>DotNetCoreFunctional</RootNamespace>
         <NullableReferenceTypes>true</NullableReferenceTypes>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
     
     <PropertyGroup>
-        <PackageId>NetFunctional</PackageId>
+        <PackageId>DotNetCoreFunctional</PackageId>
         <Version>0.0.0-alpha</Version>
         <Authors>Tim Ray</Authors>
-        <Product>NetFunctional</Product>
+        <Product>DotNetCoreFunctional</Product>
     </PropertyGroup>
     
     <PropertyGroup Condition="Exists('$(SolutionDir)')">
@@ -25,7 +25,7 @@
         <ProjectReference Include="..\Analyzers\Analyzers\Analyzers.csproj"
                           OutputItemType="Analyzer"
                           ReferenceOutputAssembly="false"/>
-        <ProjectReference Include="..\Core\Core.csproj"/>
+        <ProjectReference Include="..\UnionTypes\UnionTypes.csproj" />
     </ItemGroup>
 
     <ItemGroup>

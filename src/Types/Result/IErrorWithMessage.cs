@@ -1,4 +1,4 @@
-namespace NetFunctional.Types;
+namespace DotNetCoreFunctional.Result;
 
 public interface IErrorWithMessage
 {

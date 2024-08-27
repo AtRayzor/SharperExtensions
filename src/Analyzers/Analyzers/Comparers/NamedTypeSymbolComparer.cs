@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 
-namespace Analyzers.Comparers;
+namespace DotNetCoreFunctional.UnionTypes.Analyzers.Comparers;
 
 internal sealed class NamedTypeSymbolComparer : IEqualityComparer<INamedTypeSymbol?>
 {

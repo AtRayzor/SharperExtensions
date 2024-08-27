@@ -2,7 +2,7 @@ using System.IO;
 using System.Text;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Analyzers.Tests;
+namespace DotNetCoreFunctional.Analyzers.Tests;
 
 internal static class SourceTextFactory
 {

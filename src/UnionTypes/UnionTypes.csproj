@@ -4,15 +4,15 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>NetFunctional.Core</RootNamespace>
+        <RootNamespace>DotNetCoreFunctional.UnionTypes</RootNamespace>
 
     </PropertyGroup>
 
     <PropertyGroup>
-        <PackageId>NetFunctional.Core</PackageId>
+        <PackageId>DotNetCoreFunctional.UnionTypes</PackageId>
         <Version>0.0.0-alpha</Version>
         <Authors>Tim Ray</Authors>
-        <Product>NetFunctional</Product>
+        <Product>DotNetCoreFunctional</Product>
     </PropertyGroup>
 
     <PropertyGroup Condition="Exists('$(SolutionDir)')">

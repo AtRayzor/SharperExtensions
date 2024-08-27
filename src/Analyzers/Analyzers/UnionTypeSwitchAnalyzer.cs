@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 
-namespace Analyzers;
+namespace DotNetCoreFunctional.UnionTypes.Analyzers;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer

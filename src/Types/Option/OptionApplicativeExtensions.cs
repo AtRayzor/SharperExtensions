@@ -1,7 +1,7 @@
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 
-namespace NetFunctional.Types;
+namespace DotNetCoreFunctional.Option;
 
 public static partial class Option
 {

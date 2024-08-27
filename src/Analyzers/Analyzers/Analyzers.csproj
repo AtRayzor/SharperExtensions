@@ -6,15 +6,15 @@
         <LangVersion>latest</LangVersion>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <IsRoslynComponent>true</IsRoslynComponent>
-        <RootNamespace>Analyzers</RootNamespace>
+        <RootNamespace>DotNetCoreFunctional.UnionTypes.Analyzers</RootNamespace>
         <AssemblyName>Analyzers</AssemblyName>
     </PropertyGroup>
 
     <PropertyGroup>
-        <PackageId>NetFunctional.Analyzers</PackageId>
+        <PackageId>NetCoreFunctional.UnionTypes.Analyzers</PackageId>
         <Version>0.0.0-alpha</Version>
         <Authors>Tim Ray</Authors>
-        <Product>NetFunctional</Product>
+        <Product>NetCoreFunctional</Product>
     </PropertyGroup>
 
     <PropertyGroup Condition="Exists('$(SolutionDir)')">

@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using Analyzers.Comparers;
+using DotNetCoreFunctional.UnionTypes.Analyzers.Comparers;
 using Microsoft.CodeAnalysis;
 
-namespace Analyzers.Extensions;
+namespace DotNetCoreFunctional.UnionTypes.Analyzers.Extensions;
 
 public static class NamedTypeSymbolExtensions
 {

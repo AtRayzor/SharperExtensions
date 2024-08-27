@@ -1,7 +1,7 @@
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 
-namespace NetFunctional.Types;
+namespace DotNetCoreFunctional.Result;
 
 public static partial class Result
 {

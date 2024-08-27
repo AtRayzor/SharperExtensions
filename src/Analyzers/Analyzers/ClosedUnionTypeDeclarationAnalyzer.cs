@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Analyzers;
+namespace DotNetCoreFunctional.UnionTypes.Analyzers;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ClosedUnionTypeDeclarationAnalyzer : DiagnosticAnalyzer

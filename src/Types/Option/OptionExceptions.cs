@@ -1,6 +1,6 @@
-using NetFunctional.Core;
+using DotNetCoreFunctional.Helpers;
 
-namespace NetFunctional.Types;
+namespace DotNetCoreFunctional.Option;
 
 public static partial class Option
 {

@@ -1,11 +1,12 @@
 using System.Threading.Tasks;
-using Analyzers.Tests.TestSources;
+using DotNetCoreFunctional.Analyzers.Tests.TestSources;
+using DotNetCoreFunctional.UnionTypes.Analyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
 using Xunit;
 
-namespace Analyzers.Tests;
+namespace DotNetCoreFunctional.Analyzers.Tests;
 
 public class UnionTypeDeclarationFileAnalyzerTests
 {
@@ -23,7 +24,7 @@ public class UnionTypeDeclarationFileAnalyzerTests
                     (
                         "Closed.cs",
                         SourceTextFactory.CreateSourceText(
-                            "../../../../../Core/UnionTypes/Closed.cs"
+                            "../../../../../UnionTypes/UnionTypes/Closed.cs"
                         )
                     ),
                     (

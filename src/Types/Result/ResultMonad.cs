@@ -1,7 +1,7 @@
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 
-namespace NetFunctional.Types;
+namespace DotNetCoreFunctional.Result;
 
 public static partial class Result
 {
@@ -32,6 +32,7 @@ public static partial class Result
             where T : notnull
             where TError : notnull
         {
+            
             return wrappedResult switch
             {
                 Ok<Result<T, TError>, TError> result => result.Value,

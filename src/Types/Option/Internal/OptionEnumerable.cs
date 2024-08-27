@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace NetFunctional.Types.Internal;
+namespace DotNetCoreFunctional.Option.Internal;
 
 public class OptionEnumerable<T> : IEnumerable<T>
 {

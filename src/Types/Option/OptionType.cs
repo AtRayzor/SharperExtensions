@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using NetFunctional.Core.UnionTypes;
+using DotNetCoreFunctional.UnionTypes;
 
-namespace NetFunctional.Types;
+namespace DotNetCoreFunctional.Option;
 
 [Closed]
 public abstract record Option<T> : IOption<T>

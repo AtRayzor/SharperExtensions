@@ -2,7 +2,7 @@ using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
 
-namespace Analyzers.Tests;
+namespace DotNetCoreFunctional.Analyzers.Tests;
 
 internal static class TestContextFactory
 {
@@ -22,7 +22,7 @@ internal static class TestContextFactory
                     (
                         "Closed.cs",
                         SourceTextFactory.CreateSourceText(
-                            "../../../../../Core/UnionTypes/Closed.cs"
+                            "../../../../../UnionTypes/UnionTypes/Closed.cs"
                         )
                     ),
                     (

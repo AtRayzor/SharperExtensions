@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analyzers", "src\Analyzers\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analyzers.Tests", "src\Analyzers\Analyzers.Tests\Analyzers.Tests.csproj", "{EB703290-104A-4391-8FB8-36E3712ADD5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "src\Core\Core.csproj", "{F3BE2DCB-C807-410E-8756-A3BEF89D6713}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnionTypes", "src\UnionTypes\UnionTypes.csproj", "{F3BE2DCB-C807-410E-8756-A3BEF89D6713}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
