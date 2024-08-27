@@ -40,12 +40,12 @@ public class UnionTypeSwitchAnalyzerSuppressorTests
                 [
                     DiagnosticResult
                         .CompilerWarning(UnionTypeSwitchExpressionSuppressor.SuppressedDiagnosticId)
-                        .WithSpan("AllCasesSwitch.cs", 9, 25, 9, 31)
+                        .WithSpan("AllCasesSwitch.cs", 7, 25, 7, 31)
                         .WithArguments("_")
                         .WithIsSuppressed(true),
                     DiagnosticResult
                         .CompilerWarning(UnionTypeSwitchExpressionSuppressor.SuppressedDiagnosticId)
-                        .WithSpan("AllCasesSwitch.cs", 19, 25, 19, 31)
+                        .WithSpan("AllCasesSwitch.cs", 18, 25, 18, 31)
                         .WithArguments("_")
                         .WithIsSuppressed(true)
                 ]

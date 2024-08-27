@@ -53,9 +53,9 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
             CreateAnalyzer(
                 "../../../TestSources/MissingCaseSwitch.cs",
                 CompilerDiagnostics.Errors,
-                baseDiagnostic.WithLocation("MissingCaseSwitch.cs", 9, 16),
-                genericBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 18, 16),
-                baseDiagnostic.WithLocation("MissingCaseSwitch.cs", 27, 9),
+                baseDiagnostic.WithLocation("MissingCaseSwitch.cs", 7, 16),
+                genericBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 17, 16),
+                baseDiagnostic.WithLocation("MissingCaseSwitch.cs", 26, 9),
                 genericBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 40, 9)
             )
         ];
