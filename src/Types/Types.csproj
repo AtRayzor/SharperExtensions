@@ -9,6 +9,18 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <WarningsNotAsErrors>CS8509</WarningsNotAsErrors>
     </PropertyGroup>
+    
+    <PropertyGroup>
+        <PackageId>NetFunctional</PackageId>
+        <Version>0.0.0-alpha</Version>
+        <Authors>Tim Ray</Authors>
+        <Product>NetFunctional</Product>
+    </PropertyGroup>
+    
+    <PropertyGroup Condition="Exists('$(SolutionDir)')">
+        <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
+        <BaseOutputPath>$(SolutionDir)/packages</BaseOutputPath>
+    </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Analyzers\Analyzers\Analyzers.csproj"
