@@ -15,14 +15,12 @@ public static partial class Result
         )
             where T : notnull
             where TError : notnull
-            where TNew : notnull
-        {
-            return wrappedMapping switch
+            where TNew : notnull =>
+            wrappedMapping switch
             {
                 Ok<Func<T, TNew>, TError> okMapping => Functor.Map(result, okMapping.Value),
                 Error<Func<T, TNew>, TError> error => new Error<TNew, TError>(error)
             };
-        }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -32,15 +30,13 @@ public static partial class Result
         )
             where T : notnull
             where TError : notnull
-            where TNew : notnull
-        {
-            return await wrappedMappingTask switch
+            where TNew : notnull =>
+            await wrappedMappingTask switch
             {
                 Ok<Func<T, TNew>, TError> okMapping
                     => Functor.Map(await resultTask, okMapping.Value),
                 Error<Func<T, TNew>, TError> error => new Error<TNew, TError>(error)
             };
-        }
     }
 }
 
@@ -54,10 +50,7 @@ public static class ApplicativeResultExtensions
     )
         where T : notnull
         where TError : notnull
-        where TNew : notnull
-    {
-        return Result.Applicative.Apply(result, wrappedMapping);
-    }
+        where TNew : notnull => Result.Applicative.Apply(result, wrappedMapping);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -67,8 +60,5 @@ public static class ApplicativeResultExtensions
     )
         where T : notnull
         where TError : notnull
-        where TNew : notnull
-    {
-        return Result.Applicative.ApplyAsync(resultTask, wrappedMappingTask);
-    }
+        where TNew : notnull => Result.Applicative.ApplyAsync(resultTask, wrappedMappingTask);
 }

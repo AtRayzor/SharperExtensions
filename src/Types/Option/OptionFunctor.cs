@@ -11,14 +11,12 @@ public static partial class Option
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Option<TNew> Map<T, TNew>(Option<T> option, Func<T, TNew> mapping)
             where T : notnull
-            where TNew : notnull
-        {
-            return option switch
+            where TNew : notnull =>
+            option switch
             {
                 Some<T> some => Some(mapping(some.Value)),
                 _ => None<TNew>()
             };
-        }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -28,14 +26,12 @@ public static partial class Option
             Func<TNew> noneMapping
         )
             where T : notnull
-            where TNew : notnull
-        {
-            return option switch
+            where TNew : notnull =>
+            option switch
             {
                 Some<T> some => new Some<TNew>(someMapping(some.Value)),
                 _ => new Some<TNew>(noneMapping())
             };
-        }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -44,10 +40,7 @@ public static partial class Option
             Func<T, TNew> mapping
         )
             where T : notnull
-            where TNew : notnull
-        {
-            return Map(await optionTask, mapping);
-        }
+            where TNew : notnull => Map(await optionTask, mapping);
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -57,10 +50,7 @@ public static partial class Option
             Func<TNew> noneMapping
         )
             where T : notnull
-            where TNew : notnull
-        {
-            return Match(await optionTask, someMapping, noneMapping);
-        }
+            where TNew : notnull => Match(await optionTask, someMapping, noneMapping);
     }
 }
 
@@ -70,10 +60,7 @@ public static class OptionFunctor
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Option<TNew> Map<T, TNew>(this Option<T> option, Func<T, TNew> mapping)
         where T : notnull
-        where TNew : notnull
-    {
-        return Option.Functor.Map(option, mapping);
-    }
+        where TNew : notnull => Option.Functor.Map(option, mapping);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -83,10 +70,7 @@ public static class OptionFunctor
         Func<TNew> noneMapping
     )
         where T : notnull
-        where TNew : notnull
-    {
-        return Option.Functor.Match(option, someMapping, noneMapping);
-    }
+        where TNew : notnull => Option.Functor.Match(option, someMapping, noneMapping);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -95,10 +79,7 @@ public static class OptionFunctor
         Func<T, TNew> mapping
     )
         where T : notnull
-        where TNew : notnull
-    {
-        return Option.Functor.MapAsync(optionTask, mapping);
-    }
+        where TNew : notnull => Option.Functor.MapAsync(optionTask, mapping);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -108,8 +89,5 @@ public static class OptionFunctor
         Func<TNew> noneMapping
     )
         where T : notnull
-        where TNew : notnull
-    {
-        return Option.Functor.MatchAsync(optionTask, someMapping, noneMapping);
-    }
+        where TNew : notnull => Option.Functor.MatchAsync(optionTask, someMapping, noneMapping);
 }

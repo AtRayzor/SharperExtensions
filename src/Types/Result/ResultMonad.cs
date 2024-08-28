@@ -15,14 +15,12 @@ public static partial class Result
         )
             where T : notnull
             where TError : notnull
-            where TNew : notnull
-        {
-            return result switch
+            where TNew : notnull =>
+            result switch
             {
                 Ok<T, TError> ok => binder(ok),
                 Error<T, TError> error => new Error<TNew, TError>(error)
             };
-        }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -30,15 +28,12 @@ public static partial class Result
             Result<Result<T, TError>, TError> wrappedResult
         )
             where T : notnull
-            where TError : notnull
-        {
-            
-            return wrappedResult switch
+            where TError : notnull =>
+            wrappedResult switch
             {
                 Ok<Result<T, TError>, TError> result => result.Value,
                 Error<Result<T, TError>, TError> error => new Error<T, TError>(error)
             };
-        }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -48,14 +43,12 @@ public static partial class Result
         )
             where T : notnull
             where TError : notnull
-            where TNew : notnull
-        {
-            return await resultTask switch
+            where TNew : notnull =>
+            await resultTask switch
             {
                 Ok<T, TError> ok => await binder(ok),
                 Error<T, TError> error => new Error<TNew, TError>(error)
             };
-        }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -63,14 +56,12 @@ public static partial class Result
             Task<Result<Task<Result<T, TError>>, TError>> wrappedResultTask
         )
             where T : notnull
-            where TError : notnull
-        {
-            return await wrappedResultTask switch
+            where TError : notnull =>
+            await wrappedResultTask switch
             {
                 Ok<Task<Result<T, TError>>, TError> ok => await ok.Value,
                 Error<Task<Result<T, TError>>, TError> error => new Error<T, TError>(error)
             };
-        }
     }
 }
 
@@ -84,10 +75,7 @@ public static class ResultMonadExtensions
     )
         where T : notnull
         where TError : notnull
-        where TNew : notnull
-    {
-        return Result.Monad.Bind(result, binder);
-    }
+        where TNew : notnull => Result.Monad.Bind(result, binder);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -95,10 +83,7 @@ public static class ResultMonadExtensions
         this Result<Result<T, TError>, TError> wrappedResult
     )
         where T : notnull
-        where TError : notnull
-    {
-        return Result.Monad.Flatten(wrappedResult);
-    }
+        where TError : notnull => Result.Monad.Flatten(wrappedResult);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -108,10 +93,7 @@ public static class ResultMonadExtensions
     )
         where T : notnull
         where TError : notnull
-        where TNew : notnull
-    {
-        return Result.Monad.BindAsync(resultTask, binder);
-    }
+        where TNew : notnull => Result.Monad.BindAsync(resultTask, binder);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -119,8 +101,5 @@ public static class ResultMonadExtensions
         this Task<Result<Task<Result<T, TError>>, TError>> wrappedResultTask
     )
         where T : notnull
-        where TError : notnull
-    {
-        return Result.Monad.FlattenAsync(wrappedResultTask);
-    }
+        where TError : notnull => Result.Monad.FlattenAsync(wrappedResultTask);
 }

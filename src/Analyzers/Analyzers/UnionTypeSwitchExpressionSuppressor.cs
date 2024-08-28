@@ -36,15 +36,15 @@ public class UnionTypeSwitchExpressionSuppressor : DiagnosticSuppressor
             var semanticModel = context.GetSemanticModel(sourceTree);
 
             if (
-                semanticModel.GetOperation(switchExpressionSyntax) is not ISwitchExpressionOperation
-                {
-                    Value.Type:
-                    { TypeKind: TypeKind.Class } referenceOperationType
-                }
+                semanticModel.GetOperation(switchExpressionSyntax)
+                    is not ISwitchExpressionOperation
+                    {
+                        Value.Type: { TypeKind: TypeKind.Class } referenceOperationType
+                    }
                 || referenceOperationType
-                    .GetAttributes() 
-                    .All(ad => ad is not { AttributeClass.Name: "ClosedAttribute" }
-                ))
+                    .GetAttributes()
+                    .All(ad => ad is not { AttributeClass.Name: "ClosedAttribute" })
+            )
             {
                 continue;
             }

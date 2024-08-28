@@ -17,14 +17,12 @@ public static partial class Result
         )
             where T : notnull
             where TError : notnull
-            where TNew : notnull
-        {
-            return result switch
+            where TNew : notnull =>
+            result switch
             {
                 Ok<T, TError> ok => new Ok<TNew, TError>(mapping(ok)),
                 Error<T, TError> error => new Error<TNew, TError>(error)
             };
-        }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -34,14 +32,12 @@ public static partial class Result
         )
             where T : notnull
             where TError : notnull
-            where TNewError : notnull
-        {
-            return result switch
+            where TNewError : notnull =>
+            result switch
             {
                 Error<T, TError> error => new Error<T, TNewError>(mapping(error)),
                 Ok<T, TError> ok => new Ok<T, TNewError>(ok)
             };
-        }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -53,14 +49,12 @@ public static partial class Result
             where TNew : notnull
             where TNewError : notnull
             where T : notnull
-            where TError : notnull
-        {
-            return result switch
+            where TError : notnull =>
+            result switch
             {
                 Ok<T, TError> ok => new Ok<TNew, TNewError>(matchOk(ok)),
                 Error<T, TError> error => new Error<TNew, TNewError>(matchError(error))
             };
-        }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -70,10 +64,7 @@ public static partial class Result
         )
             where T : notnull
             where TError : notnull
-            where TNew : notnull
-        {
-            return Map(await resultTask, mapping);
-        }
+            where TNew : notnull => Map(await resultTask, mapping);
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -83,10 +74,7 @@ public static partial class Result
         )
             where T : notnull
             where TError : notnull
-            where TNewError : notnull
-        {
-            return MapError(await resultTask, mapping);
-        }
+            where TNewError : notnull => MapError(await resultTask, mapping);
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -98,10 +86,7 @@ public static partial class Result
             where TNew : notnull
             where TNewError : notnull
             where T : notnull
-            where TError : notnull
-        {
-            return Match(await resultTask, matchOk, matchError);
-        }
+            where TError : notnull => Match(await resultTask, matchOk, matchError);
     }
 }
 
@@ -115,10 +100,7 @@ public static class ResultFunctorExtensions
     )
         where T : notnull
         where TError : notnull
-        where TNew : notnull
-    {
-        return Result.Functor.Map(result, mapping);
-    }
+        where TNew : notnull => Result.Functor.Map(result, mapping);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -128,10 +110,7 @@ public static class ResultFunctorExtensions
     )
         where T : notnull
         where TError : notnull
-        where TNewError : notnull
-    {
-        return Result.Functor.MapError(result, mapping);
-    }
+        where TNewError : notnull => Result.Functor.MapError(result, mapping);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -141,10 +120,7 @@ public static class ResultFunctorExtensions
     )
         where T : notnull
         where TError : notnull
-        where TNew : notnull
-    {
-        return Result.Functor.MapAsync(resultTask, mapping);
-    }
+        where TNew : notnull => Result.Functor.MapAsync(resultTask, mapping);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -154,8 +130,5 @@ public static class ResultFunctorExtensions
     )
         where T : notnull
         where TError : notnull
-        where TNewError : notnull
-    {
-        return Result.Functor.MapErrorAsync(resultTask, mapping);
-    }
+        where TNewError : notnull => Result.Functor.MapErrorAsync(resultTask, mapping);
 }

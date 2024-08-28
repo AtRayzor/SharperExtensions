@@ -1,6 +1,5 @@
 using DotNetCoreFunctional.Option;
 using NetFunction.Types.Tests.DummyTypes;
-using NetFunctional.Types;
 
 namespace NetFunction.Types.Tests;
 

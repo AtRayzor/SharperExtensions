@@ -8,14 +8,14 @@
         <NullableReferenceTypes>true</NullableReferenceTypes>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
-    
+
     <PropertyGroup>
         <PackageId>DotNetCoreFunctional</PackageId>
         <Version>0.0.0-alpha</Version>
         <Authors>Tim Ray</Authors>
         <Product>DotNetCoreFunctional</Product>
     </PropertyGroup>
-    
+
     <PropertyGroup Condition="Exists('$(SolutionDir)')">
         <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
         <BaseOutputPath>$(SolutionDir)/packages</BaseOutputPath>
@@ -25,7 +25,7 @@
         <ProjectReference Include="..\Analyzers\Analyzers\Analyzers.csproj"
                           OutputItemType="Analyzer"
                           ReferenceOutputAssembly="false"/>
-        <ProjectReference Include="..\UnionTypes\UnionTypes.csproj" />
+        <ProjectReference Include="..\UnionTypes\UnionTypes.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

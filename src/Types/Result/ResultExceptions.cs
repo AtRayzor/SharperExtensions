@@ -3,11 +3,9 @@ using DotNetCoreFunctional.Option;
 
 namespace DotNetCoreFunctional.Result;
 
-
-
-public static class Result
+public static partial class Result
 {
-    public static class Unsafe
+    public static partial class Unsafe
     {
         public static T GetValueOrThrow<T, TError, TException>(Result<T, TError> result)
             where T : notnull

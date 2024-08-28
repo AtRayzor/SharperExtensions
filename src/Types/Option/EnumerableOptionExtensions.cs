@@ -5,16 +5,10 @@ namespace DotNetCoreFunctional.Option;
 public static class EnumerableOptionExtensions
 {
     public static Option<T> FirstOrNone<T>(this IEnumerable<T> source)
-        where T : notnull
-    {
-        return source.FirstOrDefault().ToOption();
-    }
+        where T : notnull => source.FirstOrDefault().ToOption();
 
     public static Option<T> SingleOrNone<T>(this IEnumerable<T> source)
-        where T : notnull
-    {
-        return source.SingleOrDefault().ToOption();
-    }
+        where T : notnull => source.SingleOrDefault().ToOption();
 
     [Pure]
     public static IEnumerable<Option<TResult>> MapAll<TSource, TResult>(
@@ -22,10 +16,7 @@ public static class EnumerableOptionExtensions
         Func<TSource, TResult> mapping
     )
         where TSource : notnull
-        where TResult : notnull
-    {
-        return options.Select(op => op.Map(mapping));
-    }
+        where TResult : notnull => options.Select(op => op.Map(mapping));
 
     [Pure]
     public static IEnumerable<Option<TResult>> BindAll<TSource, TResult>(
@@ -33,10 +24,7 @@ public static class EnumerableOptionExtensions
         Func<TSource, Option<TResult>> binder
     )
         where TSource : notnull
-        where TResult : notnull
-    {
-        return options.Select(op => op.Bind(binder));
-    }
+        where TResult : notnull => options.Select(op => op.Bind(binder));
 
     [Pure]
     public static IEnumerable<Option<TResult>> ApplyAll<TSource, TResult>(
@@ -44,17 +32,11 @@ public static class EnumerableOptionExtensions
         Option<Func<TSource, TResult>> wrappedMapping
     )
         where TSource : notnull
-        where TResult : notnull
-    {
-        return options.Select(op => op.Apply(wrappedMapping));
-    }
+        where TResult : notnull => options.Select(op => op.Apply(wrappedMapping));
 
     [Pure]
     public static IEnumerable<T> SelectIfSome<T>(this IEnumerable<Option<T>> options)
-        where T : notnull
-    {
-        return options.SelectValueIfSome(new None<Func<T, T>>());
-    }
+        where T : notnull => options.SelectValueIfSome(new None<Func<T, T>>());
 
     [Pure]
     public static IEnumerable<TResult> SelectIfSome<TSource, TResult>(
@@ -62,10 +44,8 @@ public static class EnumerableOptionExtensions
         Func<TSource, TResult> selector
     )
         where TSource : notnull
-        where TResult : notnull
-    {
-        return options.SelectValueIfSome(new Some<Func<TSource, TResult>>(selector));
-    }
+        where TResult : notnull =>
+        options.SelectValueIfSome(new Some<Func<TSource, TResult>>(selector));
 
     [Pure]
     private static IEnumerable<TResult> SelectValueIfSome<TSource, TResult>(
@@ -73,11 +53,9 @@ public static class EnumerableOptionExtensions
         Option<Func<TSource, TResult>> optionalSelector
     )
         where TSource : notnull
-        where TResult : notnull
-    {
-        return options
+        where TResult : notnull =>
+        options
             .Select(op => op.Apply(optionalSelector))
             .Where(op => op.IsSome())
             .Select(op => ((Some<TResult>)op).Value);
-    }
 }

@@ -11,14 +11,12 @@ public static partial class Option
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Option<TNew> Bind<T, TNew>(Option<T> option, Func<T, Option<TNew>> binder)
             where T : notnull
-            where TNew : notnull
-        {
-            return option switch
+            where TNew : notnull =>
+            option switch
             {
                 Some<T> some => binder(some.Value),
                 _ => new None<TNew>()
             };
-        }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -39,14 +37,12 @@ public static partial class Option
             Func<T, Task<Option<TNew>>> binder
         )
             where T : notnull
-            where TNew : notnull
-        {
-            return await optionTask switch
+            where TNew : notnull =>
+            await optionTask switch
             {
                 Some<T> some => await binder(some.Value),
                 _ => new None<TNew>()
             };
-        }
     }
 }
 
@@ -56,18 +52,12 @@ public static class OptionMonad
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Option<TNew> Bind<T, TNew>(this Option<T> option, Func<T, Option<TNew>> binder)
         where T : notnull
-        where TNew : notnull
-    {
-        return Option.Monad.Bind(option, binder);
-    }
+        where TNew : notnull => Option.Monad.Bind(option, binder);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Option<T> Flatten<T>(this Option<Option<T>> wrappedOption)
-        where T : notnull
-    {
-        return Option.Monad.Flatten(wrappedOption);
-    }
+        where T : notnull => Option.Monad.Flatten(wrappedOption);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -76,8 +66,5 @@ public static class OptionMonad
         Func<T, Task<Option<TNew>>> binder
     )
         where T : notnull
-        where TNew : notnull
-    {
-        return Option.Monad.BindAsync(optionTask, binder);
-    }
+        where TNew : notnull => Option.Monad.BindAsync(optionTask, binder);
 }

@@ -43,10 +43,7 @@ public static partial class Result
             ILogger logger
         )
             where T : notnull
-            where TError : notnull
-        {
-            return LogIfOk(result, createMessage, logger, LogLevel.Information);
-        }
+            where TError : notnull => LogIfOk(result, createMessage, logger, LogLevel.Information);
 
         public static Result<T, TError> LogIfError<T, TError>(
             Result<T, TError> result,
@@ -74,7 +71,9 @@ public static partial class Result
             where TError : notnull
         {
             if (result is Error<T, TError> error)
+            {
                 logger.Log(logLevel, eventId, "{ }", createMessage(error));
+            }
 
             return result;
         }
@@ -88,7 +87,9 @@ public static partial class Result
             where TError : IErrorWithMessage
         {
             if (result is Error<T, TError> { Err.Message: { } errorMessage })
+            {
                 logger.Log(logLevel, "{ }", errorMessage);
+            }
 
             return result;
         }
@@ -103,7 +104,9 @@ public static partial class Result
             where TError : IErrorWithMessage
         {
             if (result is Error<T, TError> { Err.Message: var errorMessage })
+            {
                 logger.Log(logLevel, eventId, "{ }", errorMessage);
+            }
 
             return result;
         }
@@ -137,10 +140,7 @@ public static class ResultLoggingExtensions
         LogLevel logLevel = LogLevel.None
     )
         where T : notnull
-        where TError : notnull
-    {
-        return Result.Logging.LogIfOk(result, createMessage, logger, logLevel);
-    }
+        where TError : notnull => Result.Logging.LogIfOk(result, createMessage, logger, logLevel);
 
     public static Result<T, TError> LogIfOk<T, TError>(
         this Result<T, TError> result,
@@ -150,10 +150,8 @@ public static class ResultLoggingExtensions
         LogLevel logLevel = LogLevel.None
     )
         where T : notnull
-        where TError : notnull
-    {
-        return Result.Logging.LogIfOk(result, createMessage, logger, eventId, logLevel);
-    }
+        where TError : notnull =>
+        Result.Logging.LogIfOk(result, createMessage, logger, eventId, logLevel);
 
     public static Result<T, TError> LogInformationIfOk<T, TError>(
         Result<T, TError> result,
@@ -161,10 +159,7 @@ public static class ResultLoggingExtensions
         ILogger logger
     )
         where T : notnull
-        where TError : notnull
-    {
-        return LogIfOk(result, createMessage, logger, LogLevel.Information);
-    }
+        where TError : notnull => LogIfOk(result, createMessage, logger, LogLevel.Information);
 
     public static Result<T, TError> LogIfError<T, TError>(
         this Result<T, TError> result,
@@ -173,10 +168,8 @@ public static class ResultLoggingExtensions
         LogLevel logLevel = LogLevel.Error
     )
         where T : notnull
-        where TError : notnull
-    {
-        return Result.Logging.LogIfError(result, createMessage, logger, logLevel);
-    }
+        where TError : notnull =>
+        Result.Logging.LogIfError(result, createMessage, logger, logLevel);
 
     public static Result<T, TError> LogIfError<T, TError>(
         this Result<T, TError> result,
@@ -186,10 +179,8 @@ public static class ResultLoggingExtensions
         LogLevel logLevel = LogLevel.Error
     )
         where T : notnull
-        where TError : notnull
-    {
-        return Result.Logging.LogIfError(result, eventId, createMessage, logger, logLevel);
-    }
+        where TError : notnull =>
+        Result.Logging.LogIfError(result, eventId, createMessage, logger, logLevel);
 
     public static Result<T, TError> LogIfError<T, TError>(
         this Result<T, TError> result,
@@ -197,10 +188,8 @@ public static class ResultLoggingExtensions
         LogLevel logLevel
     )
         where T : notnull
-        where TError : notnull, IErrorWithMessage
-    {
-        return Result.Logging.LogIfError(result, logger, logLevel);
-    }
+        where TError : notnull, IErrorWithMessage =>
+        Result.Logging.LogIfError(result, logger, logLevel);
 
     public static Result<T, TError> LogIfError<T, TError>(
         this Result<T, TError> result,
@@ -209,18 +198,13 @@ public static class ResultLoggingExtensions
         LogLevel logLevel = LogLevel.Error
     )
         where T : notnull
-        where TError : IErrorWithMessage
-    {
-        return Result.Logging.LogIfError(result, logger, eventId, logLevel);
-    }
+        where TError : IErrorWithMessage =>
+        Result.Logging.LogIfError(result, logger, eventId, logLevel);
 
     public static Result<T, TError> LogIfError<T, TError>(
         this Result<T, TError> result,
         ILogger logger
     )
         where T : notnull
-        where TError : ILoggableError
-    {
-        return Result.Logging.LogIfError(result, logger);
-    }
+        where TError : ILoggableError => Result.Logging.LogIfError(result, logger);
 }

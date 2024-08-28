@@ -14,14 +14,12 @@ public static partial class Option
             Option<Func<T, TNew>> wrappedMapping
         )
             where T : notnull
-            where TNew : notnull
-        {
-            return wrappedMapping switch
+            where TNew : notnull =>
+            wrappedMapping switch
             {
                 Some<Func<T, TNew>> someWrapped => option.Map(someWrapped.Value),
                 _ => new None<TNew>()
             };
-        }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -30,14 +28,12 @@ public static partial class Option
             Task<Option<Func<T, TNew>>> wrappedMappingTask
         )
             where T : notnull
-            where TNew : notnull
-        {
-            return await wrappedMappingTask switch
+            where TNew : notnull =>
+            await wrappedMappingTask switch
             {
                 Some<Func<T, TNew>> someWrapped => (await optionTask).Map(someWrapped.Value),
                 _ => new None<TNew>()
             };
-        }
     }
 }
 
@@ -50,10 +46,7 @@ public static class OptionApplicativeExtensions
         Option<Func<T, TNew>> wrappedMapping
     )
         where T : notnull
-        where TNew : notnull
-    {
-        return Option.Applicative.Apply(option, wrappedMapping);
-    }
+        where TNew : notnull => Option.Applicative.Apply(option, wrappedMapping);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -62,8 +55,5 @@ public static class OptionApplicativeExtensions
         Task<Option<Func<T, TNew>>> wrappedMappingTask
     )
         where T : notnull
-        where TNew : notnull
-    {
-        return Option.Applicative.ApplyAsync(optionTask, wrappedMappingTask);
-    }
+        where TNew : notnull => Option.Applicative.ApplyAsync(optionTask, wrappedMappingTask);
 }

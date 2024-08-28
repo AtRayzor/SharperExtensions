@@ -54,10 +54,8 @@ public static class OptionExceptionExtensions
         params object[] constructorArgs
     )
         where T : notnull
-        where TException : Exception
-    {
-        return Option.Unsafe.GetValueOrThrow<T, TException>(option, constructorArgs);
-    }
+        where TException : Exception =>
+        Option.Unsafe.GetValueOrThrow<T, TException>(option, constructorArgs);
 
     public static void DoOrThrow<T, TException>(
         this Option<T> option,

@@ -9,22 +9,13 @@ public static class OptionTypeExtensions
     }
 
     public static Option<T> ToSome<T>(this T value)
-        where T : notnull
-    {
-        return Option.Some(value);
-    }
+        where T : notnull => Option.Some(value);
 
     public static IEnumerable<Option<T>> ToOptionEnumerable<T>(this IEnumerable<T?> enumerable)
-        where T : notnull
-    {
-        return enumerable.Select(val => val.ToOption());
-    }
+        where T : notnull => enumerable.Select(val => val.ToOption());
 
     public static IEnumerable<Option<T>> ToSomeEnumerable<T>(this IEnumerable<T> enumerable)
-        where T : notnull
-    {
-        return enumerable.Select(val => val.ToSome());
-    }
+        where T : notnull => enumerable.Select(val => val.ToSome());
 
     public static Option<TCast> CastToOption<T, TCast>(this T? value)
         where T : notnull
