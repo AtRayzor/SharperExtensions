@@ -38,7 +38,7 @@ public static partial class Result
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<T, TError> Ok<T, TError>(T value)
-        where T : notnull => new Ok<T, TError>(value);
+        where T : notnull where TError : notnull => new Ok<T, TError>(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<T, TError> Error<T, TError>(TError error)

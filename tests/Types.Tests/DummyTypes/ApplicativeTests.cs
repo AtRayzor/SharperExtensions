@@ -1,5 +1,6 @@
 using System.Collections;
 using DotNetCoreFunctional.Result;
+using FluentAssertions;
 using Xunit;
 
 namespace NetFunction.Types.Tests.DummyTypes;
