@@ -8,19 +8,12 @@
         <IsRoslynComponent>true</IsRoslynComponent>
         <RootNamespace>DotNetCoreFunctional.UnionTypes.Analyzers</RootNamespace>
         <AssemblyName>Analyzers</AssemblyName>
+        <PackageId>DotNetCoreFunctional.UnionTypes.Analyzers</PackageId>
     </PropertyGroup>
 
-    <PropertyGroup>
-        <PackageId>NetCoreFunctional.UnionTypes.Analyzers</PackageId>
-        <Version>0.0.0-alpha</Version>
-        <Authors>Tim Ray</Authors>
-        <Product>NetCoreFunctional</Product>
-    </PropertyGroup>
+    <Import Condition="$(Configuration) == 'Release' And Exists('$(SolutionDir)')"
+            Project="$(SolutionDir)/common.release.props"/>
 
-    <PropertyGroup Condition="$(Configuration) == 'Release' And Exists('$(SolutionDir)')">
-        <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
-        <BaseOutputPath>$(SolutionDir)/packages</BaseOutputPath>
-    </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4">

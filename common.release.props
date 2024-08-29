@@ -1,0 +1,23 @@
+<Project>
+    <Choose>
+        <When Condition="Exists('$(ProjectVersion)')">
+            <PropertyGroup>
+                <Version>$(ProjectVersion)</Version>
+            </PropertyGroup>
+        </When>
+        <Otherwise>
+            <PropertyGroup>
+                <Version>0.0.0-alpha</Version>
+            </PropertyGroup>
+        </Otherwise>
+    </Choose>
+
+    <PropertyGroup>
+        <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
+        <BaseOutputPath>$(SolutionDir)/packages</BaseOutputPath>
+        <Authors>Tim Ray</Authors>
+        <Product>DotNetCoreFunctional</Product>
+        <RepositoryUrl>https://github.com/TxRay/DotNetCoreFunctional.git</RepositoryUrl>
+    </PropertyGroup>
+
+</Project>

@@ -7,28 +7,11 @@
         <RootNamespace>DotNetCoreFunctional</RootNamespace>
         <NullableReferenceTypes>true</NullableReferenceTypes>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    </PropertyGroup>
-
-    <PropertyGroup>
         <PackageId>DotNetCoreFunctional</PackageId>
-        <Version>0.0.0-alpha</Version>
-        <Authors>Tim Ray</Authors>
-        <Product>DotNetCoreFunctional</Product>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$(Configuration) == 'Release' And Exists('$(SolutionDir)')">
-        <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
-        <BaseOutputPath>$(SolutionDir)/packages</BaseOutputPath>
-    </PropertyGroup>
-    
-    <ItemGroup>
-        <ExcludeMethodGroupsForType Include="Option">
-            <MethodGroup>Functor</MethodGroup>
-        </ExcludeMethodGroupsForType>
-        <ExcludeMethodGroupsForType Include="Option">
-            <MethodGroup>Monad</MethodGroup>
-        </ExcludeMethodGroupsForType>
-    </ItemGroup>
+    <Import Condition="$(Configuration) == 'Release' And Exists('$(SolutionDir)')" 
+            Project="$(SolutionDir)/common.release.props"/>
 
     <ItemGroup>
         <ProjectReference Include="..\Analyzers\Analyzers\Analyzers.csproj"

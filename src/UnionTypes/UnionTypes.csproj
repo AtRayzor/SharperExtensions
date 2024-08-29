@@ -5,19 +5,11 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>DotNetCoreFunctional.UnionTypes</RootNamespace>
-
-    </PropertyGroup>
-
-    <PropertyGroup>
         <PackageId>DotNetCoreFunctional.UnionTypes</PackageId>
-        <Version>0.0.0-alpha</Version>
-        <Authors>Tim Ray</Authors>
-        <Product>DotNetCoreFunctional</Product>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$(Configuration) == 'Release' And Exists('$(SolutionDir)')">
-        <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
-        <BaseOutputPath>$(SolutionDir)/packages</BaseOutputPath>
-    </PropertyGroup>
+    <Import Condition="$(Configuration) == 'Release' And Exists('$(SolutionDir)')"
+            Project="$(SolutionDir)/common.release.props"/>
+
 
 </Project>
