@@ -23,4 +23,5 @@ riderModule.iml
 assets/
 
 .idea/
+.vscode
 .git
