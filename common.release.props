@@ -1,6 +1,6 @@
 <Project>
     <Choose>
-        <When Condition="Exists('$(ProjectVersion)')">
+        <When Condition="$(ProjectVersion) != ''">
             <PropertyGroup>
                 <Version>$(ProjectVersion)</Version>
             </PropertyGroup>
@@ -14,17 +14,17 @@
 
     <PropertyGroup>
         <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
-        <BaseOutputPath>$(SolutionDir)/packages</BaseOutputPath>
         <Authors>Tim Ray</Authors>
         <Product>DotNetCoreFunctional</Product>
         <RepositoryUrl>https://github.com/TxRay/DotNetCoreFunctional.git</RepositoryUrl>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
         <PackageReadMeFile>README.md</PackageReadMeFile>
+        <BaseOutputPath>$(SolutionDir)/packages/$(Version)</BaseOutputPath>
     </PropertyGroup>
 
     <ItemGroup>
         <None Include="$(SolutionDir)/LICENSE.txt" Pack="true" PackagePath="/"/>
-        <None Include="$(SolutionDir)/README.md" Pack="true" PackagePath="/" />
+        <None Include="$(SolutionDir)/README.md" Pack="true" PackagePath="/"/>
     </ItemGroup>
-    
+
 </Project>
