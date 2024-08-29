@@ -17,7 +17,7 @@
         <Product>NetCoreFunctional</Product>
     </PropertyGroup>
 
-    <PropertyGroup Condition="Exists('$(SolutionDir)')">
+    <PropertyGroup Condition="$(Configuration) == 'Release' And Exists('$(SolutionDir)')">
         <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
         <BaseOutputPath>$(SolutionDir)/packages</BaseOutputPath>
     </PropertyGroup>
