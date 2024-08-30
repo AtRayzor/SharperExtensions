@@ -22,7 +22,7 @@ internal static class TestContextFactory
                     (
                         "Closed.cs",
                         SourceTextFactory.CreateSourceText(
-                            "../../../../../UnionTypes/UnionTypes/Closed.cs"
+                            "../../../../../UnionTypes/Closed.cs"
                         )
                     ),
                     (

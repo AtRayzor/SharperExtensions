@@ -49,7 +49,7 @@ public class CloseUnionTypeDeclarationAnalyzerTests
                 new DiagnosticResult(ClosedUnionTypeDeclarationAnalyzer.Rule)
                     .WithArguments(
                         "record",
-                        "Analyzers.Tests.TestSources.NonAbstractClosedDeclaration"
+                        "DotNetCoreFunctional.Analyzers.Tests.TestSources.NonAbstractClosedDeclaration"
                     )
                     .WithLocation("NonAbstractClosedDeclaration.cs", 5, 1)
                     .WithSeverity(DiagnosticSeverity.Error)

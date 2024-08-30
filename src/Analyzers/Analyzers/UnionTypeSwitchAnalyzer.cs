@@ -68,16 +68,11 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
                 out var referenceOperationType
             )
         )
+        {
             return;
+        }
 
-        var referenceNamespace = referenceOperationType!.ContainingNamespace;
-        var unionTypeChecker = ResolveUnionTypeChecker(referenceOperationType);
-
-        var childTypes = referenceNamespace
-            .GetTypeMembers()
-            .Where(unionTypeChecker)
-            .Select(GetComparableNamedTypeSymbol)
-            .ToArray();
+        var childTypes = GetUnionCaseTypes(referenceOperationType!);
 
         var switchCaseTypes = switchCaseOperations
             .Select(
@@ -100,11 +95,11 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
             && (
                 switchCaseOperations.Last()
                     is IDiscardPatternOperation
-                        or IDefaultCaseClauseOperation
+                    or IDefaultCaseClauseOperation
                 || (
                     childTypes.Length == switchCaseTypes.Length
                     && childTypes.Intersect(switchCaseTypes, SymbolEqualityComparer.Default).Count()
-                        == childTypes.Length
+                    == childTypes.Length
                 )
             )
         )
@@ -149,18 +144,23 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
         out INamedTypeSymbol? switchValueType
     )
     {
+        switchValueType = default;
+
         if (
             valueParameter
-                is not IParameterReferenceOperation
-                {
-                    Type: INamedTypeSymbol { TypeKind: TypeKind.Class } referenceOperationType
-                }
-            || referenceOperationType
-                .GetAttributes()
-                .All(a => a is not { AttributeClass.Name: "ClosedAttribute" })
+            is not
+            {
+                Type: INamedTypeSymbol { TypeKind: TypeKind.Class } referenceOperationType
+            }
         )
         {
-            switchValueType = default;
+            return false;
+        }
+
+        if (referenceOperationType
+            .GetAttributes()
+            .All(a => a is not { AttributeClass.Name: "ClosedAttribute" }))
+        {
             return false;
         }
 
@@ -210,9 +210,9 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
                                 IPatternCaseClauseOperation { Pattern: ITypePatternOperation tpo }
                                     => (IOperation)tpo,
                                 IPatternCaseClauseOperation
-                                {
-                                    Pattern: IDeclarationPatternOperation dpo
-                                }
+                                    {
+                                        Pattern: IDeclarationPatternOperation dpo
+                                    }
                                     => dpo,
                                 IDefaultCaseClauseOperation dpo => dpo,
                                 _ => null
@@ -222,6 +222,22 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
             .Except([null])
             .Cast<IOperation>()
             .ToImmutableArray();
+    }
+
+    private INamedTypeSymbol[] GetUnionCaseTypes(INamedTypeSymbol unionTypeSymbol)
+    {
+        var namedTypeMembers = unionTypeSymbol.GetTypeMembers().ToImmutableArray();
+
+        var typesToCheck = namedTypeMembers.Length > 0
+            ? namedTypeMembers
+            : unionTypeSymbol.ContainingNamespace.GetTypeMembers();
+
+        var unionTypeChecker = ResolveUnionTypeChecker(unionTypeSymbol);
+
+        return typesToCheck
+            .Where(unionTypeChecker)
+            .Select(GetComparableNamedTypeSymbol)
+            .ToArray();
     }
 
     private bool TryGetSwitchExpressionOperation(
@@ -260,10 +276,10 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
         var comparableTypeSymbol = GetComparableNamedTypeSymbol(typeSymbol);
 
         return caseTypeSymbol.BaseType is { } baseType
-            && comparableTypeSymbol.Equals(
-                GetComparableNamedTypeSymbol(baseType),
-                SymbolEqualityComparer.Default
-            );
+               && comparableTypeSymbol.Equals(
+                   GetComparableNamedTypeSymbol(baseType),
+                   SymbolEqualityComparer.Default
+               );
     }
 
     private static Func<INamedTypeSymbol, bool> ResolveUnionTypeChecker(

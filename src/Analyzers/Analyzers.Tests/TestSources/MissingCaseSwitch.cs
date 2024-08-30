@@ -2,28 +2,39 @@ namespace DotNetCoreFunctional.Analyzers.Tests.TestSources;
 
 public class MissingCaseSwitch
 {
-    public object GetCaseValue(ClosedTestType testType)
+    private readonly ClosedTestType _testType;
+    private readonly GenericClosedTestType<string> _genericClosedTestType;
+    private readonly NestedClosedTestType _nestedClosedTestType;
+
+    public MissingCaseSwitch(ClosedTestType testType, GenericClosedTestType<string> genericClosedTestType,
+        NestedClosedTestType nestedClosedTestType)
     {
-        return testType switch
+        _testType = testType;
+        _genericClosedTestType = genericClosedTestType;
+        _nestedClosedTestType = nestedClosedTestType;
+    }
+
+    public object GetCaseValue()
+    {
+        return _testType switch
         {
             Animal animal => animal.Name,
             Number number => number
         };
     }
 
-    public object GetGenericCaseValue<T>(GenericClosedTestType<T> testType)
-        where T : notnull
+    public object GetGenericCaseValue()
     {
-        return testType switch
+        return _genericClosedTestType switch
         {
-            Case1<T> case1 => case1.Value,
-            Case2<T> case2 => case2.Values
+            Case1<string> case1 => case1.Value,
+            Case2<string> case2 => case2.Values
         };
     }
 
-    public void Cases(ClosedTestType testType)
+    public void Cases()
     {
-        switch (testType)
+        switch (_testType)
         {
             case Animal animal:
                 Console.WriteLine(animal.Name);
@@ -34,17 +45,23 @@ public class MissingCaseSwitch
         }
     }
 
-    public void GenericCases<T>(GenericClosedTestType<T> testType)
-        where T : notnull
+    public void GenericCases()
     {
-        switch (testType)
+        switch (_genericClosedTestType)
         {
-            case Case1<T> case1:
+            case Case1<string> case1:
                 Console.WriteLine(case1.Value);
                 break;
-            case Case2<T> case2:
+            case Case2<string> case2:
                 Console.WriteLine(case2.Values);
                 break;
         }
     }
+
+    public string GetNestedCaseMessage() => 
+        _nestedClosedTestType switch
+        {
+            NestedClosedTestType.Case1 case1 => case1.Message,
+            NestedClosedTestType.Case2 case2 => case2.Message
+        };
 }
