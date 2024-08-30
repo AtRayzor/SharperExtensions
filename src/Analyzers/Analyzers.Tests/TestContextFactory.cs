@@ -21,9 +21,7 @@ internal static class TestContextFactory
                 {
                     (
                         "Closed.cs",
-                        SourceTextFactory.CreateSourceText(
-                            "../../../../../UnionTypes/Closed.cs"
-                        )
+                        SourceTextFactory.CreateSourceText("../../../../../UnionTypes/Closed.cs")
                     ),
                     (
                         "GlobalUsings",

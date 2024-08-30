@@ -22,7 +22,7 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
     [
         "../../../TestSources/AllCasesSwitch.cs",
         "../../../TestSources/MissingCasesExpression.cs",
-        "../../../TestSources/DefaultCaseSwitch.cs",
+        "../../../TestSources/DefaultCaseSwitch.cs"
     ];
 
     private (string, SourceText)[]? _sourceTexts;
@@ -39,7 +39,9 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
             .WithSeverity(DiagnosticSeverity.Error);
 
         var genericBaseDiagnostic = new DiagnosticResult(UnionTypeSwitchAnalyzer.Rule)
-            .WithArguments($"{typeof(GenericClosedTestType<>).FullName!.Split('`').First()}<string>")
+            .WithArguments(
+                $"{typeof(GenericClosedTestType<>).FullName!.Split('`').First()}<string>"
+            )
             .WithSeverity(DiagnosticSeverity.Error);
 
         var nestedBaseDiagnostic = new DiagnosticResult(UnionTypeSwitchAnalyzer.Rule)

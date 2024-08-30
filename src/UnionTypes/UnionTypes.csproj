@@ -8,9 +8,9 @@
         <PackageId>DotNetCoreFunctional.UnionTypes</PackageId>
     </PropertyGroup>
 
-    <ImportGroup Condition="$(Configuration) == 'Release' And Exists('$(SolutionDir)')" >
+    <ImportGroup Condition="$(Configuration) == 'Release' And Exists('$(SolutionDir)')">
         <Import Project="$(SolutionDir)/common.release.props"/>
         <Import Project="$(SolutionDir)/analyzerconsumer.props"/>
     </ImportGroup>
-    
+
 </Project>

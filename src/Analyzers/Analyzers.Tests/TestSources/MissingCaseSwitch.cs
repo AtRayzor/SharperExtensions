@@ -6,8 +6,11 @@ public class MissingCaseSwitch
     private readonly GenericClosedTestType<string> _genericClosedTestType;
     private readonly NestedClosedTestType _nestedClosedTestType;
 
-    public MissingCaseSwitch(ClosedTestType testType, GenericClosedTestType<string> genericClosedTestType,
-        NestedClosedTestType nestedClosedTestType)
+    public MissingCaseSwitch(
+        ClosedTestType testType,
+        GenericClosedTestType<string> genericClosedTestType,
+        NestedClosedTestType nestedClosedTestType
+    )
     {
         _testType = testType;
         _genericClosedTestType = genericClosedTestType;
@@ -58,7 +61,7 @@ public class MissingCaseSwitch
         }
     }
 
-    public string GetNestedCaseMessage() => 
+    public string GetNestedCaseMessage() =>
         _nestedClosedTestType switch
         {
             NestedClosedTestType.Case1 case1 => case1.Message,

@@ -23,9 +23,7 @@ public class UnionTypeDeclarationFileAnalyzerTests
                 {
                     (
                         "Closed.cs",
-                        SourceTextFactory.CreateSourceText(
-                            "../../../../../UnionTypes/Closed.cs"
-                        )
+                        SourceTextFactory.CreateSourceText("../../../../../UnionTypes/Closed.cs")
                     ),
                     (
                         "InvalidClosedCaseTestType.cs",

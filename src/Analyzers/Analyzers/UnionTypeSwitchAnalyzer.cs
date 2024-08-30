@@ -95,11 +95,11 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
             && (
                 switchCaseOperations.Last()
                     is IDiscardPatternOperation
-                    or IDefaultCaseClauseOperation
+                        or IDefaultCaseClauseOperation
                 || (
                     childTypes.Length == switchCaseTypes.Length
                     && childTypes.Intersect(switchCaseTypes, SymbolEqualityComparer.Default).Count()
-                    == childTypes.Length
+                        == childTypes.Length
                 )
             )
         )
@@ -148,18 +148,17 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
 
         if (
             valueParameter
-            is not
-            {
-                Type: INamedTypeSymbol { TypeKind: TypeKind.Class } referenceOperationType
-            }
+            is not { Type: INamedTypeSymbol { TypeKind: TypeKind.Class } referenceOperationType }
         )
         {
             return false;
         }
 
-        if (referenceOperationType
-            .GetAttributes()
-            .All(a => a is not { AttributeClass.Name: "ClosedAttribute" }))
+        if (
+            referenceOperationType
+                .GetAttributes()
+                .All(a => a is not { AttributeClass.Name: "ClosedAttribute" })
+        )
         {
             return false;
         }
@@ -210,9 +209,9 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
                                 IPatternCaseClauseOperation { Pattern: ITypePatternOperation tpo }
                                     => (IOperation)tpo,
                                 IPatternCaseClauseOperation
-                                    {
-                                        Pattern: IDeclarationPatternOperation dpo
-                                    }
+                                {
+                                    Pattern: IDeclarationPatternOperation dpo
+                                }
                                     => dpo,
                                 IDefaultCaseClauseOperation dpo => dpo,
                                 _ => null
@@ -228,17 +227,16 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
     {
         var namedTypeMembers = unionTypeSymbol.GetTypeMembers().ToImmutableArray();
 
-        var typesToCheck = namedTypeMembers.Length > 0
-            ? namedTypeMembers
-            : unionTypeSymbol.ContainingNamespace.GetTypeMembers();
+        var typesToCheck =
+            namedTypeMembers.Length > 0
+                ? namedTypeMembers
+                : unionTypeSymbol.ContainingNamespace.GetTypeMembers();
 
         var unionTypeChecker = ResolveUnionTypeChecker(unionTypeSymbol);
 
-        return typesToCheck
-            .Where(unionTypeChecker)
-            .Select(GetComparableNamedTypeSymbol)
-            .ToArray();
+        return typesToCheck.Where(unionTypeChecker).Select(GetComparableNamedTypeSymbol).ToArray();
     }
+
     private static bool ValueTypeChecker(
         INamedTypeSymbol typeSymbol,
         INamedTypeSymbol caseTypeSymbol
@@ -255,10 +253,10 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
         var comparableTypeSymbol = GetComparableNamedTypeSymbol(typeSymbol);
 
         return caseTypeSymbol.BaseType is { } baseType
-               && comparableTypeSymbol.Equals(
-                   GetComparableNamedTypeSymbol(baseType),
-                   SymbolEqualityComparer.Default
-               );
+            && comparableTypeSymbol.Equals(
+                GetComparableNamedTypeSymbol(baseType),
+                SymbolEqualityComparer.Default
+            );
     }
 
     private static Func<INamedTypeSymbol, bool> ResolveUnionTypeChecker(
