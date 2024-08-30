@@ -151,7 +151,7 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
     {
         if (
             valueParameter
-                is not IParameterReferenceOperation
+                is not 
                 {
                     Type: INamedTypeSymbol { TypeKind: TypeKind.Class } referenceOperationType
                 }
