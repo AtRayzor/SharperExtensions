@@ -10,9 +10,11 @@
         <PackageId>DotNetCoreFunctional</PackageId>
     </PropertyGroup>
 
-    <Import Condition="$(Configuration) == 'Release' And Exists('$(SolutionDir)')" 
-            Project="$(SolutionDir)/common.release.props"/>
-
+    <ImportGroup Condition="$(Configuration) == 'Release' And Exists('$(SolutionDir)')" >
+        <Import Project="$(SolutionDir)/common.release.props"/>
+        <Import Project="$(SolutionDir)/analyzerconsumer.props"/>
+    </ImportGroup>
+    
     <ItemGroup>
         <ProjectReference Include="..\Analyzers\Analyzers\Analyzers.csproj"
                           OutputItemType="Analyzer"
