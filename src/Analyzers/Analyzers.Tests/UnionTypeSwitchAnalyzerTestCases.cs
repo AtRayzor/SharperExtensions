@@ -38,7 +38,7 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
             .WithSeverity(DiagnosticSeverity.Error);
 
         var genericBaseDiagnostic = new DiagnosticResult(UnionTypeSwitchAnalyzer.Rule)
-            .WithArguments($"{typeof(GenericClosedTestType<>).FullName!.Split('`').First()}<T>")
+            .WithArguments($"{typeof(GenericClosedTestType<>).FullName!.Split('`').First()}<string>")
             .WithSeverity(DiagnosticSeverity.Error);
 
         yield return
@@ -54,10 +54,10 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
             CreateAnalyzer(
                 "../../../TestSources/MissingCaseSwitch.cs",
                 CompilerDiagnostics.Errors,
-                baseDiagnostic.WithLocation("MissingCaseSwitch.cs", 7, 16),
-                genericBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 17, 16),
-                baseDiagnostic.WithLocation("MissingCaseSwitch.cs", 26, 9),
-                genericBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 40, 9)
+                baseDiagnostic.WithLocation("MissingCaseSwitch.cs", 16, 16),
+                genericBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 25, 16),
+                baseDiagnostic.WithLocation("MissingCaseSwitch.cs", 34, 9),
+                genericBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 47, 9)
             )
         ];
     }
