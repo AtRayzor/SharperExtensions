@@ -239,27 +239,6 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
             .Select(GetComparableNamedTypeSymbol)
             .ToArray();
     }
-
-    private bool TryGetSwitchExpressionOperation(
-        IOperation operation,
-        out INamedTypeSymbol? namedTypeSymbol
-    )
-    {
-        var switchOperation = operation switch
-        {
-            ISwitchOperation so => so.Value,
-            ISwitchExpressionOperation seo => seo,
-            _ => null
-        };
-
-        namedTypeSymbol = switchOperation
-            is { Type: INamedTypeSymbol { TypeKind: TypeKind.Class or TypeKind.Struct } nts }
-            ? nts
-            : null;
-
-        return namedTypeSymbol is not null;
-    }
-
     private static bool ValueTypeChecker(
         INamedTypeSymbol typeSymbol,
         INamedTypeSymbol caseTypeSymbol
