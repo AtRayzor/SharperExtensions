@@ -14,14 +14,15 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
     private readonly string[] _sources =
     [
         "../../../TestSources/ClosedTestType.cs",
-        "../../../TestSources/GenericClosedTestType.cs"
+        "../../../TestSources/GenericClosedTestType.cs",
+        "../../../TestSources/NestedClosedTestType.cs"
     ];
 
     private readonly string[] _testFiles =
     [
         "../../../TestSources/AllCasesSwitch.cs",
         "../../../TestSources/MissingCasesExpression.cs",
-        "../../../TestSources/DefaultCaseSwitch.cs"
+        "../../../TestSources/DefaultCaseSwitch.cs",
     ];
 
     private (string, SourceText)[]? _sourceTexts;
@@ -41,6 +42,10 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
             .WithArguments($"{typeof(GenericClosedTestType<>).FullName!.Split('`').First()}<string>")
             .WithSeverity(DiagnosticSeverity.Error);
 
+        var nestedBaseDiagnostic = new DiagnosticResult(UnionTypeSwitchAnalyzer.Rule)
+            .WithArguments($"{typeof(NestedClosedTestType).FullName}")
+            .WithSeverity(DiagnosticSeverity.Error);
+
         yield return
         [
             CreateAnalyzer("../../../TestSources/AllCasesSwitch.cs", CompilerDiagnostics.Errors)
@@ -54,10 +59,11 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
             CreateAnalyzer(
                 "../../../TestSources/MissingCaseSwitch.cs",
                 CompilerDiagnostics.Errors,
-                baseDiagnostic.WithLocation("MissingCaseSwitch.cs", 16, 16),
-                genericBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 25, 16),
-                baseDiagnostic.WithLocation("MissingCaseSwitch.cs", 34, 9),
-                genericBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 47, 9)
+                baseDiagnostic.WithLocation("MissingCaseSwitch.cs", 19, 16),
+                genericBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 28, 16),
+                baseDiagnostic.WithLocation("MissingCaseSwitch.cs", 37, 9),
+                genericBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 50, 9),
+                nestedBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 62, 9)
             )
         ];
     }
