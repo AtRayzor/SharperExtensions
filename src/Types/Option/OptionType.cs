@@ -68,6 +68,51 @@ public static partial class Option
     public static bool IsNone<T>(Option<T> option)
         where T : notnull => option is None<T>;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<T> Or<T>(Option<T> option, Option<T> fallback)
+        where T : notnull =>
+        option switch
+        {
+            Some<T> some => some,
+            _ => fallback
+        };
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<T> Or<T>(Option<T> option, T fallback)
+        where T : notnull =>
+        option switch
+        {
+            Some<T> some => some,
+            _ => new Some<T>(fallback)
+        };
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T OrValue<T>(Option<T> option, T fallback)
+        where T : notnull =>
+        option switch
+        {
+            Some<T> some => some.Value,
+            _ => fallback
+        };
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<T> OrInsert<T>(Option<T> option, Option<T> fallbackOption)
+        where T : notnull =>
+        option switch
+        {
+            Some<T> some => some,
+            _ => fallbackOption
+        };
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<T> OrInsert<T>(Option<T> option, T fallbackValue)
+        where T : notnull =>
+        option switch
+        {
+            Some<T> some => some,
+            _ => new Some<T>(fallbackValue)
+        };
+
     public static partial class Unsafe
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -113,4 +158,24 @@ public static class OptionExtensions
     {
         Option.Unsafe.Do(option, action);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<T> Or<T>(this Option<T> option, Option<T> fallback)
+        where T : notnull => Option.Or(option, fallback);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<T> Or<T>(this Option<T> option, T fallback)
+        where T : notnull => Option.Or(option, fallback);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T OrValue<T>(this Option<T> option, T fallback)
+        where T : notnull => Option.OrValue(option, fallback);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<T> OrInsert<T>(this Option<T> option, Option<T> fallbackOption)
+        where T : notnull => Option.OrInsert(option, fallbackOption);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<T> OrInsert<T>(this Option<T> option, T fallbackValue)
+        where T : notnull => Option.OrInsert(option, fallbackValue);
 }
