@@ -8,6 +8,7 @@
         <NullableReferenceTypes>true</NullableReferenceTypes>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <PackageId>DotNetCoreFunctional</PackageId>
+        <ProjectVersion>0.0.4-alpha</ProjectVersion>
     </PropertyGroup>
 
     <ImportGroup Condition="$(Configuration) == 'Release' And Exists('$(SolutionDir)')">
