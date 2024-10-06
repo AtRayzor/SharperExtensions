@@ -179,3 +179,4 @@ public static class OptionExtensions
     public static Option<T> OrInsert<T>(this Option<T> option, T fallbackValue)
         where T : notnull => Option.OrInsert(option, fallbackValue);
 }
+
