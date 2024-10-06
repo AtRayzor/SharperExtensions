@@ -39,16 +39,27 @@ public static partial class Result
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Result<TNew, TError>> BindAsync<T, TError, TNew>(
             Task<Result<T, TError>> resultTask,
-            Func<T, Task<Result<TNew, TError>>> binder
+            Func<T, CancellationToken, Task<Result<TNew, TError>>> binder,
+            CancellationToken cancellationToken
         )
             where T : notnull
             where TError : notnull
             where TNew : notnull =>
             await resultTask switch
             {
-                Ok<T, TError> ok => await binder(ok),
+                Ok<T, TError> ok => await binder(ok, cancellationToken),
                 Error<T, TError> error => new Error<TNew, TError>(error)
             };
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Task<Result<TNew, TError>> BindAsync<T, TError, TNew>(
+            Task<Result<T, TError>> resultTask,
+            Func<T, Task<Result<TNew, TError>>> binder
+        )
+            where T : notnull
+            where TError : notnull
+            where TNew : notnull => BindAsync(resultTask, (value, _) => binder(value), default);
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -94,6 +105,17 @@ public static class ResultMonadExtensions
         where T : notnull
         where TError : notnull
         where TNew : notnull => Result.Monad.BindAsync(resultTask, binder);
+
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Task<Result<TNew, TError>> BindAsync<T, TError, TNew>(
+        this Task<Result<T, TError>> resultTask,
+        Func<T, CancellationToken, Task<Result<TNew, TError>>> binder,
+        CancellationToken cancellationToken
+    )
+        where T : notnull
+        where TError : notnull
+        where TNew : notnull => Result.Monad.BindAsync(resultTask, binder, cancellationToken);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
