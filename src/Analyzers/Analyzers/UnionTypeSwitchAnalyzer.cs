@@ -79,6 +79,8 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
                 op =>
                     op switch
                     {
+                        IRecursivePatternOperation {MatchedType: INamedTypeSymbol matchedType} 
+                            => matchedType,
                         ITypePatternOperation { MatchedType: INamedTypeSymbol matchedType }
                             => matchedType,
                         IDeclarationPatternOperation { MatchedType: INamedTypeSymbol matchedType }
@@ -171,26 +173,28 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
         ISwitchExpressionOperation switchExpressionOperation
     )
     {
-        return switchExpressionOperation
-            .Arms
-            .Select(arm => arm.ChildOperations)
-            .SelectMany(
-                ops =>
-                    ops.Select(
-                            o =>
-                                o switch
-                                {
-                                    ITypePatternOperation tpo => (IOperation)tpo,
-                                    IDeclarationPatternOperation dpo => dpo,
-                                    IDiscardPatternOperation def => def,
-                                    _ => null
-                                }
-                        )
-                        .Where(o => o is not null)
-            )
-            .Except([null])
-            .Cast<IOperation>()
-            .ToImmutableArray();
+        return [
+            ..switchExpressionOperation
+                .Arms
+                .Select(arm => arm.ChildOperations)
+                .SelectMany(
+                    ops =>
+                        ops.Select(
+                                o =>
+                                    o switch
+                                    { 
+                                        IRecursivePatternOperation  rpo => rpo ,
+                                        ITypePatternOperation tpo => (IOperation)tpo,
+                                        IDeclarationPatternOperation dpo => dpo,
+                                        IDiscardPatternOperation def => def,
+                                        _ => null
+                                    }
+                            )
+                            .Where(o => o is not null)
+                )
+                .Except([null])
+                .Cast<IOperation>()
+        ];
     }
 
     private ImmutableArray<IOperation> GetSwitchStatementCaseOperations(
@@ -206,8 +210,10 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
                         cco =>
                             cco switch
                             {
+                                IPatternCaseClauseOperation { Pattern: IRecursivePatternOperation rpo }
+                                    => (IOperation)rpo,
                                 IPatternCaseClauseOperation { Pattern: ITypePatternOperation tpo }
-                                    => (IOperation)tpo,
+                                    => tpo,
                                 IPatternCaseClauseOperation
                                 {
                                     Pattern: IDeclarationPatternOperation dpo

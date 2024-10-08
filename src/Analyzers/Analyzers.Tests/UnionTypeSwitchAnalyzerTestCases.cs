@@ -15,14 +15,7 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
     [
         "../../../TestSources/ClosedTestType.cs",
         "../../../TestSources/GenericClosedTestType.cs",
-        "../../../TestSources/NestedClosedTestType.cs"
-    ];
-
-    private readonly string[] _testFiles =
-    [
-        "../../../TestSources/AllCasesSwitch.cs",
-        "../../../TestSources/MissingCasesExpression.cs",
-        "../../../TestSources/DefaultCaseSwitch.cs"
+        "../../../TestSources/NestedClosedTestType.cs",
     ];
 
     private (string, SourceText)[]? _sourceTexts;
@@ -67,6 +60,10 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
                 genericBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 50, 9),
                 nestedBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 62, 9)
             )
+        ];
+        yield return
+        [
+            CreateAnalyzer("../../../TestSources/PatternMatchCases.cs", CompilerDiagnostics.Errors)
         ];
     }
 
