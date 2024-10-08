@@ -1,7 +1,7 @@
 <Project>
     <PropertyGroup>
         <AnalyzersFramework>netstandard2.0</AnalyzersFramework>
-        <AnalyzersVersion>0.0.1-alpha</AnalyzersVersion>
+        <AnalyzersVersion>0.0.2-alpha</AnalyzersVersion>
     </PropertyGroup>
     
     <ItemGroup>
