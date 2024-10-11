@@ -1,6 +1,7 @@
 namespace DotNetCoreFunctional.Option;
 
-public static class OptionTypeExtensions
+public static class 
+    OptionTypeExtensions
 {
     public static Option<T> ToOption<T>(this T? value)
         where T : notnull
@@ -17,17 +18,22 @@ public static class OptionTypeExtensions
     public static IEnumerable<Option<T>> ToSomeEnumerable<T>(this IEnumerable<T> enumerable)
         where T : notnull => enumerable.Select(val => val.ToSome());
 
-    public static Option<TCast> CastToOption<T, TCast>(this T? value)
-        where T : notnull
-        where TCast : notnull
+    public static Option<TCast> CastToOption<T, TCast>(this T? value) where TCast : notnull
     {
+        if (value is null)
+        {
+            return Option<TCast>.None;
+        }
+        object obj = value;
+
         try
         {
-            return ((TCast?)Convert.ChangeType(value, typeof(TCast))).ToOption();
+            return ((TCast)obj).ToOption();
         }
         catch (InvalidCastException)
         {
-            return new None<TCast>();
+            return Option<TCast>.None;
         }
     }
+
 }
