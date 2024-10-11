@@ -36,4 +36,11 @@ public static class
         }
     }
 
+    private static Option<TCast> CastInnerValue<T, TCast>(this Option<T> option) where TCast 
+        : notnull where T : notnull
+        => option switch
+        {
+            Some<T> some => some.Value.CastToOption<T, TCast>(),
+            _=> Option<TCast>.None
+        };
 }
