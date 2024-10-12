@@ -1,6 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+
 namespace DotNetCoreFunctional.Option;
 
-public static class 
+public static class
     OptionTypeExtensions
 {
     public static Option<T> ToOption<T>(this T? value)
@@ -20,27 +23,60 @@ public static class
 
     public static Option<TCast> CastToOption<T, TCast>(this T? value) where TCast : notnull
     {
-        if (value is null)
+        switch (value)
         {
-            return Option<TCast>.None;
-        }
-        object obj = value;
+            case null:
+                return Option<TCast>.None;
+            case TCast castTypeValue:
+                return castTypeValue;
+            default:
 
-        try
-        {
-            return ((TCast)obj).ToOption();
-        }
-        catch (InvalidCastException)
-        {
-            return Option<TCast>.None;
+                if (TryGetMethodInfo(value.GetType(), typeof(TCast), out var methodInfo))
+                {
+                    return ((TCast?)methodInfo.Invoke(value, [value])).ToOption();
+                }
+
+                try
+                {
+                    return ((TCast?)(object?)value).ToOption();
+                }
+                catch (InvalidCastException)
+                {
+                    return Option<TCast>.None;
+                }
         }
     }
 
-    private static Option<TCast> CastInnerValue<T, TCast>(this Option<T> option) where TCast 
-        : notnull where T : notnull
+    private static bool TryGetMethodInfo(
+        Type valueType,
+        Type castType,
+        [NotNullWhen(true)] out MethodInfo? methodInfo
+    )
+    {
+        methodInfo = valueType
+            .GetMethods()
+            .FirstOrDefault(
+                m => m is { Name: "op_Implicit" or "op_Explicit", ReturnType: var returnType }
+                     && returnType == castType
+                     && m.GetParameters() is [{ ParameterType: var parameterType }]
+                     && parameterType == valueType
+            );
+
+        return methodInfo is not null;
+    }
+
+    private static Option<TCast> CastToReferenceTypeOption<T, TCast>(this T? value) where TCast : class
+        => (value as TCast).ToOption();
+
+    public static Option<TCast> CastValueToOption<T, TCast>(this T? value) where TCast : notnull, T
+        => ((TCast?)value).ToOption();
+
+    private static Option<TCast> CastInnerValue<T, TCast>(this Option<T> option) where TCast
+        : notnull
+        where T : notnull
         => option switch
         {
             Some<T> some => some.Value.CastToOption<T, TCast>(),
-            _=> Option<TCast>.None
+            _ => Option<TCast>.None
         };
 }
