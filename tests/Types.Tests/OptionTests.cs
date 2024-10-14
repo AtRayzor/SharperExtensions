@@ -23,8 +23,15 @@ public class OptionTests
     }
 
     [Theory]
-    [ClassData(typeof(GetValueOrdDefaultTestCases))]
-    public void GetValueOrDefaultTests(Option<DummyValue> option, DummyValue? value)
+    [ClassData(typeof(GetRefTypeValueOrdDefaultTestCases))]
+    public void GetValueOrDefaultTests_ReferenceType(Option<DummyValue> option, DummyValue? value)
+    {
+        Option.Unsafe.GetValueOrDefault(option).Should().Be(value);
+    }
+    
+    [Theory]
+    [ClassData(typeof(GetValueTypeValueOrdDefaultTestCases))]
+    public void GetValueOrDefaultTests_ValueType(Option<int> option, int value)
     {
         Option.Unsafe.GetValueOrDefault(option).Should().Be(value);
     }
@@ -41,6 +48,20 @@ public class OptionTests
     {
         Option.Unsafe.TryGetValue(OptionTestData.NoneValue, out var value).Should().BeFalse();
         value.Should().BeNull();
+    }
+    
+    [Fact]
+    public void TryGetValue_CallWithSomeValueType_ReturnsTrueAndOutputsValue()
+    {
+        Option.Unsafe.TryGetValue(Option<int>.Some(3), out var value).Should().BeTrue();
+        value.Should().Be(3);
+    }
+
+    [Fact]
+    public void TryGetValue_CallWithNoneValueType_ReturnsFalseAndOutputsValue()
+    {
+        Option.Unsafe.TryGetValue(Option<int>.None, out var value).Should().BeFalse();
+        value.Should().Be(default);
     }
 }
 
@@ -72,7 +93,7 @@ file class IsNoneTestCases : IEnumerable<object[]>
     }
 }
 
-file class GetValueOrdDefaultTestCases : IEnumerable<object?[]>
+file class GetRefTypeValueOrdDefaultTestCases : IEnumerable<object?[]>
 {
     public IEnumerator<object?[]> GetEnumerator()
     {
@@ -85,3 +106,18 @@ file class GetValueOrdDefaultTestCases : IEnumerable<object?[]>
         return GetEnumerator();
     }
 }
+
+file class GetValueTypeValueOrdDefaultTestCases : IEnumerable<object?[]>
+{
+    public IEnumerator<object?[]> GetEnumerator()
+    {
+        yield return [Option<int>.Some(3), 3];
+        yield return [Option<int>.None, default];
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+}
+

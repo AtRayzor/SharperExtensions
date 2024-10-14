@@ -117,11 +117,29 @@ public static partial class Option
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T? GetValueOrDefault<T>(Option<T> option)
-            where T : notnull => option.SingleOrDefault();
+            where T : notnull
+        {
+         return option switch
+            {
+                Some<T> someValue => someValue.Value,
+                _ => default
+            };
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryGetValue<T>(Option<T> option, [NotNullWhen(true)] out T? value)
-            where T : notnull => (value = GetValueOrDefault(option)) is not null;
+            where T : notnull
+        {
+            switch (option)
+            {
+                case Some<T> someValue:
+                    value = someValue.Value;
+                    return true;
+                default:
+                    value = default;
+                    return false;
+            }
+        }
 
         public static void Do<T>(Option<T> option, Action<T> action)
             where T : notnull
