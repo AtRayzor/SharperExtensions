@@ -9,6 +9,7 @@
         <IsTestProject>true</IsTestProject>
         <RootNamespace>NetFunction.Types.Tests</RootNamespace>
         <LangVersion>13</LangVersion>
+        <ProjectVersion>0.0.8-alpha</ProjectVersion>
     </PropertyGroup>
 
     <ItemGroup>
