@@ -26,10 +26,10 @@ public static partial class Result
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Result<T, TError>> AwaitIfOk<T, TError>(
-            Result<Task<T>, TError> valueTaskResult
+            Result<Task<T>, TError> taskResult
         )
             where T : notnull where TError : notnull
-            => valueTaskResult switch
+            => taskResult switch
             {
                 Ok<Task<T>, TError> okValueTask
                     => Result<T, TError>.Ok(
@@ -59,10 +59,10 @@ public static partial class Result
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Result<T, TError>> AwaitIfError<T, TError>(
-            Result<T, Task<TError>> valueTaskResult
+            Result<T, Task<TError>> taskResult
         )
             where T : notnull where TError : notnull
-            => valueTaskResult switch
+            => taskResult switch
             {
                 Ok<T, Task<TError>> okValue
                     => Result<T, TError>.Ok(okValue.Value),
@@ -82,10 +82,10 @@ public static partial class Result
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Result<T, TError>> Await<T, TError>(
-            Result<Task<T>, Task<TError>> valueTaskResult
+            Result<Task<T>, Task<TError>> taskResult
         )
             where T : notnull where TError : notnull
-            => await AwaitIfError(await AwaitIfOk(valueTaskResult))
+            => await AwaitIfError(await AwaitIfOk(taskResult))
                 .ConfigureAwait(ConfigureAwaitOptions.None);
     }
 }
@@ -102,10 +102,10 @@ public static class ResultAsyncExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Task<Result<T, TError>> AwaitIfOk<T, TError>(
-        this Result<Task<T>, TError> valueTaskResult
+        this Result<Task<T>, TError> taskResult
     )
         where T : notnull where TError : notnull
-        => Result.Async.AwaitIfOk(valueTaskResult);
+        => Result.Async.AwaitIfOk(taskResult);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ValueTask<Result<T, TError>> AwaitIfError<T, TError>(
@@ -116,10 +116,10 @@ public static class ResultAsyncExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Task<Result<T, TError>> AwaitIfError<T, TError>(
-        this Result<T, Task<TError>> valueTaskResult
+        this Result<T, Task<TError>> taskResult
     )
         where T : notnull where TError : notnull
-        => Result.Async.AwaitIfError(valueTaskResult);
+        => Result.Async.AwaitIfError(taskResult);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ValueTask<Result<T, TError>> Await<T, TError>(
@@ -130,8 +130,8 @@ public static class ResultAsyncExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Task<Result<T, TError>> Await<T, TError>(
-        this Result<Task<T>, Task<TError>> valueTaskResult
+        this Result<Task<T>, Task<TError>> taskResult
     )
         where T : notnull where TError : notnull
-        => Result.Async.Await(valueTaskResult);
+        => Result.Async.Await(taskResult);
 }
