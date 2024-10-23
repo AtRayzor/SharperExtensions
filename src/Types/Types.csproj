@@ -9,7 +9,7 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <PackageId>DotNetCoreFunctional</PackageId>
         <LangVersion>13</LangVersion>
-        <ProjectVersion>0.0.9-alpha</ProjectVersion>
+        <ProjectVersion>0.0.10-alpha</ProjectVersion>
     </PropertyGroup>
 
     <ImportGroup Condition="$(Configuration) == 'Release' And Exists('$(SolutionDir)')">
