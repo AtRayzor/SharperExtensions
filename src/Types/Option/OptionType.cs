@@ -186,7 +186,7 @@ public static class OptionExtensions
         where T : notnull => Option.Or(option, fallback);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T OrValue<T>(this Option<T> option, T fallback)
+    public static T ValueOr<T>(this Option<T> option, T fallback)
         where T : notnull => Option.OrValue(option, fallback);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
