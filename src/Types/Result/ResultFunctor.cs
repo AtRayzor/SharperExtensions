@@ -41,19 +41,18 @@ public static partial class Result
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Result<TNew, TNewError> Match<T, TError, TNew, TNewError>(
+        public static TNew Match<T, TError, TNew>(
             Result<T, TError> result,
             Func<T, TNew> matchOk,
-            Func<TError, TNewError> matchError
+            Func<TError, TNew> matchError
         )
             where TNew : notnull
-            where TNewError : notnull
             where T : notnull
             where TError : notnull =>
             result switch
             {
-                Ok<T, TError> ok => new Ok<TNew, TNewError>(matchOk(ok)),
-                Error<T, TError> error => new Error<TNew, TNewError>(matchError(error))
+                Ok<T, TError> ok => matchOk(ok),
+                Error<T, TError> error => matchError(error)
             };
 
         [Pure]
@@ -78,13 +77,12 @@ public static partial class Result
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static async Task<Result<TNew, TNewError>> MatchAsync<T, TError, TNew, TNewError>(
+        public static async Task<TNew> MatchAsync<T, TError, TNew>(
             Task<Result<T, TError>> resultTask,
             Func<T, TNew> matchOk,
-            Func<TError, TNewError> matchError
+            Func<TError, TNew> matchError
         )
             where TNew : notnull
-            where TNewError : notnull
             where T : notnull
             where TError : notnull => Match(await resultTask, matchOk, matchError);
     }

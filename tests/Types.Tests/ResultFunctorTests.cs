@@ -43,8 +43,8 @@ public class ResultFunctorTests
     public static void MatchTests(
         Result<DummyValue, DummyError> result,
         Func<DummyValue, DummyNewValue> okMapper,
-        Func<DummyError, DummyNewError> errorMapper,
-        Result<DummyNewValue, DummyNewError> expected
+        Func<DummyError, DummyNewValue> errorMapper,
+        DummyNewValue expected
     )
     {
         Result
@@ -85,8 +85,8 @@ public class ResultFunctorTests
     public static async Task MatchAsyncTests(
         Func<Task<Result<DummyValue, DummyError>>> resultTaskFactory,
         Func<DummyValue, DummyNewValue> okMapper,
-        Func<DummyError, DummyNewError> errorMapper,
-        Result<DummyNewValue, DummyNewError> expected
+        Func<DummyError, DummyNewValue> errorMapper,
+        DummyNewValue expected
     )
     {
         (await Result.Functor.MatchAsync(resultTaskFactory(), okMapper, errorMapper))
@@ -152,17 +152,17 @@ file class MatchTestCases : IEnumerable<object[]>
         yield return
         [
             Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
-            (Func<DummyValue, DummyNewValue>)ResultTestMethods.TestMapping,
-            (Func<DummyError, DummyNewError>)ResultTestMethods.TestErrorMapping,
-            Result.Ok<DummyNewValue, DummyNewError>(ResultTestData.NewValue)
+            (Func<DummyValue, DummyNewValue>)ResultTestMethods.MatchOk,
+            (Func<DummyError, DummyNewValue>)ResultTestMethods.MatchError,
+            ResultTestData.NewValue
         ];
 
         yield return
         [
             Result.Error<DummyValue, DummyError>(ResultTestData.Error),
-            (Func<DummyValue, DummyNewValue>)ResultTestMethods.TestMapping,
-            (Func<DummyError, DummyNewError>)ResultTestMethods.TestErrorMapping,
-            Result.Error<DummyNewValue, DummyNewError>(ResultTestData.NewError)
+            (Func<DummyValue, DummyNewValue>)ResultTestMethods.MatchOk,
+            (Func<DummyError, DummyNewValue>)ResultTestMethods.MatchError,
+            new DummyNewValue { NameAllCaps = "ERROR" }
         ];
     }
 
@@ -229,17 +229,17 @@ file class MatchAsyncTestCases : IEnumerable<object[]>
         yield return
         [
             () => Task.FromResult(Result.Ok<DummyValue, DummyError>(ResultTestData.Value)),
-            (Func<DummyValue, DummyNewValue>)ResultTestMethods.TestMapping,
-            (Func<DummyError, DummyNewError>)ResultTestMethods.TestErrorMapping,
-            Result.Ok<DummyNewValue, DummyNewError>(ResultTestData.NewValue)
+            (Func<DummyValue, DummyNewValue>)ResultTestMethods.MatchOk,
+            (Func<DummyError, DummyNewValue>)ResultTestMethods.MatchError,
+            ResultTestData.NewValue
         ];
 
         yield return
         [
             () => Task.FromResult(Result.Error<DummyValue, DummyError>(ResultTestData.Error)),
-            (Func<DummyValue, DummyNewValue>)ResultTestMethods.TestMapping,
-            (Func<DummyError, DummyNewError>)ResultTestMethods.TestErrorMapping,
-            Result.Error<DummyNewValue, DummyNewError>(ResultTestData.NewError)
+            (Func<DummyValue, DummyNewValue>)ResultTestMethods.MatchOk,
+            (Func<DummyError, DummyNewValue>)ResultTestMethods.MatchError,
+            new DummyNewValue { NameAllCaps = "ERROR" }
         ];
     }
 

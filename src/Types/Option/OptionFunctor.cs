@@ -20,7 +20,7 @@ public static partial class Option
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Option<TNew> Match<T, TNew>(
+        public static TNew Match<T, TNew>(
             Option<T> option,
             Func<T, TNew> someMapping,
             Func<TNew> noneMapping
@@ -44,7 +44,7 @@ public static partial class Option
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static async Task<Option<TNew>> MatchAsync<T, TNew>(
+        public static async Task<TNew> MatchAsync<T, TNew>(
             Task<Option<T>> optionTask,
             Func<T, TNew> someMapping,
             Func<TNew> noneMapping
@@ -64,7 +64,7 @@ public static class OptionFunctor
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Option<TNew> Match<T, TNew>(
+    public static TNew Match<T, TNew>(
         this Option<T> option,
         Func<T, TNew> someMapping,
         Func<TNew> noneMapping
@@ -83,7 +83,7 @@ public static class OptionFunctor
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Task<Option<TNew>> MatchAsync<T, TNew>(
+    public static Task<TNew> MatchAsync<T, TNew>(
         this Task<Option<T>> optionTask,
         Func<T, TNew> someMapping,
         Func<TNew> noneMapping

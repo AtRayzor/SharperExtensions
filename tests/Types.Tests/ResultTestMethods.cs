@@ -30,4 +30,14 @@ public static class ResultTestMethods
             )
         );
     }
+
+    public static DummyNewValue MatchOk(DummyValue value)
+    {
+        return new DummyNewValue { NameAllCaps = value.Name.ToUpper() };
+    }
+
+    public static DummyNewValue MatchError(DummyError _)
+    {
+        return new DummyNewValue { NameAllCaps = "ERROR" };
+    }
 }
