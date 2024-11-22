@@ -71,7 +71,7 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>> where T : notnull
             previousTokenType = reader.TokenType;
         }
 
-        if (buffer.IsEmpty && overflow is null or [])
+        if (bufferIndex == 0 && overflow is null or [])
         {
             return new None<T>();
         }
