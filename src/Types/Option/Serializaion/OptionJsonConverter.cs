@@ -14,11 +14,11 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>> where T : notnull
         List<char>? overflow = default;
         Span<char> buffer = stackalloc char[8192];
         var bufferIndex = 0;
-
+        var baselineDepth = reader.CurrentDepth;
 
         while (reader.Read())
         {
-            if (reader is { TokenType: JsonTokenType.EndArray, CurrentDepth: 0 })
+            if (reader is { TokenType: JsonTokenType.EndArray} && reader.CurrentDepth ==  baselineDepth)
             {
                 break;
             }
