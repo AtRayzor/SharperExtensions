@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
+using DotNetCoreFunctional.Option.Serializaion;
 using DotNetCoreFunctional.UnionTypes;
 
 namespace DotNetCoreFunctional.Option;
 
+[JsonConverter(typeof(OptionJsonConverterFactory))]
 [Closed]
 public abstract record Option<T> : IOption<T>
     where T : notnull
