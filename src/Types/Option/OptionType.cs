@@ -33,7 +33,6 @@ public abstract record Option<T> : IOption<T>
             yield return some.Value;
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public static Option<T> Some(T value)
     {
