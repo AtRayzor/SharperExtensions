@@ -8,20 +8,102 @@ namespace DotNetCoreFunctional.Option.Serializaion;
 
 public class OptionJsonConverter<T> : JsonConverter<Option<T>> where T : notnull
 {
-    public override Option<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override Option<T>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
+        T? value = default;
+        var valueFound = false;
+
+        if (reader.TokenType != JsonTokenType.StartObject)
+        {
+            throw new JsonException("Option types are required to be serialized as an object");
+        }
+
+        while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+        {
+            if (valueFound)
+            {
+                continue;
+            }
+
+            switch (reader)
+            {
+                case { TokenType: JsonTokenType.Comment }:
+                case { TokenType: JsonTokenType.None }:
+                    continue;
+                case { TokenType: JsonTokenType.PropertyName }:
+                    if (reader.GetString() is not ("Value" or "value"))
+                    {
+                        throw new JsonException("Invalid property");
+                    }
+
+
+                    reader.Read();
+
+                    value = ReadValue(ref reader, typeof(T), options);
+                    valueFound = true;
+                    continue;
+            }
+        }
+
+        return valueFound ? Option<T>.Some(value!) : Option<T>.None;
+    }
+
+    public T ReadValue(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        while (true)
+        {
+            switch (reader.TokenType)
+            {
+                case JsonTokenType.None:
+                case JsonTokenType.Comment:
+                    if (!reader.Read())
+                    {
+                        throw new JsonException("The value is empty.");
+                    }
+
+                    continue;
+
+                case JsonTokenType.EndArray:
+                case JsonTokenType.EndObject:
+                    throw new JsonException("Invalid end of object or array");
+                case JsonTokenType.StartObject:
+                case JsonTokenType.StartArray:
+                    return ReadObjectOrArrayValue(ref reader, typeToConvert, options);
+                case JsonTokenType.PropertyName:
+                    throw new JsonException("A property name cannot occur before an object start");
+                case JsonTokenType.Null:
+                    throw new JsonException("An option value cannot be null.");
+                case JsonTokenType.String:
+                case JsonTokenType.Number:
+                case JsonTokenType.True:
+                case JsonTokenType.False:
+                    return JsonSerializer.Deserialize<T>(reader.ValueSpan)
+                           ?? throw new JsonException("The could not be deserialized");
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+    }
+
+    public T ReadObjectOrArrayValue(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var terminationToken = reader.TokenType switch
+        {
+            JsonTokenType.StartArray => JsonTokenType.EndArray,
+            JsonTokenType.StartObject => JsonTokenType.EndObject,
+            _ => throw new JsonException("Invalid start token.")
+        };
+
         JsonTokenType previousTokenType = default;
         List<char>? overflow = default;
         Span<char> buffer = stackalloc char[8192];
-        var bufferIndex = 0;
+
+        buffer[0] = '{';
+        var bufferIndex = 1;
         var baselineDepth = reader.CurrentDepth;
 
         while (reader.Read())
         {
-            if (reader is { TokenType: JsonTokenType.EndArray} && reader.CurrentDepth ==  baselineDepth)
-            {
-                break;
-            }
 
             // Remove trailing commas.
             if (reader.TokenType is JsonTokenType.EndArray or JsonTokenType.EndObject)
@@ -67,13 +149,18 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>> where T : notnull
             bufferIndex += valueRead.Length;
             separator.CopyTo(buffer.Slice(bufferIndex, 1));
             bufferIndex += separator.Length;
+            
+            
+            if (reader.TokenType == terminationToken && reader.CurrentDepth == baselineDepth)
+            {
+                break;
+            }
 
             previousTokenType = reader.TokenType;
         }
 
         if (bufferIndex == 0 && overflow is null or [])
         {
-            return new None<T>();
         }
 
         ReadOnlySpan<char> valueBytes = overflow is null ? buffer[.. bufferIndex] : [.. overflow];
@@ -83,33 +170,30 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>> where T : notnull
             throw new JsonException("The value could not be deserialized");
         }
 
-        return Option<T>.Some(value);
+        return value;
     }
+
 
     public override void Write(Utf8JsonWriter writer, Option<T> option, JsonSerializerOptions serializerOptions)
     {
         switch (option)
         {
             case Some<T> { Value: var value }:
-                try
-                {
-                    var serializedValue = JsonSerializer.Serialize(value, serializerOptions);
+                var serializedValue = JsonSerializer.Serialize(value, serializerOptions);
+                const string propertyName = "Value";
+                var serializedPropertyName = serializerOptions
+                                                 .PropertyNamingPolicy
+                                                 ?.ConvertName(propertyName)
+                                             ?? propertyName;
 
-                    writer.WriteStartArray();
-                    writer.WriteRawValue(serializedValue);
-                    writer.WriteEndArray();
-                }
-                catch (JsonException e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
-
+                writer.WriteStartObject();
+                writer.WritePropertyName(serializedPropertyName);
+                writer.WriteRawValue(serializedValue);
+                writer.WriteEndObject();
                 break;
-
             case None<T>:
-                writer.WriteStartArray();
-                writer.WriteEndArray();
+                writer.WriteStartObject();
+                writer.WriteEndObject();
                 break;
         }
     }

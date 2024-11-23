@@ -43,12 +43,16 @@ public abstract record Option<T> : IOption<T>
     public static implicit operator Option<T>(T? value) => Option.Return(value);
 }
 
+
+[JsonConverter(typeof(OptionJsonConverterFactory))]
 public record Some<T>(T Value) : Option<T>
     where T : notnull
 {
     public static implicit operator T(Some<T> some) => some.Value;
 }
 
+
+[JsonConverter(typeof(OptionJsonConverterFactory))]
 public record None<T> : Option<T>
     where T : notnull;
 

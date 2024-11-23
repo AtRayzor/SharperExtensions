@@ -7,8 +7,8 @@ public class OptionJsonConverterFactory : JsonConverterFactory
 {
     public override bool CanConvert(Type typeToConvert)
     {
-        return typeToConvert.IsGenericType &&
-               typeToConvert.GetGenericTypeDefinition().IsAssignableTo(typeof(Option<>));
+        return typeToConvert is { IsGenericType: true, GenericTypeArguments: [var typeArg] }
+               && typeof(Option<>).MakeGenericType(typeArg).IsAssignableFrom(typeToConvert);
     }
 
     public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
