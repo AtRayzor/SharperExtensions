@@ -1,0 +1,6 @@
+﻿{
+  Value: {
+    Name: Jack Black,
+    Email: jack.black@example.com
+  }
+}
