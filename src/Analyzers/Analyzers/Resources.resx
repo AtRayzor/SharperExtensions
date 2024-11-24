@@ -61,4 +61,24 @@
         <value>The case '{0}' was defined in a different file than the discriminated union type '{1}'. All cases are required to be defined inside the same file a the base interface.</value>
         <comment>The format-able message displayed when a DU switch expression is not complete.</comment>
     </data>
+    <data name="NF0004Title" xml:space="preserve">
+        <value>Union parameters are required to be of type 'System,object'</value>
+    </data>
+    <data name="NF0004Description" xml:space="preserve">
+        <value>Union parameters required to be of type 'System.Object'.</value>
+    </data>
+    <data name="NF0004MessageFormat" xml:space="preserve">
+        <value>The type '{0}' is not valid for a union parameter. A type of 'System.object' is required.</value>
+        <comment>The format-able message displayed when a type other than 'System.object is used for union parameter.' .</comment>
+    </data>
+    <data name="NF0005Title" xml:space="preserve">
+        <value>Argument type does not match the union type list</value>
+    </data>
+    <data name="NF0005Description" xml:space="preserve">
+        <value>The given argument type does not match any of the allowed types.</value>
+    </data>
+    <data name="NF0005MessageFormat" xml:space="preserve">
+        <value>The given type {0} is does not match any of the allowed union types</value>
+        <comment>The format-able message displayed when a type other than 'System.object is used for union parameter.' .</comment>
+    </data>
 </root>
