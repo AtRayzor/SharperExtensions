@@ -3,8 +3,7 @@ using System.Reflection;
 
 namespace DotNetCoreFunctional.Option;
 
-public static class
-    OptionTypeExtensions
+public static class OptionTypeExtensions
 {
     public static Option<T> ToOption<T>(this T? value)
         where T : notnull
@@ -21,7 +20,8 @@ public static class
     public static IEnumerable<Option<T>> ToSomeEnumerable<T>(this IEnumerable<T> enumerable)
         where T : notnull => enumerable.Select(val => val.ToSome());
 
-    public static Option<TCast> CastToOption<T, TCast>(this T? value) where TCast : notnull
+    public static Option<TCast> CastToOption<T, TCast>(this T? value)
+        where TCast : notnull
     {
         switch (value)
         {
@@ -55,28 +55,28 @@ public static class
     {
         methodInfo = valueType
             .GetMethods()
-            .FirstOrDefault(
-                m => m is { Name: "op_Implicit" or "op_Explicit", ReturnType: var returnType }
-                     && returnType == castType
-                     && m.GetParameters() is [{ ParameterType: var parameterType }]
-                     && parameterType == valueType
+            .FirstOrDefault(m =>
+                m is { Name: "op_Implicit" or "op_Explicit", ReturnType: var returnType }
+                && returnType == castType
+                && m.GetParameters() is [{ ParameterType: var parameterType }]
+                && parameterType == valueType
             );
 
         return methodInfo is not null;
     }
 
-    private static Option<TCast> CastToReferenceTypeOption<T, TCast>(this T? value) where TCast : class
-        => (value as TCast).ToOption();
+    private static Option<TCast> CastToReferenceTypeOption<T, TCast>(this T? value)
+        where TCast : class => (value as TCast).ToOption();
 
-    public static Option<TCast> CastValueToOption<T, TCast>(this T? value) where TCast : notnull, T
-        => ((TCast?)value).ToOption();
+    public static Option<TCast> CastValueToOption<T, TCast>(this T? value)
+        where TCast : notnull, T => ((TCast?)value).ToOption();
 
-    private static Option<TCast> CastInnerValue<T, TCast>(this Option<T> option) where TCast
-        : notnull
-        where T : notnull
-        => option switch
+    private static Option<TCast> CastInnerValue<T, TCast>(this Option<T> option)
+        where TCast : notnull
+        where T : notnull =>
+        option switch
         {
             Some<T> some => some.Value.CastToOption<T, TCast>(),
-            _ => Option<TCast>.None
+            _ => Option<TCast>.None,
         };
 }

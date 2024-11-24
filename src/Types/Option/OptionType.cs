@@ -33,7 +33,6 @@ public abstract record Option<T> : IOption<T>
             yield return some.Value;
     }
 
-
     public static Option<T> Some(T value)
     {
         return new Some<T>(value);
@@ -42,14 +41,12 @@ public abstract record Option<T> : IOption<T>
     public static implicit operator Option<T>(T? value) => Option.Return(value);
 }
 
-
 [JsonConverter(typeof(OptionJsonConverterFactory))]
 public record Some<T>(T Value) : Option<T>
     where T : notnull
 {
     public static implicit operator T(Some<T> some) => some.Value;
 }
-
 
 [JsonConverter(typeof(OptionJsonConverterFactory))]
 public record None<T> : Option<T>
@@ -80,7 +77,7 @@ public static partial class Option
         option switch
         {
             Some<T> some => some,
-            _ => fallback
+            _ => fallback,
         };
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -89,7 +86,7 @@ public static partial class Option
         option switch
         {
             Some<T> some => some,
-            _ => new Some<T>(fallback)
+            _ => new Some<T>(fallback),
         };
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -98,7 +95,7 @@ public static partial class Option
         option switch
         {
             Some<T> some => some.Value,
-            _ => fallback
+            _ => fallback,
         };
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -107,7 +104,7 @@ public static partial class Option
         option switch
         {
             Some<T> some => some,
-            _ => fallbackOption
+            _ => fallbackOption,
         };
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -116,7 +113,7 @@ public static partial class Option
         option switch
         {
             Some<T> some => some,
-            _ => new Some<T>(fallbackValue)
+            _ => new Some<T>(fallbackValue),
         };
 
     public static partial class Unsafe
@@ -125,10 +122,10 @@ public static partial class Option
         public static T? GetValueOrDefault<T>(Option<T> option)
             where T : notnull
         {
-         return option switch
+            return option switch
             {
                 Some<T> someValue => someValue.Value,
-                _ => default
+                _ => default,
             };
         }
 
@@ -203,4 +200,3 @@ public static class OptionExtensions
     public static Option<T> OrInsert<T>(this Option<T> option, T fallbackValue)
         where T : notnull => Option.OrInsert(option, fallbackValue);
 }
-

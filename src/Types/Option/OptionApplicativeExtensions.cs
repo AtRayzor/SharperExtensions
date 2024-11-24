@@ -18,7 +18,7 @@ public static partial class Option
             wrappedMapping switch
             {
                 Some<Func<T, TNew>> someWrapped => option.Map(someWrapped.Value),
-                _ => new None<TNew>()
+                _ => new None<TNew>(),
             };
 
         [Pure]
@@ -32,7 +32,7 @@ public static partial class Option
             await wrappedMappingTask switch
             {
                 Some<Func<T, TNew>> someWrapped => (await optionTask).Map(someWrapped.Value),
-                _ => new None<TNew>()
+                _ => new None<TNew>(),
             };
     }
 }

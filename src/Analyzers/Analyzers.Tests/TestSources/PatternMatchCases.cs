@@ -1,15 +1,14 @@
 namespace DotNetCoreFunctional.Analyzers.Tests.TestSources;
 
-
 public class AllCasesPatternMatchSwitch
 {
     public object GetCaseValue(ClosedTestType testType)
     {
         return testType switch
         {
-            Animal { Name: { } name } => name ,
-            Number { Value: var value } => value ,
-            Letter { Value: var character} => character 
+            Animal { Name: { } name } => name,
+            Number { Value: var value } => value,
+            Letter { Value: var character } => character,
         };
     }
 
@@ -18,9 +17,9 @@ public class AllCasesPatternMatchSwitch
     {
         return testType switch
         {
-            Case1<T> { Value: { } value } => value ,
+            Case1<T> { Value: { } value } => value,
             Case2<T> { Values: var values } => values,
-            Case3<T> {Value: null } => default
+            Case3<T> { Value: null } => default,
         };
     }
 
@@ -28,7 +27,7 @@ public class AllCasesPatternMatchSwitch
     {
         switch (testType)
         {
-            case Animal { Name: { } name}:
+            case Animal { Name: { } name }:
                 Console.WriteLine(name);
                 break;
             case Number { Value: > 0 }:
@@ -45,7 +44,7 @@ public class AllCasesPatternMatchSwitch
     {
         switch (testType)
         {
-            case Case1<T> { Value: var value}:
+            case Case1<T> { Value: var value }:
                 Console.WriteLine(value);
                 break;
             case Case2<T> { Values: var values }:

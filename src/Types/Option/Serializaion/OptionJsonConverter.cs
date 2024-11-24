@@ -6,9 +6,14 @@ using System.Text.Json.Serialization;
 
 namespace DotNetCoreFunctional.Option.Serializaion;
 
-public class OptionJsonConverter<T> : JsonConverter<Option<T>> where T : notnull
+public class OptionJsonConverter<T> : JsonConverter<Option<T>>
+    where T : notnull
 {
-    public override Option<T>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override Option<T>? Read(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options
+    )
     {
         T? value = default;
         var valueFound = false;
@@ -35,7 +40,6 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>> where T : notnull
                     {
                         throw new JsonException("Invalid property");
                     }
-
 
                     reader.Read();
 
@@ -78,20 +82,24 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>> where T : notnull
                 case JsonTokenType.True:
                 case JsonTokenType.False:
                     return JsonSerializer.Deserialize<T>(reader.ValueSpan)
-                           ?? throw new JsonException("The could not be deserialized");
+                        ?? throw new JsonException("The could not be deserialized");
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
     }
 
-    public T ReadObjectOrArrayValue(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public T ReadObjectOrArrayValue(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options
+    )
     {
         var terminationToken = reader.TokenType switch
         {
             JsonTokenType.StartArray => JsonTokenType.EndArray,
             JsonTokenType.StartObject => JsonTokenType.EndObject,
-            _ => throw new JsonException("Invalid start token.")
+            _ => throw new JsonException("Invalid start token."),
         };
 
         JsonTokenType previousTokenType = default;
@@ -104,7 +112,6 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>> where T : notnull
 
         while (reader.Read())
         {
-
             // Remove trailing commas.
             if (reader.TokenType is JsonTokenType.EndArray or JsonTokenType.EndObject)
             {
@@ -119,20 +126,21 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>> where T : notnull
                 }
             }
 
-            var addSeparator = previousTokenType is JsonTokenType.PropertyName
-                               && reader.TokenType
-                                   is JsonTokenType.String
-                                   or JsonTokenType.Number
-                                   or JsonTokenType.True
-                                   or JsonTokenType.False
-                                   or JsonTokenType.EndArray
-                                   or JsonTokenType.EndObject;
+            var addSeparator =
+                previousTokenType is JsonTokenType.PropertyName
+                && reader.TokenType
+                    is JsonTokenType.String
+                        or JsonTokenType.Number
+                        or JsonTokenType.True
+                        or JsonTokenType.False
+                        or JsonTokenType.EndArray
+                        or JsonTokenType.EndObject;
 
             ReadOnlySpan<char> valueRead = reader.TokenType switch
             {
                 JsonTokenType.PropertyName => $"\"{reader.GetString()}\":",
                 JsonTokenType.String => $"\"{reader.GetString()}\"",
-                _ => Encoding.UTF8.GetChars([.. reader.ValueSpan])
+                _ => Encoding.UTF8.GetChars([.. reader.ValueSpan]),
             };
 
             char[] separator = addSeparator ? [','] : [];
@@ -149,8 +157,7 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>> where T : notnull
             bufferIndex += valueRead.Length;
             separator.CopyTo(buffer.Slice(bufferIndex, 1));
             bufferIndex += separator.Length;
-            
-            
+
             if (reader.TokenType == terminationToken && reader.CurrentDepth == baselineDepth)
             {
                 break;
@@ -159,11 +166,9 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>> where T : notnull
             previousTokenType = reader.TokenType;
         }
 
-        if (bufferIndex == 0 && overflow is null or [])
-        {
-        }
+        if (bufferIndex == 0 && overflow is null or []) { }
 
-        ReadOnlySpan<char> valueBytes = overflow is null ? buffer[.. bufferIndex] : [.. overflow];
+        ReadOnlySpan<char> valueBytes = overflow is null ? buffer[..bufferIndex] : [.. overflow];
 
         if (JsonSerializer.Deserialize<T>(valueBytes, options) is not { } value)
         {
@@ -173,18 +178,20 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>> where T : notnull
         return value;
     }
 
-
-    public override void Write(Utf8JsonWriter writer, Option<T> option, JsonSerializerOptions serializerOptions)
+    public override void Write(
+        Utf8JsonWriter writer,
+        Option<T> option,
+        JsonSerializerOptions serializerOptions
+    )
     {
         switch (option)
         {
             case Some<T> { Value: var value }:
                 var serializedValue = JsonSerializer.Serialize(value, serializerOptions);
                 const string propertyName = "Value";
-                var serializedPropertyName = serializerOptions
-                                                 .PropertyNamingPolicy
-                                                 ?.ConvertName(propertyName)
-                                             ?? propertyName;
+                var serializedPropertyName =
+                    serializerOptions.PropertyNamingPolicy?.ConvertName(propertyName)
+                    ?? propertyName;
 
                 writer.WriteStartObject();
                 writer.WritePropertyName(serializedPropertyName);

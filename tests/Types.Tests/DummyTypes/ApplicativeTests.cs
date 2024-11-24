@@ -16,8 +16,7 @@ public class ApplicativeTests
     )
     {
         Result
-            .Applicative
-            .Apply(result, wrappedMapping)
+            .Applicative.Apply(result, wrappedMapping)
             .Should()
             .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
@@ -44,28 +43,28 @@ file class ApplyTestsCases : IEnumerable<object[]>
         [
             Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
             Result.Ok<Func<DummyValue, DummyNewValue>, DummyError>(ResultTestMethods.TestMapping),
-            Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue)
+            Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue),
         ];
 
         yield return
         [
             Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
             Result.Error<Func<DummyValue, DummyNewValue>, DummyError>(ResultTestData.Error),
-            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error)
+            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error),
         ];
 
         yield return
         [
             Result.Error<DummyValue, DummyError>(ResultTestData.Error),
             Result.Ok<Func<DummyValue, DummyNewValue>, DummyError>(ResultTestMethods.TestMapping),
-            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error)
+            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error),
         ];
 
         yield return
         [
             Result.Error<DummyValue, DummyError>(ResultTestData.Error),
             Result.Error<Func<DummyValue, DummyNewValue>, DummyError>(ResultTestData.Error),
-            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error)
+            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error),
         ];
     }
 
@@ -88,7 +87,7 @@ file class ApplyAsyncTestsCases : IEnumerable<object[]>
                         ResultTestMethods.TestMapping
                     )
                 ),
-            Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue)
+            Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue),
         ];
 
         yield return
@@ -98,7 +97,7 @@ file class ApplyAsyncTestsCases : IEnumerable<object[]>
                 Task.FromResult(
                     Result.Error<Func<DummyValue, DummyNewValue>, DummyError>(ResultTestData.Error)
                 ),
-            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error)
+            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error),
         ];
 
         yield return
@@ -110,7 +109,7 @@ file class ApplyAsyncTestsCases : IEnumerable<object[]>
                         ResultTestMethods.TestMapping
                     )
                 ),
-            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error)
+            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error),
         ];
 
         yield return
@@ -120,7 +119,7 @@ file class ApplyAsyncTestsCases : IEnumerable<object[]>
                 Task.FromResult(
                     Result.Error<Func<DummyValue, DummyNewValue>, DummyError>(ResultTestData.Error)
                 ),
-            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error)
+            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error),
         ];
     }
 

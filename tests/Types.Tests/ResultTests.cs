@@ -51,15 +51,13 @@ public class ResultTests
     {
         string? testString = default;
 
-        Result
-            .Unsafe
-            .DoIfOk(
-                Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
-                value =>
-                {
-                    testString = value.Name;
-                }
-            );
+        Result.Unsafe.DoIfOk(
+            Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
+            value =>
+            {
+                testString = value.Name;
+            }
+        );
 
         testString.Should().Be(ResultTestData.Value.Name);
     }
@@ -69,15 +67,13 @@ public class ResultTests
     {
         string? testString = default;
 
-        Result
-            .Unsafe
-            .DoIfOk(
-                Result.Error<DummyValue, DummyError>(ResultTestData.Error),
-                value =>
-                {
-                    testString = value.Name;
-                }
-            );
+        Result.Unsafe.DoIfOk(
+            Result.Error<DummyValue, DummyError>(ResultTestData.Error),
+            value =>
+            {
+                testString = value.Name;
+            }
+        );
 
         testString.Should().BeNull();
     }
@@ -87,15 +83,13 @@ public class ResultTests
     {
         string? testString = default;
 
-        Result
-            .Unsafe
-            .DoIfError(
-                Result.Error<DummyValue, DummyError>(ResultTestData.Error),
-                error =>
-                {
-                    testString = error.Message;
-                }
-            );
+        Result.Unsafe.DoIfError(
+            Result.Error<DummyValue, DummyError>(ResultTestData.Error),
+            error =>
+            {
+                testString = error.Message;
+            }
+        );
 
         testString.Should().Be(ResultTestData.Error.Message);
     }
@@ -105,15 +99,13 @@ public class ResultTests
     {
         string? testString = default;
 
-        Result
-            .Unsafe
-            .DoIfError(
-                Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
-                error =>
-                {
-                    testString = error.Message;
-                }
-            );
+        Result.Unsafe.DoIfError(
+            Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
+            error =>
+            {
+                testString = error.Message;
+            }
+        );
 
         testString.Should().BeNull();
     }
@@ -155,7 +147,7 @@ file class TryGetValueTestCases : IEnumerable<object?[]>
         [
             Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
             true,
-            ResultTestData.Value
+            ResultTestData.Value,
         ];
         yield return [Result.Error<DummyValue, DummyError>(ResultTestData.Error), false, null];
     }
@@ -174,7 +166,7 @@ file class TryGetErrorTestCases : IEnumerable<object?[]>
         [
             Result.Error<DummyValue, DummyError>(ResultTestData.Error),
             true,
-            ResultTestData.Error
+            ResultTestData.Error,
         ];
         yield return [Result.Ok<DummyValue, DummyError>(ResultTestData.Value), false, null];
     }

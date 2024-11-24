@@ -15,7 +15,7 @@ public static partial class Option
             option switch
             {
                 Some<T> some => Some(mapping(some.Value)),
-                _ => None<TNew>()
+                _ => None<TNew>(),
             };
 
         [Pure]
@@ -30,7 +30,7 @@ public static partial class Option
             option switch
             {
                 Some<T> some => new Some<TNew>(someMapping(some.Value)),
-                _ => new Some<TNew>(noneMapping())
+                _ => new Some<TNew>(noneMapping()),
             };
 
         [Pure]

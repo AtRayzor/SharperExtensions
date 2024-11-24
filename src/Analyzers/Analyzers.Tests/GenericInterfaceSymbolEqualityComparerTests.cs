@@ -14,7 +14,7 @@ public class GenericInterfaceSymbolEqualityComparerTests
         AccessorDeclarationSyntax[] accessorDeclarations =
         [
             SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration),
-            SyntaxFactory.AccessorDeclaration(SyntaxKind.InitAccessorDeclaration)
+            SyntaxFactory.AccessorDeclaration(SyntaxKind.InitAccessorDeclaration),
         ];
 
         SyntaxToken[] modifiers = [publicKeywordToken];
@@ -26,7 +26,7 @@ public class GenericInterfaceSymbolEqualityComparerTests
                     SyntaxFactory.Identifier("Count")
                 )
                 .AddModifiers(publicKeywordToken)
-                .AddAccessorListAccessors(accessorDeclarations)
+                .AddAccessorListAccessors(accessorDeclarations),
         ];
         var interfaceSyntax = SyntaxFactory
             .InterfaceDeclaration(SyntaxFactory.Identifier("DummyInterface1"))

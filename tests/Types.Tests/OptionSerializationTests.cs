@@ -8,18 +8,18 @@ namespace NetFunction.Types.Tests;
 
 public class OptionSerializationTests
 {
-    private const string SerializedValueObject = "{\"Name\":\"Jack Black\",\"Email\":\"jack.black@example.com\"}";
+    private const string SerializedValueObject =
+        "{\"Name\":\"Jack Black\",\"Email\":\"jack.black@example.com\"}";
     private const string SerializedSomeValue = $$"""{"Value":{{SerializedValueObject}}}""";
-
 
     [Fact]
     public async Task SerializeSomeOption_IntValue()
     {
         var option = Option<int>.Some(7);
 
-       var serialized = JsonSerializer.Serialize(option);
+        var serialized = JsonSerializer.Serialize(option);
 
-       await Verify(serialized);
+        await Verify(serialized);
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class OptionSerializationTests
         const string expected = "{}";
 
         var serialized = JsonSerializer.Serialize(option);
-        
+
         await Verify(serialized);
     }
 
@@ -51,9 +51,7 @@ public class OptionSerializationTests
         var option = JsonSerializer.Deserialize<Option<DummyValue>>(serialized);
 
         await Verify(option);
-
     }
-
 
     [Fact]
     public async Task SerializeSomeOption_ObjectValue()
@@ -68,7 +66,6 @@ public class OptionSerializationTests
     [Fact]
     public async Task DeserializeSomeOption_ObjectValue()
     {
-
         var option = JsonSerializer.Deserialize<Option<DummyValue>>(SerializedSomeValue);
 
         await Verify(option);
@@ -79,9 +76,9 @@ public class OptionSerializationTests
     {
         var wrapper = new TestWrapper { Value = OptionTestData.SomeValue };
 
-       var serialized = JsonSerializer.Serialize(wrapper);
+        var serialized = JsonSerializer.Serialize(wrapper);
 
-       await Verify(serialized);
+        await Verify(serialized);
     }
 
     [Fact]

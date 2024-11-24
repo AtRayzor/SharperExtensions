@@ -17,8 +17,7 @@ public class ResultFunctorTests
     )
     {
         Result
-            .Functor
-            .Map(result, mapper)
+            .Functor.Map(result, mapper)
             .Should()
             .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
@@ -32,8 +31,7 @@ public class ResultFunctorTests
     )
     {
         Result
-            .Functor
-            .MapError(result, mapper)
+            .Functor.MapError(result, mapper)
             .Should()
             .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
@@ -48,8 +46,7 @@ public class ResultFunctorTests
     )
     {
         Result
-            .Functor
-            .Match(result, okMapper, errorMapper)
+            .Functor.Match(result, okMapper, errorMapper)
             .Should()
             .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
@@ -103,14 +100,14 @@ file class MapTestCases : IEnumerable<object[]>
         [
             Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
             (Func<DummyValue, DummyNewValue>)ResultTestMethods.TestMapping,
-            Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue)
+            Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue),
         ];
 
         yield return
         [
             Result.Error<DummyValue, DummyError>(ResultTestData.Error),
             (Func<DummyValue, DummyNewValue>)ResultTestMethods.TestMapping,
-            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error)
+            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error),
         ];
     }
 
@@ -128,14 +125,14 @@ file class MapErrorTestCases : IEnumerable<object[]>
         [
             Result.Error<DummyValue, DummyError>(ResultTestData.Error),
             (Func<DummyError, DummyNewError>)ResultTestMethods.TestErrorMapping,
-            Result.Error<DummyValue, DummyNewError>(ResultTestData.NewError)
+            Result.Error<DummyValue, DummyNewError>(ResultTestData.NewError),
         ];
 
         yield return
         [
             Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
             (Func<DummyError, DummyNewError>)ResultTestMethods.TestErrorMapping,
-            Result.Ok<DummyValue, DummyNewError>(ResultTestData.Value)
+            Result.Ok<DummyValue, DummyNewError>(ResultTestData.Value),
         ];
     }
 
@@ -154,7 +151,7 @@ file class MatchTestCases : IEnumerable<object[]>
             Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
             (Func<DummyValue, DummyNewValue>)ResultTestMethods.MatchOk,
             (Func<DummyError, DummyNewValue>)ResultTestMethods.MatchError,
-            ResultTestData.NewValue
+            ResultTestData.NewValue,
         ];
 
         yield return
@@ -162,7 +159,7 @@ file class MatchTestCases : IEnumerable<object[]>
             Result.Error<DummyValue, DummyError>(ResultTestData.Error),
             (Func<DummyValue, DummyNewValue>)ResultTestMethods.MatchOk,
             (Func<DummyError, DummyNewValue>)ResultTestMethods.MatchError,
-            new DummyNewValue { NameAllCaps = "ERROR" }
+            new DummyNewValue { NameAllCaps = "ERROR" },
         ];
     }
 
@@ -180,14 +177,14 @@ file class MapAsyncTestCases : IEnumerable<object[]>
         [
             () => Task.FromResult(Result.Ok<DummyValue, DummyError>(ResultTestData.Value)),
             (Func<DummyValue, DummyNewValue>)ResultTestMethods.TestMapping,
-            Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue)
+            Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue),
         ];
 
         yield return
         [
             () => Task.FromResult(Result.Error<DummyValue, DummyError>(ResultTestData.Error)),
             (Func<DummyValue, DummyNewValue>)ResultTestMethods.TestMapping,
-            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error)
+            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error),
         ];
     }
 
@@ -205,14 +202,14 @@ file class MapErrorAsyncTestCases : IEnumerable<object[]>
         [
             () => Task.FromResult(Result.Error<DummyValue, DummyError>(ResultTestData.Error)),
             (Func<DummyError, DummyNewError>)ResultTestMethods.TestErrorMapping,
-            Result.Error<DummyValue, DummyNewError>(ResultTestData.NewError)
+            Result.Error<DummyValue, DummyNewError>(ResultTestData.NewError),
         ];
 
         yield return
         [
             () => Task.FromResult(Result.Ok<DummyValue, DummyError>(ResultTestData.Value)),
             (Func<DummyError, DummyNewError>)ResultTestMethods.TestErrorMapping,
-            Result.Ok<DummyValue, DummyNewError>(ResultTestData.Value)
+            Result.Ok<DummyValue, DummyNewError>(ResultTestData.Value),
         ];
     }
 
@@ -231,7 +228,7 @@ file class MatchAsyncTestCases : IEnumerable<object[]>
             () => Task.FromResult(Result.Ok<DummyValue, DummyError>(ResultTestData.Value)),
             (Func<DummyValue, DummyNewValue>)ResultTestMethods.MatchOk,
             (Func<DummyError, DummyNewValue>)ResultTestMethods.MatchError,
-            ResultTestData.NewValue
+            ResultTestData.NewValue,
         ];
 
         yield return
@@ -239,7 +236,7 @@ file class MatchAsyncTestCases : IEnumerable<object[]>
             () => Task.FromResult(Result.Error<DummyValue, DummyError>(ResultTestData.Error)),
             (Func<DummyValue, DummyNewValue>)ResultTestMethods.MatchOk,
             (Func<DummyError, DummyNewValue>)ResultTestMethods.MatchError,
-            new DummyNewValue { NameAllCaps = "ERROR" }
+            new DummyNewValue { NameAllCaps = "ERROR" },
         ];
     }
 

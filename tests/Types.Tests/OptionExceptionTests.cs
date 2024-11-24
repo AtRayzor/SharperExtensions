@@ -13,12 +13,10 @@ public class OptionExceptionTests
     public void GetValueOrThrow_CallWithSome_ReturnValueDoesNotThrow()
     {
         OptionTestData
-            .SomeValue
-            .Invoking(
-                sv =>
-                    sv.GetValueOrThrow<DummyValue, InvalidDataException>(ExceptionMessage)
-                        .Should()
-                        .BeEquivalentTo(OptionTestData.Value)
+            .SomeValue.Invoking(sv =>
+                sv.GetValueOrThrow<DummyValue, InvalidDataException>(ExceptionMessage)
+                    .Should()
+                    .BeEquivalentTo(OptionTestData.Value)
             )
             .Should()
             .NotThrow<InvalidDataException>();
@@ -28,12 +26,10 @@ public class OptionExceptionTests
     public void GetValueOrThrow_CallWithNone_ThrowsException()
     {
         OptionTestData
-            .NoneValue
-            .Invoking(
-                sv =>
-                    sv.GetValueOrThrow<DummyValue, InvalidDataException>(ExceptionMessage)
-                        .Should()
-                        .BeEquivalentTo(OptionTestData.Value)
+            .NoneValue.Invoking(sv =>
+                sv.GetValueOrThrow<DummyValue, InvalidDataException>(ExceptionMessage)
+                    .Should()
+                    .BeEquivalentTo(OptionTestData.Value)
             )
             .Should()
             .Throw<InvalidDataException>()

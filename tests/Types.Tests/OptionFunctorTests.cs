@@ -18,12 +18,10 @@ public class OptionFunctorTests
     )
     {
         Option
-            .Functor
-            .Map(option, mapping)
+            .Functor.Map(option, mapping)
             .Should()
             .BeOfType(expectedType)
-            .And
-            .BeEquivalentTo(expected);
+            .And.BeEquivalentTo(expected);
     }
 }
 
@@ -44,14 +42,14 @@ file class MapTestCases : IEnumerable<object[]>
             OptionTestData.SomeValue,
             (Func<DummyValue, DummyNewValue>)TestFunctions.Mapping,
             OptionTestData.SomeNewValue,
-            typeof(Some<DummyNewValue>)
+            typeof(Some<DummyNewValue>),
         ];
         yield return
         [
             OptionTestData.NoneValue,
             (Func<DummyValue, DummyNewValue>)TestFunctions.Mapping,
             OptionTestData.NoneNewValue,
-            typeof(None<DummyNewValue>)
+            typeof(None<DummyNewValue>),
         ];
     }
 

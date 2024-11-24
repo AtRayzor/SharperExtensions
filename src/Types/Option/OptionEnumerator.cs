@@ -18,7 +18,7 @@ public class OptionEnumerator<T> : IEnumerator<T>
         _values = option switch
         {
             Some<T> s => [s.Value],
-            _ => []
+            _ => [],
         };
     }
 

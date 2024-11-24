@@ -19,7 +19,7 @@ public static partial class Result
             wrappedMapping switch
             {
                 Ok<Func<T, TNew>, TError> okMapping => Functor.Map(result, okMapping.Value),
-                Error<Func<T, TNew>, TError> error => new Error<TNew, TError>(error)
+                Error<Func<T, TNew>, TError> error => new Error<TNew, TError>(error),
             };
 
         [Pure]
@@ -33,9 +33,11 @@ public static partial class Result
             where TNew : notnull =>
             await wrappedMappingTask switch
             {
-                Ok<Func<T, TNew>, TError> okMapping
-                    => Functor.Map(await resultTask, okMapping.Value),
-                Error<Func<T, TNew>, TError> error => new Error<TNew, TError>(error)
+                Ok<Func<T, TNew>, TError> okMapping => Functor.Map(
+                    await resultTask,
+                    okMapping.Value
+                ),
+                Error<Func<T, TNew>, TError> error => new Error<TNew, TError>(error),
             };
     }
 }

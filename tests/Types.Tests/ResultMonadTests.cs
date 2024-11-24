@@ -17,8 +17,7 @@ public class MonadTests
     )
     {
         Result
-            .Monad
-            .Bind(result, binder)
+            .Monad.Bind(result, binder)
             .Should()
             .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
@@ -31,8 +30,7 @@ public class MonadTests
     )
     {
         Result
-            .Monad
-            .Flatten(wrappedResult)
+            .Monad.Flatten(wrappedResult)
             .Should()
             .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
@@ -73,14 +71,14 @@ file class BindTestCases : IEnumerable<object[]>
         [
             Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
             (Func<DummyValue, Result<DummyNewValue, DummyError>>)ResultTestMethods.TestBinder,
-            Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue)
+            Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue),
         ];
 
         yield return
         [
             Result.Error<DummyValue, DummyError>(ResultTestData.Error),
             (Func<DummyValue, Result<DummyNewValue, DummyError>>)ResultTestMethods.TestBinder,
-            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error)
+            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error),
         ];
     }
 
@@ -99,7 +97,7 @@ file class FlattenTestCases : IEnumerable<object[]>
             Result.Ok<Result<DummyValue, DummyError>, DummyError>(
                 Result.Ok<DummyValue, DummyError>(ResultTestData.Value)
             ),
-            Result.Ok<DummyValue, DummyError>(ResultTestData.Value)
+            Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
         ];
 
         yield return
@@ -107,13 +105,13 @@ file class FlattenTestCases : IEnumerable<object[]>
             Result.Ok<Result<DummyValue, DummyError>, DummyError>(
                 Result.Error<DummyValue, DummyError>(ResultTestData.Error)
             ),
-            Result.Error<DummyValue, DummyError>(ResultTestData.Error)
+            Result.Error<DummyValue, DummyError>(ResultTestData.Error),
         ];
 
         yield return
         [
             Result.Error<Result<DummyValue, DummyError>, DummyError>(ResultTestData.Error),
-            Result.Error<DummyValue, DummyError>(ResultTestData.Error)
+            Result.Error<DummyValue, DummyError>(ResultTestData.Error),
         ];
     }
 
@@ -132,7 +130,7 @@ file class BindAsyncTestCases : IEnumerable<object[]>
             () => Task.FromResult(Result.Ok<DummyValue, DummyError>(ResultTestData.Value)),
             (Func<DummyValue, Task<Result<DummyNewValue, DummyError>>>)
                 ResultTestMethods.AsyncTestBinder,
-            Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue)
+            Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue),
         ];
 
         yield return
@@ -140,7 +138,7 @@ file class BindAsyncTestCases : IEnumerable<object[]>
             () => Task.FromResult(Result.Error<DummyValue, DummyError>(ResultTestData.Error)),
             (Func<DummyValue, Task<Result<DummyNewValue, DummyError>>>)
                 ResultTestMethods.AsyncTestBinder,
-            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error)
+            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error),
         ];
     }
 
@@ -162,7 +160,7 @@ file class FlattenAsyncTestCases : IEnumerable<object[]>
                         Task.FromResult(Result.Ok<DummyValue, DummyError>(ResultTestData.Value))
                     )
                 ),
-            Result.Ok<DummyValue, DummyError>(ResultTestData.Value)
+            Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
         ];
 
         yield return
@@ -173,7 +171,7 @@ file class FlattenAsyncTestCases : IEnumerable<object[]>
                         Task.FromResult(Result.Error<DummyValue, DummyError>(ResultTestData.Error))
                     )
                 ),
-            Result.Error<DummyValue, DummyError>(ResultTestData.Error)
+            Result.Error<DummyValue, DummyError>(ResultTestData.Error),
         ];
 
         yield return
@@ -184,7 +182,7 @@ file class FlattenAsyncTestCases : IEnumerable<object[]>
                         ResultTestData.Error
                     )
                 ),
-            Result.Error<DummyValue, DummyError>(ResultTestData.Error)
+            Result.Error<DummyValue, DummyError>(ResultTestData.Error),
         ];
     }
 

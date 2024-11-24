@@ -11,10 +11,9 @@ internal static class TestContextFactory
     {
         return new CSharpAnalyzerTest<TAnalyzer, DefaultVerifier>
         {
-            ReferenceAssemblies = ReferenceAssemblies
-                .Net
-                .Net80
-                .WithAssemblies([typeof(Action).Assembly.FullName!]),
+            ReferenceAssemblies = ReferenceAssemblies.Net.Net80.WithAssemblies(
+                [typeof(Action).Assembly.FullName!]
+            ),
             TestState =
             {
                 Sources =
@@ -25,14 +24,16 @@ internal static class TestContextFactory
                     ),
                     (
                         "UnionAttribute.cs",
-                        SourceTextFactory.CreateSourceText("../../../../../UnionTypes/UnionAttribute.cs")
+                        SourceTextFactory.CreateSourceText(
+                            "../../../../../UnionTypes/UnionAttribute.cs"
+                        )
                     ),
                     (
                         "GlobalUsings",
                         SourceTextFactory.CreateSourceText("../../../TestSources/GlobalUsings.cs")
-                    )
-                }
-            }
+                    ),
+                },
+            },
         };
     }
 }

@@ -43,11 +43,11 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
 
         yield return
         [
-            CreateAnalyzer("../../../TestSources/AllCasesSwitch.cs", CompilerDiagnostics.Errors)
+            CreateAnalyzer("../../../TestSources/AllCasesSwitch.cs", CompilerDiagnostics.Errors),
         ];
         yield return
         [
-            CreateAnalyzer("../../../TestSources/DefaultCaseSwitch.cs", CompilerDiagnostics.Errors)
+            CreateAnalyzer("../../../TestSources/DefaultCaseSwitch.cs", CompilerDiagnostics.Errors),
         ];
         yield return
         [
@@ -59,11 +59,11 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
                 baseDiagnostic.WithLocation("MissingCaseSwitch.cs", 37, 9),
                 genericBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 50, 9),
                 nestedBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 62, 9)
-            )
+            ),
         ];
         yield return
         [
-            CreateAnalyzer("../../../TestSources/PatternMatchCases.cs", CompilerDiagnostics.Errors)
+            CreateAnalyzer("../../../TestSources/PatternMatchCases.cs", CompilerDiagnostics.Errors),
         ];
     }
 
@@ -82,10 +82,9 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
 
         context.CompilerDiagnostics = compilerDiagnostics;
         context.ExpectedDiagnostics.AddRange(expected);
-        context
-            .TestState
-            .Sources
-            .Add((source.Split('/').Last(), SourceTextFactory.CreateSourceText(source)));
+        context.TestState.Sources.Add(
+            (source.Split('/').Last(), SourceTextFactory.CreateSourceText(source))
+        );
         context.TestState.Sources.AddRange(SourceTexts);
 
         return context;

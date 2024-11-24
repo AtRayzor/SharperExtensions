@@ -31,16 +31,15 @@ public class ClosedUnionTypeDeclarationAnalyzer : DiagnosticAnalyzer
         typeof(Resources)
     );
 
-    internal static readonly DiagnosticDescriptor Rule =
-        new(
-            DiagnosticId,
-            Title,
-            MessageFormat,
-            Category,
-            DiagnosticSeverity.Error,
-            true,
-            Description
-        );
+    internal static readonly DiagnosticDescriptor Rule = new(
+        DiagnosticId,
+        Title,
+        MessageFormat,
+        Category,
+        DiagnosticSeverity.Error,
+        true,
+        Description
+    );
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
         ImmutableArray.Create(Rule);

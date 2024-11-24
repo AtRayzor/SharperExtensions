@@ -15,7 +15,7 @@ public static partial class Option
             option switch
             {
                 Some<T> some => binder(some.Value),
-                _ => new None<TNew>()
+                _ => new None<TNew>(),
             };
 
         [Pure]
@@ -26,7 +26,7 @@ public static partial class Option
             return wrappedOption switch
             {
                 Some<Option<T>> wrapped => wrapped.Value,
-                _ => new None<T>()
+                _ => new None<T>(),
             };
         }
 
@@ -42,7 +42,7 @@ public static partial class Option
             await optionTask switch
             {
                 Some<T> some => await binder(some.Value, cancellationToken),
-                _ => new None<TNew>()
+                _ => new None<TNew>(),
             };
 
         [Pure]
@@ -56,7 +56,7 @@ public static partial class Option
             await optionTask switch
             {
                 Some<T> some => await binder(some.Value),
-                _ => new None<TNew>()
+                _ => new None<TNew>(),
             };
     }
 }

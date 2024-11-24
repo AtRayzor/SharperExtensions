@@ -8,7 +8,7 @@ public class AllCasesSwitch
         {
             Animal animal => animal.Name,
             Number number => number,
-            Letter => "letter"
+            Letter => "letter",
         };
     }
 
@@ -19,7 +19,7 @@ public class AllCasesSwitch
         {
             Case1<T> case1 => case1.Value,
             Case2<T> case2 => case2.Values,
-            Case3<T> => default
+            Case3<T> => default,
         };
     }
 

@@ -22,7 +22,7 @@ public class MissingCaseSwitch
         return _testType switch
         {
             Animal animal => animal.Name,
-            Number number => number
+            Number number => number,
         };
     }
 
@@ -31,7 +31,7 @@ public class MissingCaseSwitch
         return _genericClosedTestType switch
         {
             Case1<string> case1 => case1.Value,
-            Case2<string> case2 => case2.Values
+            Case2<string> case2 => case2.Values,
         };
     }
 
@@ -65,6 +65,6 @@ public class MissingCaseSwitch
         _nestedClosedTestType switch
         {
             NestedClosedTestType.Case1 case1 => case1.Message,
-            NestedClosedTestType.Case2 case2 => case2.Message
+            NestedClosedTestType.Case2 case2 => case2.Message,
         };
 }

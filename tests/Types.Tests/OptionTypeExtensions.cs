@@ -5,8 +5,9 @@ using Xunit;
 namespace NetFunction.Types.Tests;
 
 public sealed record TestRecord(string Value)
-{ 
+{
     public static implicit operator string?(TestRecord? testRecord) => testRecord?.Value;
+
     public static implicit operator int(TestRecord? testRecord) => testRecord?.Value.Length ?? 0;
 }
 

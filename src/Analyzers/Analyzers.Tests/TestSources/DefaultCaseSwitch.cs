@@ -7,7 +7,7 @@ public class DefaultCaseSwitch
         return testType switch
         {
             Animal animal => animal.Name,
-            _ => string.Empty
+            _ => string.Empty,
         };
     }
 
@@ -17,7 +17,7 @@ public class DefaultCaseSwitch
         return testType switch
         {
             Case1<T> case1 => case1.Value,
-            _ => string.Empty
+            _ => string.Empty,
         };
     }
 

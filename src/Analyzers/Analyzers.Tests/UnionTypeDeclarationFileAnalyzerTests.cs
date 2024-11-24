@@ -38,9 +38,9 @@ public class UnionTypeDeclarationFileAnalyzerTests
                     (
                         "GlobalUsings",
                         SourceTextFactory.CreateSourceText("../../../TestSources/GlobalUsings.cs")
-                    )
-                }
-            }
+                    ),
+                },
+            },
         };
     }
 
@@ -49,14 +49,12 @@ public class UnionTypeDeclarationFileAnalyzerTests
     {
         var context = CreateContext();
         context.CompilerDiagnostics = CompilerDiagnostics.Errors;
-        context
-            .ExpectedDiagnostics
-            .Add(
-                new DiagnosticResult(UnionTypeDeclarationFileAnalyzer.Rule)
-                    .WithArguments(nameof(InvalidCase), nameof(InvalidClosedTestType))
-                    .WithLocation("InvalidCase.cs", 3, 1)
-                    .WithSeverity(DiagnosticSeverity.Error)
-            );
+        context.ExpectedDiagnostics.Add(
+            new DiagnosticResult(UnionTypeDeclarationFileAnalyzer.Rule)
+                .WithArguments(nameof(InvalidCase), nameof(InvalidClosedTestType))
+                .WithLocation("InvalidCase.cs", 3, 1)
+                .WithSeverity(DiagnosticSeverity.Error)
+        );
 
         await context.RunAsync();
     }

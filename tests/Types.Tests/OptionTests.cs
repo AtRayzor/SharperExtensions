@@ -28,7 +28,7 @@ public class OptionTests
     {
         Option.Unsafe.GetValueOrDefault(option).Should().Be(value);
     }
-    
+
     [Theory]
     [ClassData(typeof(GetValueTypeValueOrdDefaultTestCases))]
     public void GetValueOrDefaultTests_ValueType(Option<int> option, int value)
@@ -49,7 +49,7 @@ public class OptionTests
         Option.Unsafe.TryGetValue(OptionTestData.NoneValue, out var value).Should().BeFalse();
         value.Should().BeNull();
     }
-    
+
     [Fact]
     public void TryGetValue_CallWithSomeValueType_ReturnsTrueAndOutputsValue()
     {
@@ -120,4 +120,3 @@ file class GetValueTypeValueOrdDefaultTestCases : IEnumerable<object?[]>
         return GetEnumerator();
     }
 }
-

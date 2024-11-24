@@ -31,16 +31,15 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
         typeof(Resources)
     );
 
-    internal static readonly DiagnosticDescriptor Rule =
-        new(
-            DiagnosticId,
-            Title,
-            MessageFormat,
-            "UnionTypes",
-            DiagnosticSeverity.Error,
-            true,
-            Description
-        );
+    internal static readonly DiagnosticDescriptor Rule = new(
+        DiagnosticId,
+        Title,
+        MessageFormat,
+        "UnionTypes",
+        DiagnosticSeverity.Error,
+        true,
+        Description
+    );
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
         ImmutableArray.Create(Rule);
@@ -75,18 +74,17 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
         var childTypes = GetUnionCaseTypes(referenceOperationType!);
 
         var switchCaseTypes = switchCaseOperations
-            .Select(
-                op =>
-                    op switch
-                    {
-                        IRecursivePatternOperation {MatchedType: INamedTypeSymbol matchedType} 
-                            => matchedType,
-                        ITypePatternOperation { MatchedType: INamedTypeSymbol matchedType }
-                            => matchedType,
-                        IDeclarationPatternOperation { MatchedType: INamedTypeSymbol matchedType }
-                            => matchedType,
-                        _ => null
-                    }
+            .Select(op =>
+                op switch
+                {
+                    IRecursivePatternOperation { MatchedType: INamedTypeSymbol matchedType } =>
+                        matchedType,
+                    ITypePatternOperation { MatchedType: INamedTypeSymbol matchedType } =>
+                        matchedType,
+                    IDeclarationPatternOperation { MatchedType: INamedTypeSymbol matchedType } =>
+                        matchedType,
+                    _ => null,
+                }
             )
             .OfType<INamedTypeSymbol>()
             .Select(GetComparableNamedTypeSymbol)
@@ -173,27 +171,25 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
         ISwitchExpressionOperation switchExpressionOperation
     )
     {
-        return [
-            ..switchExpressionOperation
-                .Arms
-                .Select(arm => arm.ChildOperations)
-                .SelectMany(
-                    ops =>
-                        ops.Select(
-                                o =>
-                                    o switch
-                                    { 
-                                        IRecursivePatternOperation  rpo => rpo ,
-                                        ITypePatternOperation tpo => (IOperation)tpo,
-                                        IDeclarationPatternOperation dpo => dpo,
-                                        IDiscardPatternOperation def => def,
-                                        _ => null
-                                    }
-                            )
-                            .Where(o => o is not null)
+        return
+        [
+            .. switchExpressionOperation
+                .Arms.Select(arm => arm.ChildOperations)
+                .SelectMany(ops =>
+                    ops.Select(o =>
+                            o switch
+                            {
+                                IRecursivePatternOperation rpo => rpo,
+                                ITypePatternOperation tpo => (IOperation)tpo,
+                                IDeclarationPatternOperation dpo => dpo,
+                                IDiscardPatternOperation def => def,
+                                _ => null,
+                            }
+                        )
+                        .Where(o => o is not null)
                 )
                 .Except([null])
-                .Cast<IOperation>()
+                .Cast<IOperation>(),
         ];
     }
 
@@ -202,27 +198,20 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
     )
     {
         return switchOperation
-            .Cases
-            .Select(sc => sc.Clauses)
-            .SelectMany(
-                clauses =>
-                    clauses.Select(
-                        cco =>
-                            cco switch
-                            {
-                                IPatternCaseClauseOperation { Pattern: IRecursivePatternOperation rpo }
-                                    => (IOperation)rpo,
-                                IPatternCaseClauseOperation { Pattern: ITypePatternOperation tpo }
-                                    => tpo,
-                                IPatternCaseClauseOperation
-                                {
-                                    Pattern: IDeclarationPatternOperation dpo
-                                }
-                                    => dpo,
-                                IDefaultCaseClauseOperation dpo => dpo,
-                                _ => null
-                            }
-                    )
+            .Cases.Select(sc => sc.Clauses)
+            .SelectMany(clauses =>
+                clauses.Select(cco =>
+                    cco switch
+                    {
+                        IPatternCaseClauseOperation { Pattern: IRecursivePatternOperation rpo } =>
+                            (IOperation)rpo,
+                        IPatternCaseClauseOperation { Pattern: ITypePatternOperation tpo } => tpo,
+                        IPatternCaseClauseOperation { Pattern: IDeclarationPatternOperation dpo } =>
+                            dpo,
+                        IDefaultCaseClauseOperation dpo => dpo,
+                        _ => null,
+                    }
+                )
             )
             .Except([null])
             .Cast<IOperation>()
@@ -271,11 +260,10 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
     {
         return referenceTypeSymbol switch
         {
-            { TypeKind: TypeKind.Class }
-                => implementationTypeSymbol =>
-                    ReferenceTypeChecker(referenceTypeSymbol, implementationTypeSymbol),
-            { TypeKind: TypeKind.Struct }
-                => castTypeSymbol => ValueTypeChecker(referenceTypeSymbol, castTypeSymbol)
+            { TypeKind: TypeKind.Class } => implementationTypeSymbol =>
+                ReferenceTypeChecker(referenceTypeSymbol, implementationTypeSymbol),
+            { TypeKind: TypeKind.Struct } => castTypeSymbol =>
+                ValueTypeChecker(referenceTypeSymbol, castTypeSymbol),
         };
     }
 

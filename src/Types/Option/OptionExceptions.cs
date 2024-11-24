@@ -41,7 +41,7 @@ public static partial class Option
             return option switch
             {
                 Some<T> some => some.Value,
-                _ => throw activatedException
+                _ => throw activatedException,
             };
         }
     }

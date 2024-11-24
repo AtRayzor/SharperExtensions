@@ -54,7 +54,7 @@ public static partial class Result
             return result switch
             {
                 Ok<T, TError> ok => ok,
-                Error<T, TError> error => throw exceptionFactory(error)
+                Error<T, TError> error => throw exceptionFactory(error),
             };
         }
 
@@ -83,9 +83,10 @@ public static partial class Result
         {
             return ConstructErrorMessage(error) switch
             {
-                Some<string> message
-                    => ExceptionHelpers.TryToConstructException<TException>([message]),
-                _ => ExceptionHelpers.TryToConstructException<TException>()
+                Some<string> message => ExceptionHelpers.TryToConstructException<TException>(
+                    [message]
+                ),
+                _ => ExceptionHelpers.TryToConstructException<TException>(),
             };
         }
     }

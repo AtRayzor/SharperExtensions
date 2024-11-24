@@ -14,10 +14,7 @@ public class OptionAsyncTest
         var taskOption = Option.Some(ValueTask.FromResult(OptionTestData.Value));
         (await Option.Async.AwaitIfSome(taskOption))
             .Should()
-            .BeEquivalentTo(
-                OptionTestData.SomeValue,
-                config => config.RespectingRuntimeTypes()
-            );
+            .BeEquivalentTo(OptionTestData.SomeValue, config => config.RespectingRuntimeTypes());
     }
 
     [Fact]
@@ -26,10 +23,7 @@ public class OptionAsyncTest
         var taskOption = Option.Some(Task.FromResult(OptionTestData.Value));
         (await Option.Async.AwaitIfSome(taskOption))
             .Should()
-            .BeEquivalentTo(
-                OptionTestData.SomeValue,
-                config => config.RespectingRuntimeTypes()
-            );
+            .BeEquivalentTo(OptionTestData.SomeValue, config => config.RespectingRuntimeTypes());
     }
 
     [Fact]
@@ -41,8 +35,7 @@ public class OptionAsyncTest
             .Should()
             .Be(OptionTestData.Value);
     }
-    
-    
+
     [Fact]
     public async Task TestValueOrAsync_NoneValueTask()
     {
@@ -52,8 +45,7 @@ public class OptionAsyncTest
             .Should()
             .Be(fallbackValue);
     }
-    
-    
+
     [Fact]
     public async Task TestValueOrAsync_SomeTask()
     {
@@ -63,8 +55,7 @@ public class OptionAsyncTest
             .Should()
             .Be(OptionTestData.Value);
     }
-    
-    
+
     [Fact]
     public async Task TestValueOrAsync_NoneTask()
     {

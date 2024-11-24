@@ -13,8 +13,11 @@ public class UnionTypeSwitchExpressionSuppressor : DiagnosticSuppressor
     private const string SuppressorId = "NF0001S";
     internal const string SuppressedDiagnosticId = "CS8509";
 
-    private static readonly SuppressionDescriptor Rule =
-        new(SuppressorId, SuppressedDiagnosticId, "Discriminated union type");
+    private static readonly SuppressionDescriptor Rule = new(
+        SuppressorId,
+        SuppressedDiagnosticId,
+        "Discriminated union type"
+    );
 
     public override ImmutableArray<SuppressionDescriptor> SupportedSuppressions =>
         ImmutableArray.Create(Rule);

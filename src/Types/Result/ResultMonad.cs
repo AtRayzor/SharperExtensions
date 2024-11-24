@@ -19,7 +19,7 @@ public static partial class Result
             result switch
             {
                 Ok<T, TError> ok => binder(ok),
-                Error<T, TError> error => new Error<TNew, TError>(error)
+                Error<T, TError> error => new Error<TNew, TError>(error),
             };
 
         [Pure]
@@ -32,7 +32,7 @@ public static partial class Result
             wrappedResult switch
             {
                 Ok<Result<T, TError>, TError> result => result.Value,
-                Error<Result<T, TError>, TError> error => new Error<T, TError>(error)
+                Error<Result<T, TError>, TError> error => new Error<T, TError>(error),
             };
 
         [Pure]
@@ -48,7 +48,7 @@ public static partial class Result
             await resultTask switch
             {
                 Ok<T, TError> ok => await binder(ok, cancellationToken),
-                Error<T, TError> error => new Error<TNew, TError>(error)
+                Error<T, TError> error => new Error<TNew, TError>(error),
             };
 
         [Pure]
@@ -71,7 +71,7 @@ public static partial class Result
             await wrappedResultTask switch
             {
                 Ok<Task<Result<T, TError>>, TError> ok => await ok.Value,
-                Error<Task<Result<T, TError>>, TError> error => new Error<T, TError>(error)
+                Error<Task<Result<T, TError>>, TError> error => new Error<T, TError>(error),
             };
     }
 }

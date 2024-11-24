@@ -1,6 +1,6 @@
 namespace DotNetCoreFunctional.Option;
 
-public interface IOption<out T> 
+public interface IOption<out T>
     where T : notnull;
 
 public static class OptionInterfaceExtensions

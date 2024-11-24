@@ -21,7 +21,7 @@ public static partial class Result
             result switch
             {
                 Ok<T, TError> ok => new Ok<TNew, TError>(mapping(ok)),
-                Error<T, TError> error => new Error<TNew, TError>(error)
+                Error<T, TError> error => new Error<TNew, TError>(error),
             };
 
         [Pure]
@@ -36,7 +36,7 @@ public static partial class Result
             result switch
             {
                 Error<T, TError> error => new Error<T, TNewError>(mapping(error)),
-                Ok<T, TError> ok => new Ok<T, TNewError>(ok)
+                Ok<T, TError> ok => new Ok<T, TNewError>(ok),
             };
 
         [Pure]
@@ -52,7 +52,7 @@ public static partial class Result
             result switch
             {
                 Ok<T, TError> ok => matchOk(ok),
-                Error<T, TError> error => matchError(error)
+                Error<T, TError> error => matchError(error),
             };
 
         [Pure]

@@ -10,14 +10,12 @@ namespace DotNetCoreFunctional.UnionTypes.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class UnionTypeDeclarationFileAnalyzer : DiagnosticAnalyzer
 {
-
     internal static string DiagnosticId => Configuration.DiagnosticId;
     internal static DiagnosticDescriptor Rule => Configuration.Rule;
-    
+
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
         ImmutableArray.Create(Configuration.Rule);
-    
-    
+
     public override void Initialize(AnalysisContext context)
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
@@ -70,7 +68,6 @@ public class UnionTypeDeclarationFileAnalyzer : DiagnosticAnalyzer
 
 file static class Configuration
 {
-    
     public const string DiagnosticId = "NF0003";
     private const string Category = "Unkown";
 
@@ -92,14 +89,13 @@ file static class Configuration
         typeof(Resources)
     );
 
-    public static readonly DiagnosticDescriptor Rule =
-        new(
-            DiagnosticId,
-            Title,
-            MessageFormat,
-            Category,
-            DiagnosticSeverity.Error,
-            true,
-            Description
-        );
+    public static readonly DiagnosticDescriptor Rule = new(
+        DiagnosticId,
+        Title,
+        MessageFormat,
+        Category,
+        DiagnosticSeverity.Error,
+        true,
+        Description
+    );
 }
