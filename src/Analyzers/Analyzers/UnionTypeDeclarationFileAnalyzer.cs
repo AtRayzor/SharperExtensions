@@ -10,41 +10,14 @@ namespace DotNetCoreFunctional.UnionTypes.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class UnionTypeDeclarationFileAnalyzer : DiagnosticAnalyzer
 {
-    private const string DiagnosticId = "NF0003";
-    private const string Category = "Unkown";
 
-    private static readonly LocalizableString Title = new LocalizableResourceString(
-        nameof(Resources.NF0003Title),
-        Resources.ResourceManager,
-        typeof(Resources)
-    );
-
-    private static readonly LocalizableString Description = new LocalizableResourceString(
-        nameof(Resources.NF0003Description),
-        Resources.ResourceManager,
-        typeof(Resources)
-    );
-
-    private static readonly LocalizableString MessageFormat = new LocalizableResourceString(
-        nameof(Resources.NF0003MessageFormat),
-        Resources.ResourceManager,
-        typeof(Resources)
-    );
-
-    internal static readonly DiagnosticDescriptor Rule =
-        new(
-            DiagnosticId,
-            Title,
-            MessageFormat,
-            Category,
-            DiagnosticSeverity.Error,
-            true,
-            Description
-        );
-
+    internal static string DiagnosticId => Configuration.DiagnosticId;
+    internal static DiagnosticDescriptor Rule => Configuration.Rule;
+    
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-        ImmutableArray.Create(Rule);
-
+        ImmutableArray.Create(Configuration.Rule);
+    
+    
     public override void Initialize(AnalysisContext context)
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
@@ -74,7 +47,7 @@ public class UnionTypeDeclarationFileAnalyzer : DiagnosticAnalyzer
             return;
 
         var diagnostic = Diagnostic.Create(
-            Rule,
+            Configuration.Rule,
             typeDeclarationSyntax.GetLocation(),
             caseDeclarationSymbol.Name,
             caseDeclarationBaseSymbol.Name
@@ -93,4 +66,40 @@ public class UnionTypeDeclarationFileAnalyzer : DiagnosticAnalyzer
             && baseDeclaredSymbol.Locations[0] is { SourceTree.FilePath: { } baseFilePath }
             && caseFilePath.Equals(baseFilePath);
     }
+}
+
+file static class Configuration
+{
+    
+    public const string DiagnosticId = "NF0003";
+    private const string Category = "Unkown";
+
+    private static readonly LocalizableString Title = new LocalizableResourceString(
+        nameof(Resources.NF0003Title),
+        Resources.ResourceManager,
+        typeof(Resources)
+    );
+
+    private static readonly LocalizableString Description = new LocalizableResourceString(
+        nameof(Resources.NF0003Description),
+        Resources.ResourceManager,
+        typeof(Resources)
+    );
+
+    private static readonly LocalizableString MessageFormat = new LocalizableResourceString(
+        nameof(Resources.NF0003MessageFormat),
+        Resources.ResourceManager,
+        typeof(Resources)
+    );
+
+    public static readonly DiagnosticDescriptor Rule =
+        new(
+            DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Error,
+            true,
+            Description
+        );
 }
