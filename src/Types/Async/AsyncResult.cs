@@ -91,6 +91,58 @@ public static class AsyncResult
         where T : notnull => new(Async.New(result));
 
     /// <summary>
+    /// Creates an <see cref="AsyncResult{T, TError}"/> from a task producing a <see cref="Result{T, TError}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="result">The task producing the result.</param>
+    /// <returns>A new <see cref="AsyncResult{T, TError}"/> wrapping the given task result with no cancellation token.</returns>
+    public static AsyncResult<T, TError> Create<T, TError>(Task<Result<T, TError>> result)
+        where T : notnull
+        where TError : notnull => Create(result, CancellationToken.None);
+
+    /// <summary>
+    /// Creates an <see cref="AsyncResult{T, TError}"/> from a task producing a <see cref="Result{T, TError}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="result">The task producing the result.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>A new <see cref="AsyncResult{T, TError}"/> wrapping the given task result.</returns>
+    public static AsyncResult<T, TError> Create<T, TError>(
+        Task<Result<T, TError>> result,
+        CancellationToken cancellationToken
+    )
+        where T : notnull
+        where TError : notnull => new(new Async<Result<T, TError>>(result, cancellationToken));
+
+    /// <summary>
+    /// Creates an <see cref="AsyncResult{T, TError}"/> from a value task producing a <see cref="Result{T, TError}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="result">The value task producing the result.</param>
+    /// <returns>A new <see cref="AsyncResult{T, TError}"/> wrapping the given value task result.</returns>
+    public static AsyncResult<T, TError> Create<T, TError>(ValueTask<Result<T, TError>> result)
+        where T : notnull
+        where TError : notnull => Create(result, CancellationToken.None);
+
+    /// <summary>
+    /// Creates an <see cref="AsyncResult{T, TError}"/> from a value task producing a <see cref="Result{T, TError}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="result">The value task producing the result.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>A new <see cref="AsyncResult{T, TError}"/> wrapping the given value task result.</returns>
+    public static AsyncResult<T, TError> Create<T, TError>(
+        ValueTask<Result<T, TError>> result,
+        CancellationToken cancellationToken
+    )
+        where T : notnull
+        where TError : notnull => new(new Async<Result<T, TError>>(result, cancellationToken));
+
+    /// <summary>
     /// Lifts an asynchronous operation producing a success value into an <see cref="AsyncResult{T, TError}"/>.
     /// </summary>
     /// <typeparam name="T">The type of the success value.</typeparam>

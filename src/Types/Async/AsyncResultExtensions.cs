@@ -8,6 +8,62 @@ namespace DotNetCoreFunctional.Async;
 public static class AsyncResultExtensions
 {
     /// <summary>
+    /// Converts a <see cref="Task{Result{T, TError}}"/> to an <see cref="AsyncResult{T, TError}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="resultTask">The task containing the result to convert.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the converted result.</returns>
+    public static AsyncResult<T, TError> ToAsyncResult<T, TError>(
+        this Task<Result<T, TError>> resultTask
+    )
+        where T : notnull
+        where TError : notnull => AsyncResult.Create(resultTask);
+
+    /// <summary>
+    /// Converts a <see cref="Task{Result{T, TError}}"/> to an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="resultTask">The task containing the result to convert.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the converted result.</returns>
+    public static AsyncResult<T, TError> ToAsyncResult<T, TError>(
+        this Task<Result<T, TError>> resultTask,
+        CancellationToken cancellationToken
+    )
+        where T : notnull
+        where TError : notnull => AsyncResult.Create(resultTask, cancellationToken);
+
+    /// <summary>
+    /// Converts a <see cref="ValueTask{Result{T, TError}}"/> to an <see cref="AsyncResult{T, TError}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="resultTask">The value task containing the result to convert.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the converted result.</returns>
+    public static AsyncResult<T, TError> ToAsyncResult<T, TError>(
+        this ValueTask<Result<T, TError>> resultTask
+    )
+        where T : notnull
+        where TError : notnull => AsyncResult.Create(resultTask);
+
+    /// <summary>
+    /// Converts a <see cref="ValueTask{Result{T, TError}}"/> to an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="resultTask">The value task containing the result to convert.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the converted result.</returns>
+    public static AsyncResult<T, TError> ToAsyncResult<T, TError>(
+        this ValueTask<Result<T, TError>> resultTask,
+        CancellationToken cancellationToken
+    )
+        where T : notnull
+        where TError : notnull => AsyncResult.Create(resultTask, cancellationToken);
+
+    /// <summary>
     /// Creates an <see cref="AsyncResult{T, TError}"/> from a synchronous <see cref="Result{T, TError}"/>.
     /// </summary>
     /// <typeparam name="T">The type of the success value.</typeparam>
