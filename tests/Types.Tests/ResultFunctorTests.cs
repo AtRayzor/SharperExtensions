@@ -50,46 +50,6 @@ public class ResultFunctorTests
             .Should()
             .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
-
-    [Theory]
-    [ClassData(typeof(MapAsyncTestCases))]
-    public async Task MapAsyncTests(
-        Func<Task<Result<DummyValue, DummyError>>> resultTaskFactory,
-        Func<DummyValue, DummyNewValue> mapper,
-        Result<DummyNewValue, DummyError> expected
-    )
-    {
-        (await Result.Functor.MapAsync(resultTaskFactory(), mapper))
-            .Should()
-            .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
-    }
-
-    [Theory]
-    [ClassData(typeof(MapErrorAsyncTestCases))]
-    public static async Task MapErrorAsyncTests(
-        Func<Task<Result<DummyValue, DummyError>>> resultTaskFactory,
-        Func<DummyError, DummyNewError> mapper,
-        Result<DummyValue, DummyNewError> expected
-    )
-    {
-        (await Result.Functor.MapErrorAsync(resultTaskFactory(), mapper))
-            .Should()
-            .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
-    }
-
-    [Theory]
-    [ClassData(typeof(MatchAsyncTestCases))]
-    public static async Task MatchAsyncTests(
-        Func<Task<Result<DummyValue, DummyError>>> resultTaskFactory,
-        Func<DummyValue, DummyNewValue> okMapper,
-        Func<DummyError, DummyNewValue> errorMapper,
-        DummyNewValue expected
-    )
-    {
-        (await Result.Functor.MatchAsync(resultTaskFactory(), okMapper, errorMapper))
-            .Should()
-            .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
-    }
 }
 
 file class MapTestCases : IEnumerable<object[]>

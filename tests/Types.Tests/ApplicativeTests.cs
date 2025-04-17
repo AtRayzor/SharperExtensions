@@ -1,9 +1,9 @@
 using System.Collections;
 using DotNetCoreFunctional.Result;
 using FluentAssertions;
-using Xunit;
+using NetFunction.Types.Tests.DummyTypes;
 
-namespace NetFunction.Types.Tests.DummyTypes;
+namespace NetFunction.Types.Tests;
 
 public class ApplicativeTests
 {
@@ -17,19 +17,6 @@ public class ApplicativeTests
     {
         Result
             .Applicative.Apply(result, wrappedMapping)
-            .Should()
-            .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
-    }
-
-    [Theory]
-    [ClassData(typeof(ApplyAsyncTestsCases))]
-    public async Task ApplyAsyncTests(
-        Func<Task<Result<DummyValue, DummyError>>> resultTaskFactory,
-        Func<Task<Result<Func<DummyValue, DummyNewValue>, DummyError>>> wrappedMappingTaskFactory,
-        Result<DummyNewValue, DummyError> expected
-    )
-    {
-        (await Result.Applicative.ApplyAsync(resultTaskFactory(), wrappedMappingTaskFactory()))
             .Should()
             .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }

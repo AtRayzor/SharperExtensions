@@ -1,6 +1,7 @@
-using System.Collections;
+using System;
 using DotNetCoreFunctional.Result;
 using FluentAssertions;
+using NetFunction.Types.Tests;
 using NetFunction.Types.Tests.DummyTypes;
 using Xunit;
 
@@ -8,184 +9,146 @@ namespace NetFunction.Types.Tests;
 
 public class ResultTests
 {
-    [Theory]
-    [ClassData(typeof(IsOkTestCases))]
-    public void TestIsOk(Result<DummyValue, DummyError> result, bool expected)
+    [Fact]
+    public void Ok_CreatesOkResult()
     {
-        Result.IsOk(result).Should().Be(expected);
-    }
+        var ok = Result.Ok<DummyValue, DummyError>(ResultTestData.Value);
 
-    [Theory]
-    [ClassData(typeof(IsErrorTestCases))]
-    public void TestIsError(Result<DummyValue, DummyError> result, bool expected)
-    {
-        Result.IsError(result).Should().Be(expected);
-    }
-
-    [Theory]
-    [ClassData(typeof(TryGetValueTestCases))]
-    public void TestTryGetValue(
-        Result<DummyValue, DummyError> result,
-        bool expected,
-        DummyValue? expectedValue
-    )
-    {
-        Result.Unsafe.TryGetValue(result, out var valueOut).Should().Be(expected);
-        valueOut.Should().Be(expectedValue);
-    }
-
-    [Theory]
-    [ClassData(typeof(TryGetErrorTestCases))]
-    public void TestTryGetError(
-        Result<DummyValue, DummyError> result,
-        bool expected,
-        DummyError? expectedError
-    )
-    {
-        Result.Unsafe.TryGetError(result, out var errorOut).Should().Be(expected);
-        errorOut.Should().Be(expectedError);
+        ok.Should().BeOfType<Ok<DummyValue, DummyError>>();
+        ok.As<Ok<DummyValue, DummyError>>().Value.Should().Be(ResultTestData.Value);
     }
 
     [Fact]
-    public void DoIfOk_OkResult()
+    public void Error_CreatesErrorResult()
     {
-        string? testString = default;
+        var error = Result.Error<DummyValue, DummyError>(ResultTestData.Error);
 
-        Result.Unsafe.DoIfOk(
-            Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
-            value =>
-            {
-                testString = value.Name;
-            }
-        );
-
-        testString.Should().Be(ResultTestData.Value.Name);
+        error.Should().BeOfType<Error<DummyValue, DummyError>>();
+        error.As<Error<DummyValue, DummyError>>().Err.Should().Be(ResultTestData.Error);
     }
 
     [Fact]
-    public void DoIfOk_ErrorResult()
+    public void IsOk_ReturnsTrueForOk()
     {
-        string? testString = default;
+        var ok = Result.Ok<DummyValue, DummyError>(ResultTestData.Value);
 
-        Result.Unsafe.DoIfOk(
-            Result.Error<DummyValue, DummyError>(ResultTestData.Error),
-            value =>
-            {
-                testString = value.Name;
-            }
-        );
-
-        testString.Should().BeNull();
+        Result.IsOk(ok).Should().BeTrue();
+        Result.IsError(ok).Should().BeFalse();
     }
 
     [Fact]
-    public void DoIfError_ErrorResult()
+    public void IsError_ReturnsTrueForError()
     {
-        string? testString = default;
+        var error = Result.Error<DummyValue, DummyError>(ResultTestData.Error);
 
-        Result.Unsafe.DoIfError(
-            Result.Error<DummyValue, DummyError>(ResultTestData.Error),
-            error =>
-            {
-                testString = error.Message;
-            }
-        );
-
-        testString.Should().Be(ResultTestData.Error.Message);
+        Result.IsError(error).Should().BeTrue();
+        Result.IsOk(error).Should().BeFalse();
     }
 
     [Fact]
-    public void DoIfError_OkResult()
+    public void Unsafe_GetValueOrDefault_ReturnsValueOrDefault()
     {
-        string? testString = default;
+        var ok = Result.Ok<DummyValue, DummyError>(ResultTestData.Value);
+        var error = Result.Error<DummyValue, DummyError>(ResultTestData.Error);
 
-        Result.Unsafe.DoIfError(
-            Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
-            error =>
-            {
-                testString = error.Message;
-            }
-        );
+        Result.Unsafe.GetValueOrDefault(ok).Should().Be(ResultTestData.Value);
+        Result.Unsafe.GetValueOrDefault(error).Should().BeNull();
 
-        testString.Should().BeNull();
-    }
-}
-
-file class IsOkTestCases : IEnumerable<object[]>
-{
-    public IEnumerator<object[]> GetEnumerator()
-    {
-        yield return [Result.Ok<DummyValue, DummyError>(ResultTestData.Value), true];
-        yield return [Result.Error<DummyValue, DummyError>(ResultTestData.Error), false];
+        Result.Unsafe.GetValueOrDefault(ok, ResultTestData.DefaultValue).Should().Be(ResultTestData.Value);
+        Result.Unsafe.GetValueOrDefault(error, ResultTestData.DefaultValue).Should().Be(ResultTestData.DefaultValue);
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
+    [Fact]
+    public void Unsafe_GetErrorOrDefault_ReturnsErrorOrDefault()
     {
-        return GetEnumerator();
-    }
-}
+        var ok = Result.Ok<DummyValue, DummyError>(ResultTestData.Value);
+        var error = Result.Error<DummyValue, DummyError>(ResultTestData.Error);
 
-file class IsErrorTestCases : IEnumerable<object[]>
-{
-    public IEnumerator<object[]> GetEnumerator()
-    {
-        yield return [Result.Error<DummyValue, DummyError>(ResultTestData.Error), true];
-        yield return [Result.Ok<DummyValue, DummyError>(ResultTestData.Value), false];
-    }
+        Result.Unsafe.GetErrorOrDefault(error).Should().Be(ResultTestData.Error);
+        Result.Unsafe.GetErrorOrDefault(ok).Should().BeNull();
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-}
-
-file class TryGetValueTestCases : IEnumerable<object?[]>
-{
-    public IEnumerator<object?[]> GetEnumerator()
-    {
-        yield return
-        [
-            Result.Ok<DummyValue, DummyError>(ResultTestData.Value),
-            true,
-            ResultTestData.Value,
-        ];
-        yield return [Result.Error<DummyValue, DummyError>(ResultTestData.Error), false, null];
+        Result.Unsafe.GetErrorOrDefault(error, ResultTestData.DefaultError).Should().Be(ResultTestData.Error);
+        Result.Unsafe.GetErrorOrDefault(ok, ResultTestData.DefaultError).Should().Be(ResultTestData.DefaultError);
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
+    [Fact]
+    public void Unsafe_TryGetValue_ReturnsTrueAndValueForOk()
     {
-        return GetEnumerator();
-    }
-}
+        var ok = Result.Ok<DummyValue, DummyError>(ResultTestData.Value);
+        var error = Result.Error<DummyValue, DummyError>(ResultTestData.Error);
 
-file class TryGetErrorTestCases : IEnumerable<object?[]>
-{
-    public IEnumerator<object?[]> GetEnumerator()
-    {
-        yield return
-        [
-            Result.Error<DummyValue, DummyError>(ResultTestData.Error),
-            true,
-            ResultTestData.Error,
-        ];
-        yield return [Result.Ok<DummyValue, DummyError>(ResultTestData.Value), false, null];
+        var resultOk = Result.Unsafe.TryGetValue(ok, out var value);
+        resultOk.Should().BeTrue();
+        value.Should().Be(ResultTestData.Value);
+
+        var resultError = Result.Unsafe.TryGetValue(error, out var valueError);
+        resultError.Should().BeFalse();
+        valueError.Should().BeNull();
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
+    [Fact]
+    public void Unsafe_TryGetError_ReturnsTrueAndErrorForError()
     {
-        return GetEnumerator();
-    }
-}
+        var ok = Result.Ok<DummyValue, DummyError>(ResultTestData.Value);
+        var error = Result.Error<DummyValue, DummyError>(ResultTestData.Error);
 
-file class DoIfOkTestCases : IEnumerable<object[]>
-{
-    public IEnumerator<object[]> GetEnumerator()
-    {
-        yield return [Result.Ok<DummyValue, DummyError>(ResultTestData.Value)];
+        var resultError = Result.Unsafe.TryGetError(error, out var err);
+        resultError.Should().BeTrue();
+        err.Should().Be(ResultTestData.Error);
+
+        var resultOk = Result.Unsafe.TryGetError(ok, out var errOk);
+        resultOk.Should().BeFalse();
+        errOk.Should().BeNull();
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
+    [Fact]
+    public void Unsafe_DoIfOk_ExecutesActionOnlyForOk()
     {
-        return GetEnumerator();
+        var ok = Result.Ok<DummyValue, DummyError>(ResultTestData.Value);
+        var error = Result.Error<DummyValue, DummyError>(ResultTestData.Error);
+
+        DummyValue? capturedValue = null;
+        Result.Unsafe.DoIfOk(ok, v => capturedValue = v);
+        capturedValue.Should().Be(ResultTestData.Value);
+
+        capturedValue = null;
+        Result.Unsafe.DoIfOk(error, v => capturedValue = v);
+        capturedValue.Should().BeNull();
+    }
+
+    [Fact]
+    public void Unsafe_DoIfError_ExecutesActionOnlyForError()
+    {
+        var ok = Result.Ok<DummyValue, DummyError>(ResultTestData.Value);
+        var error = Result.Error<DummyValue, DummyError>(ResultTestData.Error);
+
+        DummyError? capturedError = null;
+        Result.Unsafe.DoIfError(error, e => capturedError = e);
+        capturedError.Should().Be(ResultTestData.Error);
+
+        capturedError = null;
+        Result.Unsafe.DoIfError(ok, e => capturedError = e);
+        capturedError.Should().BeNull();
+    }
+
+    [Fact]
+    public void Unsafe_Do_ExecutesCorrectActionBasedOnResult()
+    {
+        var ok = Result.Ok<DummyValue, DummyError>(ResultTestData.Value);
+        var error = Result.Error<DummyValue, DummyError>(ResultTestData.Error);
+
+        DummyValue? okValue = null;
+        DummyError? errorValue = null;
+
+        Result.Unsafe.Do(ok, v => okValue = v, e => errorValue = e);
+        okValue.Should().Be(ResultTestData.Value);
+        errorValue.Should().BeNull();
+
+        okValue = null;
+        errorValue = null;
+
+        Result.Unsafe.Do(error, v => okValue = v, e => errorValue = e);
+        okValue.Should().BeNull();
+        errorValue.Should().Be(ResultTestData.Error);
     }
 }

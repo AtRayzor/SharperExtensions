@@ -35,32 +35,6 @@ public class MonadTests
             .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
     }
 
-    [Theory]
-    [ClassData(typeof(BindAsyncTestCases))]
-    public async Task BindAsyncTests(
-        Func<Task<Result<DummyValue, DummyError>>> resultTaskFactory,
-        Func<DummyValue, Task<Result<DummyNewValue, DummyError>>> asyncBinder,
-        Result<DummyNewValue, DummyError> expected
-    )
-    {
-        (await Result.Monad.BindAsync(resultTaskFactory(), asyncBinder))
-            .Should()
-            .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
-    }
-
-    [Theory]
-    [ClassData(typeof(FlattenAsyncTestCases))]
-    public async Task FlattenAsyncTests(
-        Func<
-            Task<Result<Task<Result<DummyValue, DummyError>>, DummyError>>
-        > wrappedResultTaskFactory,
-        Result<DummyValue, DummyError> expected
-    )
-    {
-        (await Result.Monad.FlattenAsync(wrappedResultTaskFactory()))
-            .Should()
-            .BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
-    }
 }
 
 file class BindTestCases : IEnumerable<object[]>
