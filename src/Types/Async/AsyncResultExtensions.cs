@@ -8,7 +8,75 @@ namespace DotNetCoreFunctional.Async;
 public static class AsyncResultExtensions
 {
     /// <summary>
-    /// Converts a <see cref="Task{Result{T, TError}}"/> to an <see cref="AsyncResult{T, TError}"/>.
+    /// Converts a nullable <see cref="Task{T}"/> to an <see cref="AsyncResult{T, TError}"/>, specifying an error to use if the task returns null.
+    /// </summary>
+    /// <typeparam name="T">The type of the task's result, which must be non-nullable.</typeparam>
+    /// <typeparam name="TError">The type of error to return if the task result is null, which must be non-nullable.</typeparam>
+    /// <param name="task">The nullable task to convert.</param>
+    /// <param name="nullError">The error to use if the task result is null.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the converted task result.</returns>
+    public static AsyncResult<T, TError> ToAsyncResult<T, TError>(
+        this Task<T?> task,
+        TError nullError,
+        CancellationToken cancellationToken
+    )
+        where T : notnull
+        where TError : notnull => AsyncResult.LiftFromTask(task, nullError, cancellationToken);
+
+    /// <summary>
+    /// Converts a nullable <see cref="Task{T}"/> to an <see cref="AsyncResult{T, TError}"/>, specifying an error to use if the task returns null.
+    /// </summary>
+    /// <typeparam name="T">The type of the task's result, which must be non-nullable.</typeparam>
+    /// <typeparam name="TError">The type of error to return if the task result is null, which must be non-nullable.</typeparam>
+    /// <param name="task">The nullable task to convert.</param>
+    /// <param name="nullError">The error to use if the task result is null.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the converted task result.</returns>
+    public static AsyncResult<T, TError> ToAsyncResult<T, TError>(
+        this Task<T?> task,
+        TError nullError
+    )
+        where T : notnull
+        where TError : notnull => AsyncResult.LiftFromTask(task, nullError, CancellationToken.None);
+
+    /// <summary>
+    /// Converts a nullable <see cref="ValueTask{T}"/> to an <see cref="AsyncResult{T, TError}"/>, specifying an error to use if the value task returns null.
+    /// </summary>
+    /// <typeparam name="T">The type of the value task's result, which must be non-nullable.</typeparam>
+    /// <typeparam name="TError">The type of error to return if the value task result is null, which must be non-nullable.</typeparam>
+    /// <param name="task">The nullable value task to convert.</param>
+    /// <param name="nullError">The error to use if the value task result is null.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the converted value task result.</returns>
+    public static AsyncResult<T, TError> ToAsyncResult<T, TError>(
+        this ValueTask<T?> task,
+        TError nullError,
+        CancellationToken cancellationToken
+    )
+        where T : notnull
+        where TError : notnull => AsyncResult.LiftFromValueTask(task, nullError, cancellationToken);
+
+    /// <summary>
+    /// Converts a nullable <see cref="ValueTask{T}"/> to an <see cref="AsyncResult{T, TError}"/>, specifying an error to use if the value task returns null.
+    /// </summary>
+    /// <typeparam name="T">The type of the value task's result, which must be non-nullable.</typeparam>
+    /// <typeparam name="TError">The type of error to return if the value task result is null, which must be non-nullable.</typeparam>
+    /// <param name="task">The nullable value task to convert.</param>
+    /// <param name="nullError">The error to use if the value task result is null.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the converted value task result.</returns>
+    public static AsyncResult<T, TError> ToAsyncResult<T, TError>(
+        this ValueTask<T?> task,
+        TError nullError
+    )
+        where T : notnull
+        where TError : notnull =>
+        AsyncResult.LiftFromValueTask(task, nullError, CancellationToken.None);
+
+    /// <summary>
+    /// Converts a <see>
+    ///     <cref>Task{Result{T, TError}}</cref>
+    /// </see>
+    /// to an <see cref="AsyncResult{T, TError}"/>.
     /// </summary>
     /// <typeparam name="T">The type of the success value.</typeparam>
     /// <typeparam name="TError">The type of the error value.</typeparam>
@@ -21,7 +89,10 @@ public static class AsyncResultExtensions
         where TError : notnull => AsyncResult.Create(resultTask);
 
     /// <summary>
-    /// Converts a <see cref="Task{Result{T, TError}}"/> to an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
+    /// Converts a <see>
+    ///     <cref>Task{Result{T, TError}}</cref>
+    /// </see>
+    /// to an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
     /// </summary>
     /// <typeparam name="T">The type of the success value.</typeparam>
     /// <typeparam name="TError">The type of the error value.</typeparam>
@@ -36,7 +107,10 @@ public static class AsyncResultExtensions
         where TError : notnull => AsyncResult.Create(resultTask, cancellationToken);
 
     /// <summary>
-    /// Converts a <see cref="ValueTask{Result{T, TError}}"/> to an <see cref="AsyncResult{T, TError}"/>.
+    /// Converts a <see>
+    ///     <cref>ValueTask{Result{T, TError}}</cref>
+    /// </see>
+    /// to an <see cref="AsyncResult{T, TError}"/>.
     /// </summary>
     /// <typeparam name="T">The type of the success value.</typeparam>
     /// <typeparam name="TError">The type of the error value.</typeparam>
@@ -49,7 +123,10 @@ public static class AsyncResultExtensions
         where TError : notnull => AsyncResult.Create(resultTask);
 
     /// <summary>
-    /// Converts a <see cref="ValueTask{Result{T, TError}}"/> to an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
+    /// Converts a <see>
+    ///     <cref>ValueTask{Result{T, TError}}</cref>
+    /// </see>
+    /// to an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
     /// </summary>
     /// <typeparam name="T">The type of the success value.</typeparam>
     /// <typeparam name="TError">The type of the error value.</typeparam>

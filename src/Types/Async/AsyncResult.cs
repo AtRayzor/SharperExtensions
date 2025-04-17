@@ -80,6 +80,19 @@ public static class AsyncResult
         where TError : notnull => new(Async.New(Result<T, TError>.Error(error)));
 
     /// <summary>
+    /// Creates an <see cref="AsyncResult{T, TError}"/> from a nullable value, returning an error if the value is null.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="value">The nullable value to wrap.</param>
+    /// <param name="nullError">The error to use if the value is null.</param>
+    /// <returns>A new <see cref="AsyncResult{T, TError}"/> representing either success or failure.</returns>
+    public static AsyncResult<T, TError> Create<T, TError>(T? value, TError nullError)
+        where T : notnull
+        where TError : notnull =>
+        value is not null ? CreateOk<T, TError>(value) : CreateError<T, TError>(nullError);
+
+    /// <summary>
     /// Creates an <see cref="AsyncResult{T, TError}"/> from an existing <see cref="Result{T, TError}"/>.
     /// </summary>
     /// <typeparam name="T">The type of the success value.</typeparam>
@@ -181,6 +194,58 @@ public static class AsyncResult
         new(async.Bind((value, ct) => Async.New(Result<T, TError>.Ok(value), ct)));
 
     /// <summary>
+    /// Lifts an asynchronous task producing a success value into an <see cref="AsyncResult{T, TError}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="task">The task producing the success value.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the lifted task.</returns>
+    public static AsyncResult<T, TError> LiftToOk<T, TError>(Task<T> task)
+        where T : notnull
+        where TError : notnull => LiftToOk<T, TError>(new Async<T>(task));
+
+    /// <summary>
+    /// Lifts an asynchronous task producing a success value into an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="task">The task producing the success value.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the lifted task.</returns>
+    public static AsyncResult<T, TError> LiftToOk<T, TError>(
+        Task<T> task,
+        CancellationToken cancellationToken
+    )
+        where T : notnull
+        where TError : notnull => LiftToOk<T, TError>(new Async<T>(task, cancellationToken));
+
+    /// <summary>
+    /// Lifts an asynchronous value task producing a success value into an <see cref="AsyncResult{T, TError}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="task">The value task producing the success value.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the lifted value task.</returns>
+    public static AsyncResult<T, TError> LiftToOk<T, TError>(ValueTask<T> task)
+        where T : notnull
+        where TError : notnull => LiftToOk<T, TError>(new Async<T>(task));
+
+    /// <summary>
+    /// Lifts an asynchronous value task producing a success value into an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="task">The value task producing the success value.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the lifted value task.</returns>
+    public static AsyncResult<T, TError> LiftToOk<T, TError>(
+        ValueTask<T> task,
+        CancellationToken cancellationToken
+    )
+        where T : notnull
+        where TError : notnull => LiftToOk<T, TError>(new Async<T>(task, cancellationToken));
+
+    /// <summary>
     /// Lifts an asynchronous operation producing an error value into an <see cref="AsyncResult{T, TError}"/>.
     /// </summary>
     /// <typeparam name="T">The type of the success value.</typeparam>
@@ -191,6 +256,118 @@ public static class AsyncResult
         where T : notnull
         where TError : notnull =>
         new(async.Bind((error, ct) => Async.New(Result<T, TError>.Error(error), ct)));
+
+    /// <summary>
+    /// Lifts an asynchronous task producing an error value into an <see cref="AsyncResult{T, TError}"/> without a specific cancellation token.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="task">The task producing the error value.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the lifted task with no cancellation token.</returns>
+    public static AsyncResult<T, TError> LiftToError<T, TError>(Task<TError> task)
+        where T : notnull
+        where TError : notnull => LiftToError<T, TError>(task, CancellationToken.None);
+
+    /// <summary>
+    /// Lifts an asynchronous task producing an error value into an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="task">The task producing the error value.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the lifted task.</returns>
+    public static AsyncResult<T, TError> LiftToError<T, TError>(
+        Task<TError> task,
+        CancellationToken cancellationToken
+    )
+        where T : notnull
+        where TError : notnull =>
+        LiftToError<T, TError>(new Async<TError>(task, cancellationToken));
+
+    /// <summary>
+    /// Lifts an asynchronous value task producing an error value into an <see cref="AsyncResult{T, TError}"/> without a specific cancellation token.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="task">The value task producing the error value.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the lifted value task with no cancellation token.</returns>
+    public static AsyncResult<T, TError> LiftToError<T, TError>(ValueTask<TError> task)
+        where T : notnull
+        where TError : notnull => LiftToError<T, TError>(task, CancellationToken.None);
+
+    /// <summary>
+    /// Lifts an asynchronous value task producing an error value into an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="task">The value task producing the error value.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the lifted value task.</returns>
+    public static AsyncResult<T, TError> LiftToError<T, TError>(
+        ValueTask<TError> task,
+        CancellationToken cancellationToken
+    )
+        where T : notnull
+        where TError : notnull =>
+        LiftToError<T, TError>(new Async<TError>(task, cancellationToken));
+
+    /// <summary>
+    /// Lifts an asynchronous task producing a nullable value into an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="task">The task producing the nullable value.</param>
+    /// <param name="nullError">The error to return if the value is null.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the lifted task.</returns>
+    public static AsyncResult<T, TError> LiftFromTask<T, TError>(
+        Task<T?> task,
+        TError nullError,
+        CancellationToken cancellationToken
+    )
+        where T : notnull
+        where TError : notnull
+    {
+        return Create(CreateResultAsync(task, nullError, cancellationToken));
+
+        static async Task<Result<T, TError>> CreateResultAsync(
+            Task<T?> task,
+            TError nullError,
+            CancellationToken cancellationToken
+        ) =>
+            await task.ConfigureAwait(ConfigureAwaitOptions.None) is { } value
+                ? Result<T, TError>.Ok(value)
+                : Result<T, TError>.Error(nullError);
+    }
+
+    /// <summary>
+    /// Lifts an asynchronous value task producing a nullable value into an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="task">The value task producing the nullable value.</param>
+    /// <param name="nullError">The error to return if the value is null.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the lifted value task.</returns>
+    public static AsyncResult<T, TError> LiftFromValueTask<T, TError>(
+        ValueTask<T?> task,
+        TError nullError,
+        CancellationToken cancellationToken
+    )
+        where T : notnull
+        where TError : notnull
+    {
+        return Create(CreateResultAsync(task, nullError, cancellationToken));
+
+        static async Task<Result<T, TError>> CreateResultAsync(
+            ValueTask<T?> task,
+            TError nullError,
+            CancellationToken cancellationToken
+        ) =>
+            await task.ConfigureAwait(false) is { } value
+                ? Result<T, TError>.Ok(value)
+                : Result<T, TError>.Error(nullError);
+    }
 
     /// <summary>
     /// Maps the success value of an <see cref="AsyncResult{T, TError}"/> to a new value.

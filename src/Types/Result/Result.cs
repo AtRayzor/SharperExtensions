@@ -96,6 +96,19 @@ public static partial class Result
         where TError : notnull => new Ok<T, TError>(value);
 
     /// <summary>
+    /// Creates a <see cref="Result{T, TError}"/> from a potentially null value, returning an error if the value is null.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <param name="value">The value to convert to a result.</param>
+    /// <param name="nullError">The error to use if the value is null.</param>
+    /// <returns>A successful result containing the value if not null, or an error result.</returns>
+    public static Result<T, TError> Create<T, TError>(T? value, TError nullError)
+        where T : notnull
+        where TError : notnull =>
+        value is not null ? Ok<T, TError>(value) : Error<T, TError>(nullError);
+
+    /// <summary>
     /// Creates a failed result with the given error.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
@@ -164,7 +177,6 @@ public static partial class Result
             return result is not Error<T, TError> { Err: var error } ? default : error;
         }
 
-
         /// <summary>
         /// Retrieves the value from a <see cref="Result{T, TError}"/> if it is successful, otherwise returns a specified default value.
         /// </summary>
@@ -175,9 +187,9 @@ public static partial class Result
         /// <returns>The value of the result if successful, or the specified <paramref name="defaultValue"/> if the result is an error.</returns>
         public static T GetValueOrDefault<T, TError>(Result<T, TError> result, T defaultValue)
             where T : notnull
-            where TError : notnull => result is Ok<T, TError> { Value: var value } ? value : defaultValue;
+            where TError : notnull =>
+            result is Ok<T, TError> { Value: var value } ? value : defaultValue;
 
-        
         /// <summary>
         /// Retrieves the error from a <see cref="Result{T, TError}"/> if it is an error, otherwise returns a specified default error.
         /// </summary>
@@ -186,10 +198,14 @@ public static partial class Result
         /// <param name="result">The result to extract the error from.</param>
         /// <param name="defaultError">The default error to return if the result is not an error.</param>
         /// <returns>The error of the result if it is an error, or the specified <paramref name="defaultError"/> if the result is successful.</returns>
-        public static TError GetErrorOrDefault<T, TError>(Result<T, TError> result, TError defaultError)
+        public static TError GetErrorOrDefault<T, TError>(
+            Result<T, TError> result,
+            TError defaultError
+        )
             where T : notnull
-            where TError : notnull => result is Error<T, TError> { Err: var error} ? error: defaultError;
-        
+            where TError : notnull =>
+            result is Error<T, TError> { Err: var error } ? error : defaultError;
+
         /// <summary>
         /// Tries to get the value from a <see cref="Result{T, TError}"/> instance.
         /// </summary>
@@ -304,7 +320,5 @@ public static partial class Result
                 }
             }
         }
-
-
     }
 }

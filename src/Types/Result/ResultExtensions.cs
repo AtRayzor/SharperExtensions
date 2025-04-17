@@ -12,6 +12,18 @@ namespace DotNetCoreFunctional.Result;
 /// </remarks>
 public static class ResultExtensions
 {
+    /// <summary>
+    /// Converts a nullable value to a Result, using the provided error if the value is null.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <param name="value">The nullable value to convert.</param>
+    /// <param name="nullError">The error to use if the value is null.</param>
+    /// <returns>A Result representing the conversion of the value.</returns>
+    public static Result<T, TError> ToResult<T, TError>(this T? value, TError nullError)
+        where T : notnull
+        where TError : notnull => Result.Create(value, nullError);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsOk<T, TError>(this Result<T, TError> result)
         where T : notnull
@@ -73,5 +85,4 @@ public static class ResultExtensions
     )
         where T : notnull
         where TError : notnull => Result.Unsafe.Do(result, ifOk, ifError);
-
 }
