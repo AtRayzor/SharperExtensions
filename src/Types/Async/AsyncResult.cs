@@ -143,6 +143,21 @@ public static class AsyncResult
         where TError : notnull => new(new Async<Result<T, TError>>(result, cancellationToken));
 
     /// <summary>
+    /// Creates an <see cref="AsyncResult{T, TError}"/> from a function that produces a task of <see cref="Result{T, TError}"/> given a cancellation token.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="func">A function that takes a cancellation token and returns a task producing a result.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>A new <see cref="AsyncResult{T, TError}"/> wrapping the result of the given function.</returns>
+    public static AsyncResult<T, TError> Create<T, TError>(
+        Func<CancellationToken, Task<Result<T, TError>>> func,
+        CancellationToken cancellationToken
+    )
+        where T : notnull
+        where TError : notnull => Create(func(cancellationToken), cancellationToken);
+
+    /// <summary>
     /// Creates an <see cref="AsyncResult{T, TError}"/> from a function that produces a task of <see cref="Result{T, TError}"/>.
     /// </summary>
     /// <typeparam name="T">The type of the success value.</typeparam>
@@ -151,18 +166,7 @@ public static class AsyncResult
     /// <returns>A new <see cref="AsyncResult{T, TError}"/> wrapping the result of the given function.</returns>
     public static AsyncResult<T, TError> Create<T, TError>(Func<Task<Result<T, TError>>> func)
         where T : notnull
-        where TError : notnull => Create(func());
-
-    /// <summary>
-    /// Creates an <see cref="AsyncResult{T, TError}"/> from a function that produces a value task of <see cref="Result{T, TError}"/>.
-    /// </summary>
-    /// <typeparam name="T">The type of the success value.</typeparam>
-    /// <typeparam name="TError">The type of the error value.</typeparam>
-    /// <param name="func">A function that returns a value task producing a result.</param>
-    /// <returns>A new <see cref="AsyncResult{T, TError}"/> wrapping the result of the given function.</returns>
-    public static AsyncResult<T, TError> Create<T, TError>(Func<ValueTask<Result<T, TError>>> func)
-        where T : notnull
-        where TError : notnull => Create(func());
+        where TError : notnull => Create(_ => func(), CancellationToken.None);
 
     /// <summary>
     /// Lifts an asynchronous operation producing a success value into an <see cref="AsyncResult{T, TError}"/>.
