@@ -9,7 +9,6 @@
         <RootNamespace>DotNetCoreFunctional.UnionTypes.Analyzers</RootNamespace>
         <AssemblyName>Analyzers</AssemblyName>
         <PackageId>DotNetCoreFunctional.UnionTypes.Analyzers</PackageId>
-        <ProjectVersion>0.0.2-alpha</ProjectVersion>
     </PropertyGroup>
 
     <Import Condition="$(Configuration) == 'Release' And Exists('$(SolutionDir)')"
