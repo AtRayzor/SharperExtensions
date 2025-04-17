@@ -370,6 +370,23 @@ public static class AsyncResult
     }
 
     /// <summary>
+    /// Maps the success value of an <see cref="AsyncResult{T, TError}"/> to a new value without using the cancellation token.
+    /// </summary>
+    /// <typeparam name="T">The type of the original success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <typeparam name="TNew">The type of the new success value.</typeparam>
+    /// <param name="asyncResult">The asynchronous result to map.</param>
+    /// <param name="mapper">A mapping function that takes the success value.</param>
+    /// <returns>A new <see cref="AsyncResult{TNew, TError}"/> with the mapped success value.</returns>
+    public static AsyncResult<TNew, TError> Map<T, TError, TNew>(
+        AsyncResult<T, TError> asyncResult,
+        Func<T, TNew> mapper
+    )
+        where T : notnull
+        where TError : notnull
+        where TNew : notnull => Map(asyncResult, (value, _) => mapper(value));
+
+    /// <summary>
     /// Maps the success value of an <see cref="AsyncResult{T, TError}"/> to a new value.
     /// </summary>
     /// <typeparam name="T">The type of the original success value.</typeparam>
@@ -390,6 +407,23 @@ public static class AsyncResult
                 (result, ct) => Async.New(result.Map(Lambda.Partial(mapper, ct)), ct)
             )
         );
+
+    /// <summary>
+    /// Binds the success value of an <see cref="AsyncResult{T, TError}"/> to a new asynchronous result without using the cancellation token.
+    /// </summary>
+    /// <typeparam name="T">The type of the original success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <typeparam name="TNew">The type of the new success value.</typeparam>
+    /// <param name="asyncResult">The asynchronous result to bind.</param>
+    /// <param name="binder">A binder function that takes the success value and returns a new <see cref="AsyncResult{TNew, TError}"/>.</param>
+    /// <returns>A new <see cref="AsyncResult{TNew, TError}"/> resulting from the bind operation.</returns>
+    public static AsyncResult<TNew, TError> Bind<T, TError, TNew>(
+        AsyncResult<T, TError> asyncResult,
+        Func<T, AsyncResult<TNew, TError>> binder
+    )
+        where T : notnull
+        where TError : notnull
+        where TNew : notnull => Bind(asyncResult, (value, _) => binder(value));
 
     /// <summary>
     /// Binds the success value of an <see cref="AsyncResult{T, TError}"/> to a new asynchronous result.

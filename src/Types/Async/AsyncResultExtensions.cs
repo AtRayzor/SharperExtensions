@@ -180,6 +180,23 @@ public static class AsyncResultExtensions
     /// <typeparam name="TError">The type of the error value.</typeparam>
     /// <typeparam name="TNew">The type of the new success value.</typeparam>
     /// <param name="asyncResult">The asynchronous result to map.</param>
+    /// <param name="mapper">A mapping function that transforms the success value.</param>
+    /// <returns>A new <see cref="AsyncResult{TNew, TError}"/> with the mapped success value.</returns>
+    public static AsyncResult<TNew, TError> Map<T, TError, TNew>(
+        this AsyncResult<T, TError> asyncResult,
+        Func<T, TNew> mapper
+    )
+        where T : notnull
+        where TError : notnull
+        where TNew : notnull => AsyncResult.Map(asyncResult, mapper);
+
+    /// <summary>
+    /// Maps the success value of an <see cref="AsyncResult{T, TError}"/> to a new value.
+    /// </summary>
+    /// <typeparam name="T">The type of the original success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <typeparam name="TNew">The type of the new success value.</typeparam>
+    /// <param name="asyncResult">The asynchronous result to map.</param>
     /// <param name="mapper">A mapping function that takes the success value and a cancellation token.</param>
     /// <returns>A new <see cref="AsyncResult{TNew, TError}"/> with the mapped success value.</returns>
     public static AsyncResult<TNew, TError> Map<T, TError, TNew>(
@@ -202,6 +219,14 @@ public static class AsyncResultExtensions
     public static AsyncResult<TNew, TError> Bind<T, TError, TNew>(
         this AsyncResult<T, TError> asyncResult,
         Func<T, CancellationToken, AsyncResult<TNew, TError>> binder
+    )
+        where T : notnull
+        where TError : notnull
+        where TNew : notnull => AsyncResult.Bind(asyncResult, binder);
+
+    public static AsyncResult<TNew, TError> Bind<T, TError, TNew>(
+        this AsyncResult<T, TError> asyncResult,
+        Func<T, AsyncResult<TNew, TError>> binder
     )
         where T : notnull
         where TError : notnull
