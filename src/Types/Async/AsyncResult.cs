@@ -1,3 +1,4 @@
+using System.Data;
 using System.Runtime.CompilerServices;
 using DotNetCoreFunctional.Operations;
 using DotNetCoreFunctional.Result;
@@ -424,6 +425,45 @@ public static class AsyncResult
         new(
             asyncResult.WrappedResult.Bind(
                 (result, ct) => Async.New(result.Map(Lambda.Partial(mapper, ct)), ct)
+            )
+        );
+
+    /// <summary>
+    /// Maps the error value of an <see cref="AsyncResult{T, TError}"/> to a new error value without using the cancellation token.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the original error value.</typeparam>
+    /// <typeparam name="TNewError">The type of the new error value.</typeparam>
+    /// <param name="asyncResult">The asynchronous result to map the error.</param>
+    /// <param name="mapper">A mapping function that takes the error value.</param>
+    /// <returns>A new <see cref="AsyncResult{T, TNewError}"/> with the mapped error value.</returns>
+    public static AsyncResult<T, TNewError> MapError<T, TError, TNewError>(
+        AsyncResult<T, TError> asyncResult,
+        Func<TError, TNewError> mapper
+    )
+        where T : notnull
+        where TError : notnull
+        where TNewError : notnull => MapError(asyncResult, (error, _) => mapper(error));
+
+    /// <summary>
+    /// Maps the error value of an <see cref="AsyncResult{T, TError}"/> to a new error value.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the original error value.</typeparam>
+    /// <typeparam name="TNewError">The type of the new error value.</typeparam>
+    /// <param name="asyncResult">The asynchronous result to map the error.</param>
+    /// <param name="mapper">A mapping function that takes the error value and a cancellation token.</param>
+    /// <returns>A new <see cref="AsyncResult{T, TNewError}"/> with the mapped error value.</returns>
+    public static AsyncResult<T, TNewError> MapError<T, TError, TNewError>(
+        AsyncResult<T, TError> asyncResult,
+        Func<TError, CancellationToken, TNewError> mapper
+    )
+        where T : notnull
+        where TError : notnull
+        where TNewError : notnull =>
+        new(
+            asyncResult.WrappedResult.Bind(
+                (result, ct) => Async.New(result.MapError(Lambda.Partial(mapper, ct)), ct)
             )
         );
 

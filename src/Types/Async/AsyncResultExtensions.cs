@@ -208,6 +208,40 @@ public static class AsyncResultExtensions
         where TNew : notnull => AsyncResult.Map(asyncResult, mapper);
 
     /// <summary>
+    /// Maps the error value of an <see cref="AsyncResult{T, TError}"/> to a new error value.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the original error value.</typeparam>
+    /// <typeparam name="TNewError">The type of the new error value.</typeparam>
+    /// <param name="asyncResult">The asynchronous result to map the error of.</param>
+    /// <param name="mapper">A mapping function that transforms the error value.</param>
+    /// <returns>A new <see cref="AsyncResult{T, TNewError}"/> with the mapped error value.</returns>
+    public static AsyncResult<T, TNewError> MapError<T, TError, TNewError>(
+        this AsyncResult<T, TError> asyncResult,
+        Func<TError, TNewError> mapper
+    )
+        where T : notnull
+        where TError : notnull
+        where TNewError : notnull => AsyncResult.MapError(asyncResult, mapper);
+
+    /// <summary>
+    /// Maps the error value of an <see cref="AsyncResult{T, TError}"/> to a new error value.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the original error value.</typeparam>
+    /// <typeparam name="TNewError">The type of the new error value.</typeparam>
+    /// <param name="asyncResult">The asynchronous result to map the error of.</param>
+    /// <param name="mapper">A mapping function that takes the error value and a cancellation token.</param>
+    /// <returns>A new <see cref="AsyncResult{T, TNewError}"/> with the mapped error value.</returns>
+    public static AsyncResult<T, TNewError> MapError<T, TError, TNewError>(
+        this AsyncResult<T, TError> asyncResult,
+        Func<TError, CancellationToken, TNewError> mapper
+    )
+        where T : notnull
+        where TError : notnull
+        where TNewError : notnull => AsyncResult.MapError(asyncResult, mapper);
+
+    /// <summary>
     /// Binds the success value of an <see cref="AsyncResult{T, TError}"/> to a new asynchronous result.
     /// </summary>
     /// <typeparam name="T">The type of the original success value.</typeparam>
