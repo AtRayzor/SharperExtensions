@@ -30,6 +30,25 @@ public readonly struct AsyncResult<T, TError>
     }
 
     /// <summary>
+    /// Creates a successful <see cref="AsyncResult{T, TError}"/> wrapping the specified value.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="value">The success value to wrap.</param>
+    /// <returns>A new <see cref="AsyncResult{T, TError}"/> representing a successful result.</returns>
+    public static AsyncResult<T, TError> Ok(T value) => AsyncResult.CreateOk<T, TError>(value);
+
+    /// <summary>
+    /// Creates a failed <see cref="AsyncResult{T, TError}"/> wrapping the specified error.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="error">The error value to wrap.</param>
+    /// <returns>A new <see cref="AsyncResult{T, TError}"/> representing a failed result.</returns>
+    public static AsyncResult<T, TError> Error(TError error) =>
+        AsyncResult.CreateError<T, TError>(error);
+
+    /// <summary>
     /// Configures how awaits on the underlying task are performed.
     /// </summary>
     /// <param name="options">The configure await options.</param>
