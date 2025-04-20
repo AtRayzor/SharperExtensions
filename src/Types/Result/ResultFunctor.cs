@@ -139,4 +139,15 @@ public static class ResultFunctorExtensions
         where T : notnull
         where TError : notnull
         where TNewError : notnull => Result.Functor.MapError(result, mapping);
+
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static TNew Match<T, TError, TNew>(
+        this Result<T, TError> result,
+        Func<T, TNew> matchOk,
+        Func<TError, TNew> matchError
+    )
+        where TNew : notnull
+        where T : notnull
+        where TError : notnull => Result.Functor.Match(result, matchOk, matchError);
 }
