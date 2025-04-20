@@ -523,6 +523,12 @@ public static class AsyncResult
         }
     }
 
+    public static AsyncResult<T, TError> Flatten<T, TError>(
+        this AsyncResult<AsyncResult<T, TError>, TError> nestedAsyncResult
+    )
+        where T : notnull
+        where TError : notnull => nestedAsyncResult.Bind(asyncResult => asyncResult);
+
     /// <summary>
     /// Applies a wrapped mapping function to the success value of an <see cref="AsyncResult{T, TError}"/>.
     /// </summary>

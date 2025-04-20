@@ -52,6 +52,9 @@ public static class AsyncExtensions
         where T : notnull
         where TNew : notnull => Async.Bind(async, binder);
 
+    public static Async<T> Flatten<T>(this Async<Async<T>> nestedAsync)
+        where T : notnull => Async.Flatten(nestedAsync);
+
     public static Async<TNew> Apply<T, TNew>(
         this Async<T> async,
         Async<Func<T, CancellationToken, TNew>> wrappedMap,
