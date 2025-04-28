@@ -77,6 +77,6 @@ public static class AsyncExtensions
     public static async Task DoAsync<T>(this Async<T> async, Func<T, Task> actionAsync)
         where T : notnull
     {
-        await actionAsync(await async.ConfigureAwait()).ConfigureAwait(ConfigureAwaitOptions.None);
+        await actionAsync(await async).ConfigureAwait(ConfigureAwaitOptions.None);
     }
 }

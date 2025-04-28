@@ -7,6 +7,12 @@ namespace DotNetCoreFunctional.Async;
 /// </summary>
 public static class AsyncResultExtensions
 {
+    public static AsyncResult<T, TError> AsAsyncResult<T, TError>(
+        this Async<Result<T, TError>> wrappedResult
+    )
+        where T : notnull
+        where TError : notnull => new(wrappedResult);
+
     /// <summary>
     /// Converts a nullable <see cref="Task{T}"/> to an <see cref="AsyncResult{T, TError}"/>, specifying an error to use if the task returns null.
     /// </summary>

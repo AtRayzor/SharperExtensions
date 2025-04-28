@@ -1,18 +1,128 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using DotNetCoreFunctional.Result;
 
 namespace DotNetCoreFunctional.Async;
+
+internal sealed record Box<T>(T Value);
+
+internal sealed class AsyncMutableState<T>(CancellationToken token = default)
+    where T : notnull
+{
+    public AsyncMutableState(Func<T> executionDelegate, CancellationToken cancellationToken)
+        : this(cancellationToken)
+    {
+        _executionDelegate = executionDelegate;
+    }
+
+    public AsyncMutableState(T value, CancellationToken token = default)
+        : this(token)
+    {
+        _executionDelegate = () => value;
+    }
+
+    public AsyncMutableState(Exception exception, CancellationToken token = default)
+        : this(token)
+    {
+        _exception = exception;
+    }
+
+    public AsyncMutableState(Task<T> sourceTask, CancellationToken token = default)
+        : this(token)
+    {
+        _sourceTask = sourceTask;
+    }
+
+    public bool IsCompleted { get; set; }
+
+    private Func<T>? _executionDelegate;
+
+    private Exception? _exception;
+
+    private Task<T>? _sourceTask;
+
+    [field: AllowNull, MaybeNull]
+    public TaskCompletionSource<T> CompletionSource => field ?? new TaskCompletionSource<T>();
+    public Action? Continuation { get; set; }
+
+    public CancellationToken Token { get; set; } = token;
+
+    public T GetResult()
+    {
+        Continuation?.Invoke();
+        return this switch
+        {
+            { _executionDelegate: { } execution, _sourceTask: null } => execution(),
+            { _sourceTask: { } sourceTask } => sourceTask.Result,
+            _ => throw new InvalidOperationException("No value was set."),
+        };
+    }
+
+    public Task<T> BuildTask()
+    {
+        switch (this)
+        {
+            case { _sourceTask: not null }:
+            {
+                return _sourceTask;
+            }
+            case { IsCompleted: false, _executionDelegate: not null }:
+            {
+                var task = new Task<T>(_executionDelegate, Token);
+                task.Start();
+
+                return task;
+            }
+            case { IsCompleted: true, _executionDelegate: not null, _exception: null }:
+            {
+                if (CompletionSource.Task.Status is TaskStatus.Created)
+                {
+                    CompletionSource.Task.Start();
+                }
+
+                CompletionSource.SetResult(_executionDelegate());
+                break;
+            }
+            case { _exception: not null }:
+            {
+                if (CompletionSource.Task.Status is TaskStatus.Created)
+                {
+                    CompletionSource.Task.Start();
+                }
+
+                CompletionSource.SetException(_exception);
+                break;
+            }
+            default:
+            {
+                if (CompletionSource.Task.Status is TaskStatus.Created)
+                {
+                    CompletionSource.Task.Start();
+                }
+
+                CompletionSource.SetException(new InvalidOperationException("No value was set."));
+                break;
+            }
+        }
+
+        return CompletionSource.Task;
+    }
+}
 
 /// <summary>
 /// Represents an asynchronous computation that produces a value of type <typeparamref name="T"/>.
 /// </summary>
 /// <typeparam name="T">The type of the value produced by the asynchronous computation.</typeparam>
+[AsyncMethodBuilder(typeof(AsyncMethodBuilder<>))]
 public readonly struct Async<T>
     where T : notnull
 {
+    private readonly AsyncMutableState<T> _state;
+
     /// <summary>
     /// Gets the underlying <see cref="Task{TResult}"/> representing the asynchronous operation.
     /// </summary>
-    public Task<T> Task { get; }
+    public Task<T> Task => _state.BuildTask();
 
     /// <summary>
     /// Gets the <see cref="CancellationToken"/> associated with this asynchronous computation.
@@ -24,39 +134,39 @@ public readonly struct Async<T>
     /// <summary>
     /// Initializes a new instance of the <see cref="Async{T}"/> struct from a <see cref="Task{TResult}"/>.
     /// </summary>
-    /// <param name="task">The task representing the asynchronous operation.</param>
     /// <param name="cancellationToken">The cancellation token to associate with this async operation.</param>
+    internal Async(CancellationToken cancellationToken = default)
+    {
+        _state = new AsyncMutableState<T>(cancellationToken);
+    }
+
+    internal Async(T value, CancellationToken cancellationToken = default)
+    {
+        _state = new AsyncMutableState<T>(value, cancellationToken);
+    }
+
+    internal Async(Exception exception, CancellationToken cancellationToken = default)
+    {
+        _state = new AsyncMutableState<T>(exception, cancellationToken);
+    }
+
+    internal Async(AsyncMutableState<T> state)
+    {
+        _state = state;
+    }
+
     internal Async(Task<T> task, CancellationToken cancellationToken = default)
     {
-        Task = task;
-        CancellationToken = cancellationToken;
+        _state = new AsyncMutableState<T>(task, cancellationToken);
     }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Async{T}"/> struct from a <see cref="ValueTask{TResult}"/>.
-    /// </summary>
-    /// <param name="valueTask">The value task representing the asynchronous operation.</param>
-    /// <param name="cancellationToken">The cancellation token to associate with this async operation.</param>
-    internal Async(ValueTask<T> valueTask, CancellationToken cancellationToken = default)
-    {
-        Task = valueTask.AsTask();
-        CancellationToken = cancellationToken;
-    }
-
-    /// <summary>
-    /// Configures an awaiter used to await this asynchronous operation.
-    /// </summary>
-    /// <param name="options">The options to use when configuring the awaiter.</param>
-    /// <returns>A configured task awaitable.</returns>
-    public ConfiguredTaskAwaitable<T> ConfigureAwait(
-        ConfigureAwaitOptions options = ConfigureAwaitOptions.None
-    ) => Task.ConfigureAwait(options);
 
     /// <summary>
     /// Gets an awaiter used to await this asynchronous operation.
     /// </summary>
     /// <returns>A task awaiter.</returns>
-    public TaskAwaiter<T> GetAwaiter() => Task.GetAwaiter();
+    public AsyncAwaiter<T> GetAwaiter() => new(_state);
+
+    internal void SetContinuationAction(Action continuation) => _state.Continuation = continuation;
 }
 
 /// <summary>
@@ -72,7 +182,7 @@ public static class Async
     /// <param name="cancellationToken">The cancellation token to associate with this async operation.</param>
     /// <returns>An <see cref="Async{T}"/> representing a completed asynchronous computation with the specified value.</returns>
     public static Async<T> New<T>(T value, CancellationToken cancellationToken = default)
-        where T : notnull => new(Task.FromResult(value), cancellationToken);
+        where T : notnull => new(value, cancellationToken);
 
     /// <summary>
     /// Creates a new <see cref="Async{T}"/> from an existing <see cref="Task{TResult}"/> and cancellation token.
@@ -101,7 +211,7 @@ public static class Async
     /// <param name="cancellationToken">The cancellation token to associate with this async operation.</param>
     /// <returns>An <see cref="Async{T}"/> wrapping the specified value task.</returns>
     public static Async<T> FromValueTask<T>(ValueTask<T> task, CancellationToken cancellationToken)
-        where T : notnull => new(task, cancellationToken);
+        where T : notnull => new(task.AsTask(), cancellationToken);
 
     /// <summary>
     /// Creates a new <see cref="Async{T}"/> from an existing <see cref="ValueTask{TResult}"/>.
@@ -110,7 +220,7 @@ public static class Async
     /// <param name="task">The value task to wrap.</param>
     /// <returns>An <see cref="Async{T}"/> wrapping the specified value task.</returns>
     public static Async<T> FromValueTask<T>(ValueTask<T> task)
-        where T : notnull => new(task, CancellationToken.None);
+        where T : notnull => new(task.AsTask(), CancellationToken.None);
 
     /// <summary>
     /// Creates a new <see cref="Async{Unit}"/> from a <see cref="Task"/> and cancellation token.
@@ -145,7 +255,7 @@ public static class Async
     /// <returns>An <see cref="Async{Unit}"/> representing the completion of the value task.</returns>
     public static Async<Unit> FromValueTask(ValueTask task, CancellationToken cancellationToken)
     {
-        return new Async<Unit>(ToUnitTask(task), cancellationToken);
+        return new Async<Unit>(ToUnitTask(task).AsTask(), cancellationToken);
 
         static async ValueTask<Unit> ToUnitTask(ValueTask task)
         {
@@ -186,7 +296,7 @@ public static class Async
             Async<T> async,
             Func<T, CancellationToken, TNew> map,
             CancellationToken cancellationToken
-        ) => map(await async.ConfigureAwait(), cancellationToken);
+        ) => map(await async, cancellationToken);
     }
 
     /// <summary>
@@ -236,7 +346,7 @@ public static class Async
             Async<T> async,
             Func<T, CancellationToken, Async<TNew>> binder,
             CancellationToken cancellationToken
-        ) => await binder(await async.ConfigureAwait(), cancellationToken).ConfigureAwait();
+        ) => await binder(await async, cancellationToken);
     }
 
     /// <summary>
@@ -276,7 +386,7 @@ public static class Async
         where T : notnull => FlattenAsync(nestedAsync).Result;
 
     private static async Task<Async<T>> FlattenAsync<T>(Async<Async<T>> nestedAsync)
-        where T : notnull => await nestedAsync.ConfigureAwait();
+        where T : notnull => await nestedAsync;
 
     /// <summary>
     /// Applies a wrapped mapping function to an asynchronous computation.
@@ -338,7 +448,7 @@ public static class Async
     )
         where T : notnull
     {
-        await actionAsync(await async.ConfigureAwait(), cancellationToken)
+        await actionAsync(await async, cancellationToken)
             .ConfigureAwait(ConfigureAwaitOptions.None);
     }
 }

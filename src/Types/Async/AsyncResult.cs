@@ -50,26 +50,23 @@ public readonly struct AsyncResult<T, TError>
         AsyncResult.CreateError<T, TError>(error);
 
     /// <summary>
-    /// Configures how awaits on the underlying task are performed.
-    /// </summary>
-    /// <param name="options">The configure await options.</param>
-    /// <returns>A configured task awaitable.</returns>
-    public ConfiguredTaskAwaitable<Result<T, TError>> ConfigureAwait(
-        ConfigureAwaitOptions options = ConfigureAwaitOptions.None
-    ) => WrappedResult.ConfigureAwait(options);
-
-    /// <summary>
     /// Gets an awaiter used to await this <see cref="AsyncResult{T, TError}"/>.
     /// </summary>
     /// <returns>A configured task awaiter.</returns>
-    public ConfiguredTaskAwaitable<Result<T, TError>>.ConfiguredTaskAwaiter GetAwaiter() =>
-        ConfigureAwait().GetAwaiter();
+    public AsyncAwaiter<Result<T, TError>> GetAwaiter() => WrappedResult.GetAwaiter();
 
     /// <summary>
     /// Returns the underlying task representing the asynchronous operation.
     /// </summary>
     /// <returns>The task of the result.</returns>
     public Task<Result<T, TError>> AsTask() => WrappedResult.Task;
+
+    public static implicit operator AsyncResult<T, TError>(
+        Async<Result<T, TError>> wrappedResult
+    ) => new(wrappedResult);
+
+    public static implicit operator Async<Result<T, TError>>(AsyncResult<T, TError> asyncResult) =>
+        asyncResult.WrappedResult;
 }
 
 /// <summary>
@@ -173,7 +170,8 @@ public static class AsyncResult
         CancellationToken cancellationToken
     )
         where T : notnull
-        where TError : notnull => new(new Async<Result<T, TError>>(result, cancellationToken));
+        where TError : notnull =>
+        new(new Async<Result<T, TError>>(result.AsTask(), cancellationToken));
 
     /// <summary>
     /// Creates an <see cref="AsyncResult{T, TError}"/> from a function that produces a task of <see cref="Result{T, TError}"/> given a cancellation token.
@@ -248,7 +246,7 @@ public static class AsyncResult
     /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the lifted value task.</returns>
     public static AsyncResult<T, TError> LiftToOk<T, TError>(ValueTask<T> task)
         where T : notnull
-        where TError : notnull => LiftToOk<T, TError>(new Async<T>(task));
+        where TError : notnull => LiftToOk<T, TError>(new Async<T>(task.AsTask()));
 
     /// <summary>
     /// Lifts an asynchronous value task producing a success value into an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
@@ -263,7 +261,8 @@ public static class AsyncResult
         CancellationToken cancellationToken
     )
         where T : notnull
-        where TError : notnull => LiftToOk<T, TError>(new Async<T>(task, cancellationToken));
+        where TError : notnull =>
+        LiftToOk<T, TError>(new Async<T>(task.AsTask(), cancellationToken));
 
     /// <summary>
     /// Lifts an asynchronous operation producing an error value into an <see cref="AsyncResult{T, TError}"/>.
@@ -329,7 +328,7 @@ public static class AsyncResult
     )
         where T : notnull
         where TError : notnull =>
-        LiftToError<T, TError>(new Async<TError>(task, cancellationToken));
+        LiftToError<T, TError>(new Async<TError>(task.AsTask(), cancellationToken));
 
     /// <summary>
     /// Lifts an asynchronous task producing a nullable value into an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
@@ -576,7 +575,7 @@ public static class AsyncResult
         where TError : notnull
     {
         var token = asyncResult.WrappedResult.CancellationToken;
-        return await asyncResult.WrappedResult.ConfigureAwait() switch
+        return await asyncResult.WrappedResult switch
         {
             Ok<T, TError> { Value: var value } => okArm(value, token),
             Error<T, TError> { Err: var error } => errorArm(error, token),
@@ -693,7 +692,7 @@ public static class AsyncResult
             AsyncResult<T, TError> asyncResult
         )
             where T : notnull
-            where TError : notnull => (await asyncResult.ConfigureAwait()).GetValueOrDefault();
+            where TError : notnull => (await asyncResult).GetValueOrDefault();
 
         /// <summary>
         /// Gets the success value or a specified default asynchronously.
@@ -708,8 +707,7 @@ public static class AsyncResult
             T defaultValue
         )
             where T : notnull
-            where TError : notnull =>
-            (await asyncResult.ConfigureAwait()).GetValueOrDefault(defaultValue);
+            where TError : notnull => (await asyncResult).GetValueOrDefault(defaultValue);
 
         /// <summary>
         /// Gets the error value or default asynchronously.
@@ -721,7 +719,7 @@ public static class AsyncResult
             AsyncResult<T, TError> asyncResult
         )
             where T : notnull
-            where TError : notnull => (await asyncResult.ConfigureAwait()).GetErrorOrDefault();
+            where TError : notnull => (await asyncResult).GetErrorOrDefault();
 
         /// <summary>
         /// Gets the error value or a specified default asynchronously.
@@ -736,6 +734,6 @@ public static class AsyncResult
             TError error
         )
             where T : notnull
-            where TError : notnull => (await asyncResult.ConfigureAwait()).GetErrorOrDefault(error);
+            where TError : notnull => (await asyncResult).GetErrorOrDefault(error);
     }
 }
