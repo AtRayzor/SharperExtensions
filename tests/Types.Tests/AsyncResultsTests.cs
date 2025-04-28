@@ -15,7 +15,7 @@ namespace NetFunction.Types.Tests
             var dummyValue = new DummyValue { Name = "Test", Email = "test@example.com" };
             var asyncResult = AsyncResult.CreateOk<DummyValue, DummyError>(dummyValue);
 
-            var result = await asyncResult.ConfigureAwait();
+            var result = await asyncResult;
 
             result.Should().BeOfType<Ok<DummyValue, DummyError>>();
             result.As<Ok<DummyValue, DummyError>>().Value.Should().BeEquivalentTo(dummyValue);
@@ -27,7 +27,7 @@ namespace NetFunction.Types.Tests
             var dummyError = new DummyError { Message = "Error occurred" };
             var asyncResult = AsyncResult.CreateError<DummyValue, DummyError>(dummyError);
 
-            var result = await asyncResult.ConfigureAwait();
+            var result = await asyncResult;
 
             result.Should().BeOfType<Error<DummyValue, DummyError>>();
             result.As<Error<DummyValue, DummyError>>().Err.Should().BeEquivalentTo(dummyError);
@@ -40,7 +40,7 @@ namespace NetFunction.Types.Tests
             var okResult = Result<DummyValue, DummyError>.Ok(dummyValue);
             var asyncResult = AsyncResult.Create(okResult);
 
-            var result = await asyncResult.ConfigureAwait();
+            var result = await asyncResult;
 
             result.Should().BeOfType<Ok<DummyValue, DummyError>>();
             result.As<Ok<DummyValue, DummyError>>().Value.Should().BeEquivalentTo(dummyValue);
@@ -53,7 +53,7 @@ namespace NetFunction.Types.Tests
             var asyncValue = Async.New(dummyValue);
             var asyncResult = AsyncResult.LiftToOk<DummyValue, DummyError>(asyncValue);
 
-            var result = await asyncResult.ConfigureAwait();
+            var result = await asyncResult;
 
             result.Should().BeOfType<Ok<DummyValue, DummyError>>();
             result.As<Ok<DummyValue, DummyError>>().Value.Should().BeEquivalentTo(dummyValue);
@@ -66,7 +66,7 @@ namespace NetFunction.Types.Tests
             var asyncError = Async.New(dummyError);
             var asyncResult = AsyncResult.LiftToError<DummyValue, DummyError>(asyncError);
 
-            var result = await asyncResult.ConfigureAwait();
+            var result = await asyncResult;
 
             result.Should().BeOfType<Error<DummyValue, DummyError>>();
             result.As<Error<DummyValue, DummyError>>().Err.Should().BeEquivalentTo(dummyError);
@@ -78,10 +78,12 @@ namespace NetFunction.Types.Tests
             var dummyValue = new DummyValue { Name = "Test", Email = "test@example.com" };
             var asyncResult = AsyncResult.CreateOk<DummyValue, DummyError>(dummyValue);
 
-            var mapped = AsyncResult.Map(asyncResult, (value, ct) =>
-                new DummyNewValue { NameAllCaps = value.Name.ToUpperInvariant() });
+            var mapped = AsyncResult.Map(
+                asyncResult,
+                (value, ct) => new DummyNewValue { NameAllCaps = value.Name.ToUpperInvariant() }
+            );
 
-            var result = await mapped.ConfigureAwait();
+            var result = await mapped;
 
             result.Should().BeOfType<Ok<DummyNewValue, DummyError>>();
             result.As<Ok<DummyNewValue, DummyError>>().Value.NameAllCaps.Should().Be("TEST");
@@ -93,10 +95,12 @@ namespace NetFunction.Types.Tests
             var dummyError = new DummyError { Message = "Error occurred" };
             var asyncResult = AsyncResult.CreateError<DummyValue, DummyError>(dummyError);
 
-            var mapped = AsyncResult.Map(asyncResult, (value, ct) =>
-                new DummyNewValue { NameAllCaps = value.Name.ToUpperInvariant() });
+            var mapped = AsyncResult.Map(
+                asyncResult,
+                (value, ct) => new DummyNewValue { NameAllCaps = value.Name.ToUpperInvariant() }
+            );
 
-            var result = await mapped.ConfigureAwait();
+            var result = await mapped;
 
             result.Should().BeOfType<Error<DummyNewValue, DummyError>>();
             result.As<Error<DummyNewValue, DummyError>>().Err.Should().BeEquivalentTo(dummyError);
@@ -110,11 +114,12 @@ namespace NetFunction.Types.Tests
 
             AsyncResult<DummyNewValue, DummyError> Binder(DummyValue val, CancellationToken ct) =>
                 AsyncResult.CreateOk<DummyNewValue, DummyError>(
-                    new DummyNewValue { NameAllCaps = val.Name.ToUpperInvariant() });
+                    new DummyNewValue { NameAllCaps = val.Name.ToUpperInvariant() }
+                );
 
             var bound = AsyncResult.Bind(asyncResult, Binder);
 
-            var result = await bound.ConfigureAwait();
+            var result = await bound;
 
             result.Should().BeOfType<Ok<DummyNewValue, DummyError>>();
             result.As<Ok<DummyNewValue, DummyError>>().Value.NameAllCaps.Should().Be("TEST");
@@ -128,11 +133,12 @@ namespace NetFunction.Types.Tests
 
             AsyncResult<DummyNewValue, DummyError> Binder(DummyValue val, CancellationToken ct) =>
                 AsyncResult.CreateOk<DummyNewValue, DummyError>(
-                    new DummyNewValue { NameAllCaps = val.Name.ToUpperInvariant() });
+                    new DummyNewValue { NameAllCaps = val.Name.ToUpperInvariant() }
+                );
 
             var bound = AsyncResult.Bind(asyncResult, Binder);
 
-            var result = await bound.ConfigureAwait();
+            var result = await bound;
 
             result.Should().BeOfType<Error<DummyNewValue, DummyError>>();
             result.As<Error<DummyNewValue, DummyError>>().Err.Should().BeEquivalentTo(dummyError);
@@ -147,11 +153,14 @@ namespace NetFunction.Types.Tests
             Func<DummyValue, CancellationToken, DummyNewValue> mapper = (val, ct) =>
                 new DummyNewValue { NameAllCaps = val.Name.ToUpperInvariant() };
 
-            var asyncMapper = AsyncResult.CreateOk<Func<DummyValue, CancellationToken, DummyNewValue>, DummyError>(mapper);
+            var asyncMapper = AsyncResult.CreateOk<
+                Func<DummyValue, CancellationToken, DummyNewValue>,
+                DummyError
+            >(mapper);
 
             var applied = AsyncResult.Apply(asyncResult, asyncMapper);
 
-            var result = await applied.ConfigureAwait();
+            var result = await applied;
 
             result.Should().BeOfType<Ok<DummyNewValue, DummyError>>();
             result.As<Ok<DummyNewValue, DummyError>>().Value.NameAllCaps.Should().Be("TEST");
@@ -164,11 +173,14 @@ namespace NetFunction.Types.Tests
             var asyncResult = AsyncResult.CreateOk<DummyValue, DummyError>(dummyValue);
 
             var dummyError = new DummyError { Message = "Mapper error" };
-            var asyncMapper = AsyncResult.CreateError<Func<DummyValue, CancellationToken, DummyNewValue>, DummyError>(dummyError);
+            var asyncMapper = AsyncResult.CreateError<
+                Func<DummyValue, CancellationToken, DummyNewValue>,
+                DummyError
+            >(dummyError);
 
             var applied = AsyncResult.Apply(asyncResult, asyncMapper);
 
-            var result = await applied.ConfigureAwait();
+            var result = await applied;
 
             result.Should().BeOfType<Error<DummyNewValue, DummyError>>();
             result.As<Error<DummyNewValue, DummyError>>().Err.Should().BeEquivalentTo(dummyError);
@@ -183,7 +195,8 @@ namespace NetFunction.Types.Tests
             var matched = await AsyncResult.MatchAsync(
                 asyncResult,
                 (val, ct) => val.Name,
-                (err, ct) => err.Message);
+                (err, ct) => err.Message
+            );
 
             matched.Should().Be("Test");
         }
@@ -197,7 +210,8 @@ namespace NetFunction.Types.Tests
             var matched = await AsyncResult.MatchAsync(
                 asyncResult,
                 (val, ct) => val.Name,
-                (err, ct) => err.Message);
+                (err, ct) => err.Message
+            );
 
             matched.Should().Be("Error occurred");
         }
@@ -280,7 +294,10 @@ namespace NetFunction.Types.Tests
             var dummyValue = new DummyValue { Name = "Test", Email = "test@example.com" };
             var asyncResult = AsyncResult.CreateOk<DummyValue, DummyError>(dummyValue);
 
-            var value = await AsyncResult.Unsafe.GetValueOrDefaultAsync(asyncResult, new DummyValue { Name = "Default", Email = "default@example.com" });
+            var value = await AsyncResult.Unsafe.GetValueOrDefaultAsync(
+                asyncResult,
+                new DummyValue { Name = "Default", Email = "default@example.com" }
+            );
 
             value.Should().BeEquivalentTo(dummyValue);
         }

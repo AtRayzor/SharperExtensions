@@ -14,7 +14,7 @@ public class AsyncTests
 
         var asyncDummy = Async.New(dummy);
 
-        var result = await asyncDummy.ConfigureAwait();
+        var result = await asyncDummy;
 
         result.Should().BeEquivalentTo(dummy);
     }
@@ -27,7 +27,7 @@ public class AsyncTests
 
         var asyncDummy = Async.FromTask(task);
 
-        var result = await asyncDummy.ConfigureAwait();
+        var result = await asyncDummy;
 
         result.Should().BeEquivalentTo(dummy);
     }
@@ -40,9 +40,20 @@ public class AsyncTests
 
         var asyncDummy = Async.FromValueTask(valueTask);
 
-        var result = await asyncDummy.ConfigureAwait();
+        var result = await asyncDummy;
 
         result.Should().BeEquivalentTo(dummy);
+    }
+
+    [Fact]
+    public async Task GetAwaiter_ReturnsValue()
+    {
+        var dummy = new DummyValue { Email = "jack.black@examply.com", Name = "Jack Black" };
+        var asyncDummy = new Async<DummyValue>(dummy);
+
+        var returned = await asyncDummy.GetAwaiter();
+
+        returned.Should().Be(dummy);
     }
 
     [Fact]
@@ -56,7 +67,7 @@ public class AsyncTests
             (d, _) => new DummyNewValue { NameAllCaps = d.Name.ToUpper() }
         );
 
-        var result = await mapped.ConfigureAwait();
+        var result = await mapped;
 
         result.NameAllCaps.Should().Be("JOHN");
     }
@@ -69,7 +80,7 @@ public class AsyncTests
 
         var mapped = asyncDummy.Map((d, _) => new DummyNewValue { NameAllCaps = d.Name.ToUpper() });
 
-        var result = await mapped.ConfigureAwait();
+        var result = await mapped;
 
         result.NameAllCaps.Should().Be("JANE");
     }
@@ -85,7 +96,7 @@ public class AsyncTests
 
         var bound = Async.Bind(asyncDummy, Binder);
 
-        var result = await bound.ConfigureAwait();
+        var result = await bound;
 
         result.NameAllCaps.Should().Be("JOHN");
     }
@@ -101,7 +112,7 @@ public class AsyncTests
 
         var bound = asyncDummy.Bind(Binder);
 
-        var result = await bound.ConfigureAwait();
+        var result = await bound;
 
         result.NameAllCaps.Should().Be("JANE");
     }
@@ -118,7 +129,7 @@ public class AsyncTests
 
         var applied = Async.Apply(asyncDummy, asyncFunc);
 
-        var result = await applied.ConfigureAwait();
+        var result = await applied;
 
         result.NameAllCaps.Should().Be("JOHN");
     }
@@ -135,7 +146,7 @@ public class AsyncTests
 
         var applied = asyncDummy.Apply(asyncFunc);
 
-        var result = await applied.ConfigureAwait();
+        var result = await applied;
 
         result.NameAllCaps.Should().Be("JANE");
     }
@@ -187,7 +198,7 @@ public class AsyncTests
 
         var asyncUnit = Async.FromTask(task);
 
-        var result = await asyncUnit.ConfigureAwait();
+        var result = await asyncUnit;
 
         result.Should().Be(Unit.Value);
     }
@@ -199,7 +210,7 @@ public class AsyncTests
 
         var asyncUnit = Async.FromValueTask(valueTask);
 
-        var result = await asyncUnit.ConfigureAwait();
+        var result = await asyncUnit;
 
         result.Should().Be(Unit.Value);
     }
@@ -220,5 +231,17 @@ public class AsyncTests
         asyncFromTaskWithToken.Should().NotBeNull();
         asyncFromValueTask.Should().NotBeNull();
         asyncFromValueTaskWithToken.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Async_Task_ShouldBeAwaitable()
+    {
+        var dummy = new DummyValue { Name = "John", Email = "john@example.com" };
+        var dummyAsync = new Async<DummyValue>(dummy);
+
+        var task = dummyAsync.Task;
+        var awaited = await task;
+
+        awaited.Should().Be(dummy);
     }
 }
