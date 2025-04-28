@@ -8,7 +8,7 @@
         <NullableReferenceTypes>true</NullableReferenceTypes>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <PackageId>DotNetCoreFunctional</PackageId>
-        <LangVersion>13</LangVersion>
+        <LangVersion>preview</LangVersion>
         <ProjectVersion>0.1.8-alpha</ProjectVersion>
     </PropertyGroup>
 
