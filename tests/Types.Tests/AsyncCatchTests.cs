@@ -30,4 +30,48 @@ public class AsyncCatchTests
         (await result.AsTask()).TryGetError(out var message).Should().BeTrue();
         message.Should().Be(testMessage);
     }
+
+    [Fact]
+    public async Task Await_ReturnsOk()
+    {
+        const string testString = "This is a test.";
+        
+       var asyncCatch = CreateAsyncCatch();
+       var result = await asyncCatch;
+       
+        result.TryGetValue(out var response).Should().BeTrue();
+        response.Should().Be(testString);
+
+        return;
+
+        static async AsyncCatch<string> CreateAsyncCatch() => await TaskFactory();
+
+        static async Task<string> TaskFactory()
+        {
+
+            await Task.Delay(1000);
+            return testString;
+        }
+    }
+
+    [Fact]
+    public async Task Await_ReturnsError()
+    {
+        const string testString = "This is a test exception.";
+
+        var result = await CreateAsyncCatch();
+
+        result.TryGetError(out var exception).Should().BeTrue();
+        exception!.Message.Should().Be(testString);
+
+        return;
+
+        static async AsyncCatch<string> CreateAsyncCatch() => await TaskFactory();
+
+        static async Task<string> TaskFactory()
+        {
+            await Task.Delay(1000);
+            throw new InvalidOperationException(testString);
+        }
+    }
 }
