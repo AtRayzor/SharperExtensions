@@ -1,70 +1,170 @@
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using DotNetCoreFunctional.Result;
 
 namespace DotNetCoreFunctional.Async;
 
-[AsyncMethodBuilder(typeof(AsyncCatchMethodBuilder<>))]
-public readonly struct AsyncCatch<T>
+internal sealed class AsyncCatchState<T>
     where T : notnull
 {
-    private readonly Result<T, Exception> _result;
+    public bool IsCompleted { get; set; }
+    
+    public AsyncCatchState()
+    {
+        return;
+    }
+
+
+    public AsyncCatchState(Result<T, Exception> result) : this()
+    {
+        Result = result;
+    }
+
+
+    [field: AllowNull, MaybeNull]
+    public Result<T, Exception> Result
+    {
+        get =>
+            field
+            ?? Result<T, Exception>.Error(
+                new InvalidOperationException("The value was never set.")
+            );
+        set
+        {
+            field = value;
+            return;
+        }
+    }
+    
+    public Action? Continuation { get; set; }
+}
+
+[AsyncMethodBuilder(typeof(AsyncCatchMethodBuilder<>))]
+public struct AsyncCatch<T>
+    where T : notnull
+{
+    [field: AllowNull, MaybeNull] internal AsyncCatchState<T> State { get; private init; }
+
+    public AsyncCatch()
+    {
+        State = new AsyncCatchState<T>();
+    }
 
     internal AsyncCatch(T value)
+        : this(new AsyncCatchState<T>(Result<T, Exception>.Ok(value)))
     {
-        _result = Result<T, Exception>.Ok(value);
     }
 
     internal AsyncCatch(Exception exception)
+        : this(new AsyncCatchState<T>(Result<T, Exception>.Error(exception)))
     {
-        _result = Result<T, Exception>.Error(exception);
     }
 
-    public AsyncResult<T, Exception> AsAsyncResult() => AsyncResult.Create(_result);
+    internal AsyncCatch(AsyncCatchState<T> state)
+        : this()
+    {
+        State = state;
+    }
 
-    public Result<T, Exception> AsResult() => _result;
 
-    public Result<T, TError> CreateResult<TError>(Func<Exception, TError> errorMapper) where TError : notnull => _result.MapError(errorMapper);
+    internal void SetResult(T result)
+    {
+        State.Result = Result<T, Exception>.Ok(result);
+        State.IsCompleted = true;
+        State.Continuation?.Invoke();
+    }
+
+    internal void SetException(Exception exception)
+    {
+        State.Result = Result<T, Exception>.Error(exception);
+        State.IsCompleted = true;
+        State.Continuation?.Invoke();
+    }
+
+    public AsyncResult<T, Exception> AsAsyncResult() => AsyncResult.Create(State.Result);
+
+    public Result<T, Exception> AsResult() => State.Result;
+
+    public Result<T, TError> CreateResult<TError>(Func<Exception, TError> errorMapper)
+        where TError : notnull => State.Result.MapError(errorMapper);
 
     public AsyncResult<T, TError> CreateAsyncResult<TError>(Func<Exception, TError> errorMapper)
-        where TError : notnull =>
-        AsAsyncResult().MapError(errorMapper);
+        where TError : notnull => AsAsyncResult().MapError(errorMapper);
 
-   public AsyncCatchAwaiter<T> GetAwaiter() => new(_result);
+    public AsyncCatchAwaiter<T> GetAwaiter()
+    {
+        return new AsyncCatchAwaiter<T>(this);
+    }
 }
 
-public sealed class AsyncCatchAwaiter<T> : ICriticalNotifyCompletion where T : notnull
+public struct AsyncCatchAwaiter<T> : ICriticalNotifyCompletion
+    where T : notnull
 {
-    public bool IsCompleted { get; private set; }
+    public bool IsCompleted => _catch.State.IsCompleted;
 
-    private Result<T, Exception> _result;
-    internal AsyncCatchAwaiter(Result<T, Exception> result)
+    private AsyncCatch<T> _catch;
+
+    public AsyncCatchAwaiter()
     {
-        _result = result;
+        return;
     }
-    
+
+    internal AsyncCatchAwaiter(AsyncCatch<T> @catch)
+    {
+        _catch = @catch;
+    }
+
     public void OnCompleted(Action continuation)
     {
-        continuation.Invoke();
-        IsCompleted = true;
+        _catch.State.Continuation = continuation;
     }
 
-    public void UnsafeOnCompleted(Action continuation) => OnCompleted(continuation);
+    public void UnsafeOnCompleted(Action continuation)
+    {
+        OnCompleted(continuation);
+    }
 
-    Result<T, Exception> GetResult() => _result;
+    public Result<T, Exception> GetResult()
+    {
+        return _catch.State.Result;
+    }
 
     public AsyncCatchAwaiter<T> GetAwaiter() => this;
 }
 
-public struct AsyncCatchMethodBuilder<TResult>() where TResult : notnull
+public struct AsyncCatchMethodBuilder<TResult>
+    where TResult : notnull
 {
-    public AsyncCatch<TResult> Task { get; private set; } = new();
+    public AsyncCatch<TResult> Task { get; private set; }
+    private readonly Lock _lock;
 
-    public static AsyncCatchMethodBuilder<TResult> Create() => default;
+
+    internal AsyncCatchMethodBuilder(AsyncCatch<TResult> task, Lock @lock)
+    {
+        Task = task;
+        _lock = @lock;
+    }
+
+    public static AsyncCatchMethodBuilder<TResult> Create()
+    {
+        var @lock = new Lock();
+        return new AsyncCatchMethodBuilder<TResult>(
+            new AsyncCatch<TResult>(new AsyncCatchState<TResult>(
+            )),
+            @lock
+        );
+    }
 
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
-        where TStateMachine : IAsyncStateMachine => stateMachine.MoveNext();
+        where TStateMachine : IAsyncStateMachine
+    {
+        stateMachine.MoveNext();
+    }
 
-    public void SetStateMachine(IAsyncStateMachine _) { }
+    public void SetStateMachine(IAsyncStateMachine _)
+    {
+    }
 
     public void AwaitOnCompleted<TAwaiter, TStateMachine>(
         ref TAwaiter awaiter,
@@ -79,11 +179,19 @@ public struct AsyncCatchMethodBuilder<TResult>() where TResult : notnull
         ref TStateMachine stateMachine
     )
         where TAwaiter : ICriticalNotifyCompletion
-        where TStateMachine : IAsyncStateMachine =>
+        where TStateMachine : IAsyncStateMachine
+    {
         awaiter.UnsafeOnCompleted(stateMachine.MoveNext);
+    }
 
-    public void SetResult(TResult result) => Task = new AsyncCatch<TResult>(result);
+    public void SetResult(TResult result)
+    {
+        Task.SetResult(result);
+        return;
+    }
 
-    public void SetException(Exception exception) =>
-        Task = new AsyncCatch<TResult>(exception);
+    public void SetException(Exception exception)
+    {
+        Task.SetException(exception);
+    }
 }

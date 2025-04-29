@@ -4,13 +4,19 @@ using DotNetCoreFunctional.Async;
 // ReSharper disable once CheckNamespace
 namespace System.Runtime.CompilerServices;
 
-public struct AsyncMethodBuilder<TResult>()
+public readonly struct AsyncMethodBuilder<TResult>()
     where TResult : notnull
 {
-    public Async<TResult> Task { get; private set; } = new();
+    public Async<TResult> Task { get; } = new();
 
-    public static AsyncMethodBuilder<TResult> Create() => default;
 
+    private AsyncMethodBuilder(AsyncMutableState<TResult> state) 
+        : this() => Task = new Async<TResult>(state);
+    
+    public static AsyncMethodBuilder<TResult> Create() => 
+        new(new AsyncMutableState<TResult>()); 
+    
+    
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
         where TStateMachine : IAsyncStateMachine => stateMachine.MoveNext();
 
@@ -32,8 +38,7 @@ public struct AsyncMethodBuilder<TResult>()
         where TStateMachine : IAsyncStateMachine =>
         awaiter.UnsafeOnCompleted(stateMachine.MoveNext);
 
-    public void SetResult(TResult result) => Task = Async.New(result);
+    public void SetResult(TResult result) => Task.State.SetResult(result);
 
-    public void SetException(Exception exception) =>
-        Task = new Async<TResult>(exception);
+    public void SetException(Exception exception) => Task.State.SetException(exception);
 }

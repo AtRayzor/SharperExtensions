@@ -59,7 +59,7 @@ public readonly struct AsyncResult<T, TError>
     /// Returns the underlying task representing the asynchronous operation.
     /// </summary>
     /// <returns>The task of the result.</returns>
-    public Task<Result<T, TError>> AsTask() => WrappedResult.Task;
+    public Task<Result<T, TError>> AsTask() => Async.AsTask(WrappedResult);
 
     public static implicit operator AsyncResult<T, TError>(
         Async<Result<T, TError>> wrappedResult
@@ -144,7 +144,7 @@ public static class AsyncResult
         CancellationToken cancellationToken
     )
         where T : notnull
-        where TError : notnull => new(new Async<Result<T, TError>>(result, cancellationToken));
+        where TError : notnull => new(Async<Result<T, TError>>.FromTask(result, cancellationToken));
 
     /// <summary>
     /// Creates an <see cref="AsyncResult{T, TError}"/> from a value task producing a <see cref="Result{T, TError}"/>.
@@ -171,7 +171,7 @@ public static class AsyncResult
     )
         where T : notnull
         where TError : notnull =>
-        new(new Async<Result<T, TError>>(result.AsTask(), cancellationToken));
+        new(Async<Result<T, TError>>.FromValueTask(result, cancellationToken));
 
     /// <summary>
     /// Creates an <see cref="AsyncResult{T, TError}"/> from a function that produces a task of <see cref="Result{T, TError}"/> given a cancellation token.
@@ -220,7 +220,7 @@ public static class AsyncResult
     /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the lifted task.</returns>
     public static AsyncResult<T, TError> LiftToOk<T, TError>(Task<T> task)
         where T : notnull
-        where TError : notnull => LiftToOk<T, TError>(new Async<T>(task));
+        where TError : notnull => LiftToOk<T, TError>(Async<T>.FromTask(task));
 
     /// <summary>
     /// Lifts an asynchronous task producing a success value into an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
@@ -235,7 +235,7 @@ public static class AsyncResult
         CancellationToken cancellationToken
     )
         where T : notnull
-        where TError : notnull => LiftToOk<T, TError>(new Async<T>(task, cancellationToken));
+        where TError : notnull => LiftToOk<T, TError>(Async<T>.FromTask(task, cancellationToken));
 
     /// <summary>
     /// Lifts an asynchronous value task producing a success value into an <see cref="AsyncResult{T, TError}"/>.
@@ -246,7 +246,7 @@ public static class AsyncResult
     /// <returns>An <see cref="AsyncResult{T, TError}"/> representing the lifted value task.</returns>
     public static AsyncResult<T, TError> LiftToOk<T, TError>(ValueTask<T> task)
         where T : notnull
-        where TError : notnull => LiftToOk<T, TError>(new Async<T>(task.AsTask()));
+        where TError : notnull => LiftToOk<T, TError>(Async<T>.FromTask(task.AsTask()));
 
     /// <summary>
     /// Lifts an asynchronous value task producing a success value into an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
@@ -262,7 +262,7 @@ public static class AsyncResult
     )
         where T : notnull
         where TError : notnull =>
-        LiftToOk<T, TError>(new Async<T>(task.AsTask(), cancellationToken));
+        LiftToOk<T, TError>(Async<T>.FromTask(task.AsTask(), cancellationToken));
 
     /// <summary>
     /// Lifts an asynchronous operation producing an error value into an <see cref="AsyncResult{T, TError}"/>.
@@ -301,7 +301,7 @@ public static class AsyncResult
     )
         where T : notnull
         where TError : notnull =>
-        LiftToError<T, TError>(new Async<TError>(task, cancellationToken));
+        LiftToError<T, TError>(Async<TError>.FromTask(task, cancellationToken));
 
     /// <summary>
     /// Lifts an asynchronous value task producing an error value into an <see cref="AsyncResult{T, TError}"/> without a specific cancellation token.
@@ -328,7 +328,7 @@ public static class AsyncResult
     )
         where T : notnull
         where TError : notnull =>
-        LiftToError<T, TError>(new Async<TError>(task.AsTask(), cancellationToken));
+        LiftToError<T, TError>(Async<TError>.FromTask(task.AsTask(), cancellationToken));
 
     /// <summary>
     /// Lifts an asynchronous task producing a nullable value into an <see cref="AsyncResult{T, TError}"/> with a specified cancellation token.
@@ -500,7 +500,7 @@ public static class AsyncResult
         where TError : notnull
         where TNew : notnull
     {
-        var partialBinder = Lambda.Partial(binder, asyncResult.WrappedResult.CancellationToken);
+        var partialBinder = Lambda.Partial(binder, asyncResult.WrappedResult.State.Token);
         var asyncBinder = Lambda.Partial<
             Result<T, TError>,
             Func<T, AsyncResult<TNew, TError>>,
@@ -574,7 +574,7 @@ public static class AsyncResult
         where T : notnull
         where TError : notnull
     {
-        var token = asyncResult.WrappedResult.CancellationToken;
+        var token = asyncResult.WrappedResult.State.Token;
         return await asyncResult.WrappedResult switch
         {
             Ok<T, TError> { Value: var value } => okArm(value, token),
@@ -736,4 +736,11 @@ public static class AsyncResult
             where T : notnull
             where TError : notnull => (await asyncResult).GetErrorOrDefault(error);
     }
+
+
+    public static Async<T> WithCancellation<T>(this Async<T> async, CancellationToken token) where T : notnull =>
+        Async.SetToken(async, token);
+
+    public static Task<T> AsTask<T>(this Async<T> async) where T : notnull => Async.AsTask(async);
+
 }
