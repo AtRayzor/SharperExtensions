@@ -1,6 +1,7 @@
 using DotNetCoreFunctional;
 using DotNetCoreFunctional.Async;
 using FluentAssertions;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Engine.ClientProtocol;
 using NetFunction.Types.Tests.DummyTypes;
 
 namespace NetFunction.Types.Tests;
@@ -71,8 +72,7 @@ public class AsyncTests
 
         result.NameAllCaps.Should().Be("JOHN");
     }
-    
-    
+
     [Fact]
     public async Task MapSourceWithDelay_ShouldTransformValue()
     {
@@ -84,7 +84,7 @@ public class AsyncTests
         var result = await mapped;
 
         result.NameAllCaps.Should().Be("JOHN");
-        
+
         return;
 
         async Async<DummyValue> CreateSource()
@@ -139,12 +139,10 @@ public class AsyncTests
 
         result.NameAllCaps.Should().Be("JANE");
     }
-    
+
     [Fact]
     public async Task BindSourceWithDelay_ShouldChainAsyncOperations()
     {
-
-
         var bound = Async.Bind(CreateSource(), Binder);
 
         var result = await bound;
@@ -155,14 +153,13 @@ public class AsyncTests
 
         Async<DummyNewValue> Binder(DummyValue d, CancellationToken _) =>
             Async.New(new DummyNewValue { NameAllCaps = d.Name.ToUpper() });
-        
+
         async Async<DummyValue> CreateSource()
         {
             await Task.Delay(1000);
-            
+
             return new DummyValue { Name = "John", Email = "john@example.com" };
         }
-        
     }
 
     [Fact]
@@ -181,12 +178,10 @@ public class AsyncTests
 
         result.NameAllCaps.Should().Be("JOHN");
     }
-    
-    
+
     [Fact]
     public async Task Apply_WithDelayedSource_ShouldApplyWrappedFunction()
     {
-
         var asyncFunc = Async.New<Func<DummyValue, CancellationToken, DummyNewValue>>(
             (d, _) => new DummyNewValue { NameAllCaps = d.Name.ToUpper() }
         );
@@ -196,19 +191,17 @@ public class AsyncTests
         var result = await applied;
 
         result.NameAllCaps.Should().Be("JOHN");
-        
+
         return;
 
         static async Async<DummyValue> CreateSourceAsync()
         {
             await Task.Delay(1000);
-            
+
             return new DummyValue { Name = "John", Email = "john@example.com" };
         }
     }
-    
-    
-    
+
     [Fact]
     public async Task Apply_WithDelayedWrapperMethod_ShouldApplyWrappedFunction()
     {
@@ -217,13 +210,13 @@ public class AsyncTests
         var result = await applied;
 
         result.NameAllCaps.Should().Be("JOHN");
-        
+
         return;
-        
+
         static async Async<DummyValue> CreateSourceAsync()
         {
             await Task.Delay(1000);
-            
+
             return new DummyValue { Name = "John", Email = "john@example.com" };
         }
 
@@ -231,8 +224,7 @@ public class AsyncTests
         {
             await Task.Delay(1000);
 
-            return
-                (d, _) => new DummyNewValue { NameAllCaps = d.Name.ToUpper() };
+            return (d, _) => new DummyNewValue { NameAllCaps = d.Name.ToUpper() };
         }
     }
 
@@ -338,14 +330,13 @@ public class AsyncTests
     [Fact]
     public async Task AwaitAsyncFunction_ShouldReturnResult()
     {
-
         var expected = new DummyValue { Name = "John", Email = "john@example.com" };
         var result = await DelayAsync();
 
         result.Should().BeEquivalentTo(expected);
-        
+
         return;
-        
+
         static async Async<DummyValue> DelayAsync()
         {
             await Task.Delay(1000);
@@ -353,20 +344,19 @@ public class AsyncTests
             return new DummyValue { Name = "John", Email = "john@example.com" };
         }
     }
-    
-    
+
     [Fact]
     public async Task AwaitAsyncFunction_ShouldThrowException()
     {
-
         const string errorMessage = "Test error message";
-        await FluentActions.Awaiting( 
-           async () => await DelayAsync()
-            ).Should().ThrowAsync<InvalidOperationException>()
+        await FluentActions
+            .Awaiting(async () => await DelayAsync())
+            .Should()
+            .ThrowAsync<InvalidOperationException>()
             .WithMessage(errorMessage);
-        
+
         return;
-        
+
         static async Async<DummyValue> DelayAsync()
         {
             await Task.Delay(1000);
@@ -374,8 +364,7 @@ public class AsyncTests
             throw new InvalidOperationException(errorMessage);
         }
     }
-    
-    
+
     [Fact]
     public async Task AsTask_ShouldBeAwaitable()
     {
@@ -387,7 +376,53 @@ public class AsyncTests
 
         awaited.Should().Be(dummy);
     }
-    
-    
-    
+
+    [Fact]
+    public void Result_CreateFromValue_ShouldReturnOk()
+    {
+        var dummy = new DummyValue { Name = "John", Email = "john@example.com" };
+        var dummyAsync = new Async<DummyValue>(dummy);
+
+        dummyAsync.Result.Should().Be(dummy);
+    }
+
+    [Fact]
+    public void Result_CreateFromAsyncOperation_ShouldReturnOk()
+    {
+        const string name = "John";
+        const string email = "john@example.com";
+
+        var expected = new DummyValue { Name = name, Email = email };
+
+        var dummyAsync = CreateValueAsync();
+
+        dummyAsync.Result.Should().BeEquivalentTo(expected);
+
+        async Async<DummyValue> CreateValueAsync()
+        {
+            await Task.Delay(2000);
+
+            return new DummyValue { Email = email, Name = name };
+        }
+    }
+
+    [Fact]
+    public void Result_FromCallback_ShouldReturnOk()
+    {
+        const string name = "John";
+        const string email = "john@example.com";
+
+        var expected = new DummyValue { Name = name, Email = email };
+
+        var dummyAsync = new Async<DummyValue>(CreateValue, ExecutionContext.Capture());
+
+        dummyAsync.Result.Should().BeEquivalentTo(expected);
+
+        static DummyValue CreateValue()
+        {
+            Task.Delay(2000).Wait();
+
+            return new DummyValue { Email = email, Name = name };
+        }
+    }
 }

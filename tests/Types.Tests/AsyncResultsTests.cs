@@ -46,6 +46,26 @@ namespace NetFunction.Types.Tests
             result.As<Ok<DummyValue, DummyError>>().Value.Should().BeEquivalentTo(dummyValue);
         }
 
+
+        [Fact]
+        public async Task Create_PassAsyncLambdaWithDelay_ShouldCreateAsyncResult()
+        {
+            var dummyValue = new DummyValue { Name = "Test", Email = "test@example.com" };
+            
+            var result = await CreateAsyncResult();
+            
+            result.As<Ok<DummyValue, DummyError>>().Value.Should().BeEquivalentTo(dummyValue);
+            
+            return;
+
+            AsyncResult<DummyValue, DummyError> CreateAsyncResult() => AsyncResult.Create(async () =>
+            {
+                await Task.Delay(1000);
+
+                return Result<DummyValue, DummyError>.Ok(dummyValue);
+            });
+        }
+
         [Fact]
         public async Task LiftToOk_ShouldWrapValueIntoOk()
         {
@@ -105,7 +125,95 @@ namespace NetFunction.Types.Tests
             result.Should().BeOfType<Error<DummyNewValue, DummyError>>();
             result.As<Error<DummyNewValue, DummyError>>().Err.Should().BeEquivalentTo(dummyError);
         }
+        
+        //
+        
+        
+        [Fact]
+        public async Task Map_WithDelayedSource_ShouldMapOkValue()
+        {
 
+            var mapped = AsyncResult.Map(
+                CreateSourceAsync().AsAsyncResult(),
+                (value, ct) => new DummyNewValue { NameAllCaps = value.Name.ToUpperInvariant() }
+            );
+
+            var result = await mapped;
+
+            result.Should().BeOfType<Ok<DummyNewValue, DummyError>>();
+            result.As<Ok<DummyNewValue, DummyError>>().Value.NameAllCaps.Should().Be("TEST");
+            
+            return;
+            
+            static async Async<Result<DummyValue, DummyError>> CreateSourceAsync()
+            {
+                await Task.Delay(1000);
+                var dummyValue = new DummyValue { Name = "Test", Email = "test@example.com" };
+                return Result.Ok<DummyValue, DummyError>(dummyValue);
+            }
+            
+        }
+
+        [Fact]
+        public async Task Map_WithDelayedSource_ShouldMapError()
+        {
+
+            var dummyError = new DummyError { Message = "Error occurred" };
+            var mapped = AsyncResult.Map(
+                CreateSourceAsync().AsAsyncResult(),
+                (value, ct) => new DummyNewValue { NameAllCaps = value.Name.ToUpperInvariant() }
+            );
+
+            var result = await mapped;
+
+            result.Should().BeOfType<Error<DummyNewValue, DummyError>>();
+            result.As<Error<DummyNewValue, DummyError>>().Err.Should().BeEquivalentTo(dummyError);
+            
+            return;
+
+            async Async<Result<DummyValue, DummyError>> CreateSourceAsync()
+            {
+                await Task.Delay(1000);
+                
+               return  Result.Error<DummyValue, DummyError>(dummyError);
+            }
+        }
+
+        
+        [Fact]
+        public async Task Map_FromLongRunningCreateCall_ShouldMapOkValue()
+        {
+            
+            var mapped = AsyncResult.Map(
+                CreateSourceAsync().AsAsyncResult(),
+                (value, ct) => new DummyNewValue { NameAllCaps = value.Name.ToUpperInvariant() }
+            );
+
+            var result = await mapped;
+
+            result.Should().BeOfType<Ok<DummyNewValue, DummyError>>();
+            result.As<Ok<DummyNewValue, DummyError>>().Value.NameAllCaps.Should().Be("TEST");
+            
+            return;
+
+            static async Async<Result<DummyValue, DummyError>> CreateSourceAsync() => 
+               await Task.Run( () =>
+                   {
+                      return AsyncResult.Create(async () =>
+                       {
+
+                           await Task.Delay(1000);
+                           var dummyValue = new DummyValue { Name = "Test", Email = "test@example.com" };
+                           return Result.Ok<DummyValue, DummyError>(dummyValue);
+                       }).AsTask();
+                   }
+                );
+                
+            
+            
+            
+        }
+        
         [Fact]
         public async Task Bind_ShouldBindOkValue()
         {

@@ -20,6 +20,52 @@ public class AsyncCatchTests
     }
 
     [Fact]
+    public void AsAsyncResult_ResultCallbackShouldNotBeNull()
+    {
+        var asyncCatch = new AsyncCatch<DummyValue>(ResultTestData.Value);
+
+        var asyncResult = asyncCatch.AsAsyncResult();
+
+        asyncResult.WrappedResult.State.ResultCallback.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void AsAsyncResult_AsyncFunctionReturnsResult_ResultCallbackShouldNotBeNull()
+    {
+        var asyncCatch = ReturnValueAsync();
+        var asyncResult = asyncCatch.AsAsyncResult();
+
+        asyncResult.WrappedResult.State.ResultCallback.Should().NotBeNull();
+
+        return;
+
+        async AsyncCatch<DummyValue> ReturnValueAsync()
+        {
+            await Task.Delay(2000);
+
+            return ResultTestData.DefaultValue;
+        }
+    }
+
+    [Fact]
+    public void AsAsyncResult_AsyncFunctionThrowsException_ResultCallbackShouldNotBeNull()
+    {
+        var asyncCatch = ReturnValueAsync();
+        var asyncResult = asyncCatch.AsAsyncResult();
+
+        asyncResult.WrappedResult.State.ResultCallback.Should().NotBeNull();
+
+        return;
+
+        async AsyncCatch<DummyValue> ReturnValueAsync()
+        {
+            await Task.Delay(2000);
+
+            throw new InvalidOperationException();
+        }
+    }
+
+    [Fact]
     public async Task CreateAsyncResult_ShouldReturnErrorString()
     {
         const string testMessage = "This is a test exception.";
@@ -35,10 +81,10 @@ public class AsyncCatchTests
     public async Task Await_ReturnsOk()
     {
         const string testString = "This is a test.";
-        
-       var asyncCatch = CreateAsyncCatch();
-       var result = await asyncCatch;
-       
+
+        var asyncCatch = CreateAsyncCatch();
+        var result = await asyncCatch;
+
         result.TryGetValue(out var response).Should().BeTrue();
         response.Should().Be(testString);
 
@@ -48,7 +94,6 @@ public class AsyncCatchTests
 
         static async Task<string> TaskFactory()
         {
-
             await Task.Delay(1000);
             return testString;
         }
