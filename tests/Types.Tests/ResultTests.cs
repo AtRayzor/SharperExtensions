@@ -1,6 +1,7 @@
 using System;
 using DotNetCoreFunctional.Result;
 using FluentAssertions;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 using NetFunction.Types.Tests;
 using NetFunction.Types.Tests.DummyTypes;
 using Xunit;
@@ -46,6 +47,83 @@ public class ResultTests
     }
 
     [Fact]
+    public void Combine_BothOk_ShouldReturnOk()
+    {
+        var result1 = Result.Ok<DummyValue, DummyError>(ResultTestData.Value);
+        var result2 = Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue);
+
+        var expected = Result.Ok<(DummyValue, DummyNewValue), DummyError>(
+            (ResultTestData.Value, ResultTestData.NewValue)
+        );
+
+        var combined = Result.Combine(
+            result1,
+            result2,
+            (e1, e2) => new DummyError { Message = e1.Message + e2.Message }
+        );
+
+        combined.Should().BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
+    }
+
+    [Fact]
+    public void Combine_FirstOk_SecondError_ShouldReturnError()
+    {
+        var result1 = Result.Ok<DummyValue, DummyError>(ResultTestData.Value);
+        var result2 = Result.Error<DummyNewValue, DummyError>(ResultTestData.Error);
+
+        var expected = Result.Error<(DummyValue, DummyNewValue), DummyError>(ResultTestData.Error);
+
+        var combined = Result.Combine(
+            result1,
+            result2,
+            (e1, e2) => new DummyError { Message = e1.Message + e2.Message }
+        );
+
+        combined.Should().BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
+    }
+
+    [Fact]
+    public void Combine_FirstError_SecondOk_ShouldReturnError()
+    {
+        var result1 = Result.Error<DummyValue, DummyError>(ResultTestData.DefaultError);
+        var result2 = Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue);
+
+        var expected = Result.Error<(DummyValue, DummyNewValue), DummyError>(
+            ResultTestData.DefaultError
+        );
+
+        var combined = Result.Combine(
+            result1,
+            result2,
+            (e1, e2) => new DummyError { Message = e1.Message + e2.Message }
+        );
+
+        combined.Should().BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
+    }
+
+    [Fact]
+    public void Combine_BothError_ShouldReturnError()
+    {
+        var result1 = Result.Error<DummyValue, DummyError>(ResultTestData.DefaultError);
+        var result2 = Result.Error<DummyNewValue, DummyError>(ResultTestData.Error);
+
+        var expected = Result.Error<(DummyValue, DummyNewValue), DummyError>(
+            new DummyError
+            {
+                Message = ResultTestData.DefaultError.Message + ResultTestData.Error.Message,
+            }
+        );
+
+        var combined = Result.Combine(
+            result1,
+            result2,
+            (e1, e2) => new DummyError { Message = e1.Message + e2.Message }
+        );
+
+        combined.Should().BeEquivalentTo(expected, config => config.RespectingRuntimeTypes());
+    }
+
+    [Fact]
     public void Unsafe_GetValueOrDefault_ReturnsValueOrDefault()
     {
         var ok = Result.Ok<DummyValue, DummyError>(ResultTestData.Value);
@@ -54,8 +132,14 @@ public class ResultTests
         Result.Unsafe.GetValueOrDefault(ok).Should().Be(ResultTestData.Value);
         Result.Unsafe.GetValueOrDefault(error).Should().BeNull();
 
-        Result.Unsafe.GetValueOrDefault(ok, ResultTestData.DefaultValue).Should().Be(ResultTestData.Value);
-        Result.Unsafe.GetValueOrDefault(error, ResultTestData.DefaultValue).Should().Be(ResultTestData.DefaultValue);
+        Result
+            .Unsafe.GetValueOrDefault(ok, ResultTestData.DefaultValue)
+            .Should()
+            .Be(ResultTestData.Value);
+        Result
+            .Unsafe.GetValueOrDefault(error, ResultTestData.DefaultValue)
+            .Should()
+            .Be(ResultTestData.DefaultValue);
     }
 
     [Fact]
@@ -67,8 +151,14 @@ public class ResultTests
         Result.Unsafe.GetErrorOrDefault(error).Should().Be(ResultTestData.Error);
         Result.Unsafe.GetErrorOrDefault(ok).Should().BeNull();
 
-        Result.Unsafe.GetErrorOrDefault(error, ResultTestData.DefaultError).Should().Be(ResultTestData.Error);
-        Result.Unsafe.GetErrorOrDefault(ok, ResultTestData.DefaultError).Should().Be(ResultTestData.DefaultError);
+        Result
+            .Unsafe.GetErrorOrDefault(error, ResultTestData.DefaultError)
+            .Should()
+            .Be(ResultTestData.Error);
+        Result
+            .Unsafe.GetErrorOrDefault(ok, ResultTestData.DefaultError)
+            .Should()
+            .Be(ResultTestData.DefaultError);
     }
 
     [Fact]
