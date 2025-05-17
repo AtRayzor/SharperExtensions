@@ -41,6 +41,16 @@ public static partial class Result
                 Error<T, TError> error => new Error<TNew, TError>(error),
             };
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Result<TNew, TError> Map<T1, T2, TError, TNew>(
+            Result<(T1, T2), TError> result,
+            Func<T1, T2, TNew> mapper
+        )
+            where T1 : notnull
+            where T2 : notnull
+            where TError : notnull
+            where TNew : notnull => Map(result, pair => mapper(pair.Item1, pair.Item2));
+
         /// <summary>
         /// Maps the error value of a <see cref="Result{T, TError}"/> to a new error value,
         /// preserving the success type if the result is successful.

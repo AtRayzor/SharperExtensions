@@ -388,6 +388,28 @@ public static class AsyncResult
                 : Result<T, TError>.Error(nullError);
     }
 
+    public static AsyncResult<(T1, T2), TError> Combine<T1, T2, TError>(
+        AsyncResult<T1, TError> asyncResult1,
+        AsyncResult<T2, TError> asyncResult2,
+        Func<TError, TError, TError> errorCollisionHandler
+    )
+        where T1 : notnull
+        where T2 : notnull
+        where TError : notnull
+    {
+        return new AsyncResult<(T1, T2), TError>(
+            new Async<Result<(T1, T2), TError>>(ResultCallback, ExecutionContext.Capture())
+        );
+
+        Result<(T1, T2), TError> ResultCallback()
+        {
+            var result1 = asyncResult1.WrappedResult.Result;
+            var result2 = asyncResult2.WrappedResult.Result;
+
+            return Result.Result.Combine(result1, result2, errorCollisionHandler);
+        }
+    }
+
     /// <summary>
     /// Maps the success value of an <see cref="AsyncResult{T, TError}"/> to a new value without using the cancellation token.
     /// </summary>

@@ -144,6 +144,28 @@ public static partial class Result
         where T : notnull
         where TError : notnull => result is Error<T, TError>;
 
+    public static Result<(T1, T2), TError> Combine<T1, T2, TError>(
+        Result<T1, TError> result1,
+        Result<T2, TError> result2,
+        Func<TError, TError, TError> errorCollisionHandler
+    )
+        where T1 : notnull
+        where T2 : notnull
+        where TError : notnull =>
+        result1.Match(
+            matchOk: value1 =>
+                result2.Match(
+                    matchOk: value2 => Result<(T1, T2), TError>.Ok((value1, value2)),
+                    matchError: Result<(T1, T2), TError>.Error
+                ),
+            matchError: error1 =>
+                result2.Match(
+                    matchOk: _ => Result<(T1, T2), TError>.Error(error1),
+                    matchError: error2 =>
+                        Result<(T1, T2), TError>.Error(errorCollisionHandler(error1, error2))
+                )
+        );
+
     /// <summary>
     /// Provides unsafe utility methods for working with <see cref="Result{T, TError}"/> types.
     /// </summary>
