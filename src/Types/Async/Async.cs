@@ -13,41 +13,55 @@ public struct Async<T> : IEquatable<Async<T>>
     where T : notnull
 {
     internal AsyncMutableState<T> State { get; }
-    
+
     private Async<Unit> New => Async.New(Unit.Value);
 
+    public T Result => State.GetResultBlocking();
 
-
-    internal Async(T value, CancellationToken cancellationToken = default)
+    internal Async(
+        T value,
+        ExecutionContext? executionContext = null,
+        CancellationToken cancellationToken = default
+    )
     {
-        State = new AsyncMutableState<T>(value, cancellationToken);
+        State = new AsyncMutableState<T>(value, executionContext, cancellationToken);
+        State.CaptureLocalContext();
+    }
+
+    internal Async(
+        Func<T> resultCallback,
+        ExecutionContext? executionContext,
+        CancellationToken cancellationToken = default
+    )
+    {
+        State = new AsyncMutableState<T>(executionContext, cancellationToken)
+        {
+            ResultCallback = resultCallback,
+        };
     }
 
     internal Async(AsyncMutableState<T> state, CancellationToken cancellationToken = default)
     {
         State = state;
+        State.CaptureLocalContext();
+        State.Status = AsyncStatus.RunningAsync;
     }
-
-
-
 
     public static Async<T> FromTask(Task<T> task, CancellationToken token = default)
     {
         return ConvertAsync(task);
-        
-        static async Async<T> ConvertAsync(Task<T> task) => 
+
+        static async Async<T> ConvertAsync(Task<T> task) =>
             await task.ConfigureAwait(ConfigureAwaitOptions.None);
     }
-    
+
     public static Async<T> FromValueTask(ValueTask<T> task, CancellationToken token = default)
     {
         return ConvertAsync(task);
-        
-        static async Async<T> ConvertAsync(ValueTask<T> valueTask) => 
+
+        static async Async<T> ConvertAsync(ValueTask<T> valueTask) =>
             await valueTask.ConfigureAwait(false);
     }
-    
-    
 
     /// <summary>
     /// Gets an awaiter used to await this asynchronous operation.
@@ -88,7 +102,7 @@ public static class Async
     /// <param name="cancellationToken">The cancellation token to associate with this async operation.</param>
     /// <returns>An <see cref="Async{T}"/> representing a completed asynchronous computation with the specified value.</returns>
     public static Async<T> New<T>(T value, CancellationToken cancellationToken = default)
-        where T : notnull => new(value, cancellationToken);
+        where T : notnull => new(value, cancellationToken: cancellationToken);
 
     /// <summary>
     /// Creates a new <see cref="Async{T}"/> from an existing <see cref="Task{TResult}"/> and cancellation token.
@@ -171,28 +185,30 @@ public static class Async
         }
     }
 
-
-    public static Task<T> AsTask<T>(Async<T> async) where T : notnull
+    public static Task<T> AsTask<T>(Async<T> async)
+        where T : notnull
     {
         return ToTaskAsync(async);
-        
+
         static async Task<T> ToTaskAsync(Async<T> async)
         {
-           return await async;
+            return await async;
         }
-    } 
-    
-    public static ValueTask<T> AsValueTask<T>(Async<T> async) where T : notnull
+    }
+
+    public static ValueTask<T> AsValueTask<T>(Async<T> async)
+        where T : notnull
     {
         return ToValueTaskAsync(async);
-        
+
         static async ValueTask<T> ToValueTaskAsync(Async<T> async)
         {
             return await async;
         }
-    } 
+    }
 
-    public static Async<T> SetToken<T>(Async<T> async, CancellationToken token) where T : notnull
+    public static Async<T> SetToken<T>(Async<T> async, CancellationToken token)
+        where T : notnull
     {
         async.State.Token = token;
 
@@ -212,25 +228,22 @@ public static class Async
     /// </summary>
     /// <typeparam name="T">The type of the input value.</typeparam>
     /// <typeparam name="TNew">The type of the output value.</typeparam>
-    /// <param name="async">The asynchronous computation to map.</param>
-    /// <param name="map">A function to transform the input value and cancellation token into the output value.</param>
+    /// <param name="async">The asynchronous computation to mapper.</param>
+    /// <param name="mapper">A function to transform the input value and cancellation token into the output value.</param>
     /// <param name="cancellationToken">The cancellation token to associate with this async operation.</param>
     /// <returns>A new <see cref="Async{TNew}"/> representing the mapped asynchronous computation.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Async<TNew> Map<T, TNew>(
         Async<T> async,
-        Func<T, CancellationToken, TNew> map,
+        Func<T, CancellationToken, TNew> mapper,
         CancellationToken cancellationToken
     )
         where T : notnull
         where TNew : notnull
     {
-        return MapAsync(async, map, cancellationToken);
+        return new Async<TNew>(ResultCallback, async.State.ExecutionContext);
 
-        static async Async<TNew> MapAsync(
-            Async<T> async,
-            Func<T, CancellationToken, TNew> map,
-            CancellationToken cancellationToken
-        ) => map(await async, cancellationToken);
+        TNew ResultCallback() => mapper(async.Result, cancellationToken);
     }
 
     /// <summary>
@@ -241,6 +254,7 @@ public static class Async
     /// <param name="async">The asynchronous computation to map.</param>
     /// <param name="map">A function to transform the input value and cancellation token into the output value.</param>
     /// <returns>A new <see cref="Async{TNew}"/> representing the mapped asynchronous computation.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Async<TNew> Map<T, TNew>(Async<T> async, Func<T, CancellationToken, TNew> map)
         where T : notnull
         where TNew : notnull => Map(async, map, CancellationToken.None);
@@ -253,6 +267,7 @@ public static class Async
     /// <param name="async">The asynchronous computation to map.</param>
     /// <param name="map">A function to transform the input value into the output value.</param>
     /// <returns>A new <see cref="Async{TNew}"/> representing the mapped asynchronous computation.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Async<TNew> Map<T, TNew>(Async<T> async, Func<T, TNew> map)
         where T : notnull
         where TNew : notnull => Map(async, (value, _) => map(value), async.State.Token);
@@ -266,6 +281,7 @@ public static class Async
     /// <param name="binder">A function that takes the input value and cancellation token and returns a new asynchronous computation.</param>
     /// <param name="cancellationToken">The cancellation token to associate with this async operation.</param>
     /// <returns>A new <see cref="Async{TNew}"/> representing the bound asynchronous computation.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Async<TNew> Bind<T, TNew>(
         Async<T> async,
         Func<T, CancellationToken, Async<TNew>> binder,
@@ -274,13 +290,9 @@ public static class Async
         where T : notnull
         where TNew : notnull
     {
-        return SetToken(BindAsync(async, binder, cancellationToken), cancellationToken);
+        return new Async<TNew>(ResultCallback, async.State.ExecutionContext, cancellationToken);
 
-        static async Async<TNew> BindAsync(
-            Async<T> async,
-            Func<T, CancellationToken, Async<TNew>> binder,
-            CancellationToken cancellationToken
-        ) => await binder(await async, cancellationToken);
+        TNew ResultCallback() => binder(async.Result, cancellationToken).Result;
     }
 
     /// <summary>
@@ -291,6 +303,7 @@ public static class Async
     /// <param name="async">The asynchronous computation to bind.</param>
     /// <param name="binder">A function that takes the input value and cancellation token and returns a new asynchronous computation.</param>
     /// <returns>A new <see cref="Async{TNew}"/> representing the bound asynchronous computation.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Async<TNew> Bind<T, TNew>(
         Async<T> async,
         Func<T, CancellationToken, Async<TNew>> binder
@@ -306,6 +319,7 @@ public static class Async
     /// <param name="async">The asynchronous computation to bind.</param>
     /// <param name="binder">A function that takes the input value and returns a new asynchronous computation.</param>
     /// <returns>A new <see cref="Async{TNew}"/> representing the bound asynchronous computation.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Async<TNew> Bind<T, TNew>(Async<T> async, Func<T, Async<TNew>> binder)
         where T : notnull
         where TNew : notnull => Bind(async, (value, _) => binder(value), async.State.Token);
@@ -316,11 +330,18 @@ public static class Async
     /// <typeparam name="T">The type of the inner asynchronous computation's value.</typeparam>
     /// <param name="nestedAsync">The nested asynchronous computation to flatten.</param>
     /// <returns>The flattened asynchronous computation.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Async<T> Flatten<T>(Async<Async<T>> nestedAsync)
-        where T : notnull => FlattenAsync(nestedAsync).Result;
+        where T : notnull
+    {
+        return new Async<T>(
+            ResultCallback,
+            nestedAsync.State.ExecutionContext,
+            nestedAsync.State.Token
+        );
 
-    private static async Task<Async<T>> FlattenAsync<T>(Async<Async<T>> nestedAsync)
-        where T : notnull => await nestedAsync;
+        T ResultCallback() => nestedAsync.Result.Result;
+    }
 
     /// <summary>
     /// Applies a wrapped mapping function to an asynchronous computation.
@@ -331,14 +352,19 @@ public static class Async
     /// <param name="wrappedMap">The wrapped mapping function as an asynchronous computation.</param>
     /// <param name="cancellationToken">The cancellation token to associate with this async operation.</param>
     /// <returns>A new <see cref="Async{TNew}"/> representing the result of applying the mapping function.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Async<TNew> Apply<T, TNew>(
         Async<T> async,
         Async<Func<T, CancellationToken, TNew>> wrappedMap,
         CancellationToken cancellationToken
     )
         where T : notnull
-        where TNew : notnull =>
-        Bind(wrappedMap, (map, ct) => Map(async, map, ct), cancellationToken);
+        where TNew : notnull
+    {
+        return new Async<TNew>(ResultCallback, async.State.ExecutionContext, cancellationToken);
+
+        TNew ResultCallback() => wrappedMap.Result.Invoke(async.Result, cancellationToken);
+    }
 
     /// <summary>
     /// Applies a wrapped mapping function to an asynchronous computation.
@@ -348,6 +374,7 @@ public static class Async
     /// <param name="async">The asynchronous computation to apply the mapping to.</param>
     /// <param name="wrappedMap">The wrapped mapping function as an asynchronous computation.</param>
     /// <returns>A new <see cref="Async{TNew}"/> representing the result of applying the mapping function.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Async<TNew> Apply<T, TNew>(
         Async<T> async,
         Async<Func<T, CancellationToken, TNew>> wrappedMap
@@ -363,6 +390,7 @@ public static class Async
     /// <param name="async">The asynchronous computation to apply the mapping to.</param>
     /// <param name="wrappedMap">The wrapped mapping function as an asynchronous computation.</param>
     /// <returns>A new <see cref="Async{TNew}"/> representing the result of applying the mapping function.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Async<TNew> Apply<T, TNew>(Async<T> async, Async<Func<T, TNew>> wrappedMap)
         where T : notnull
         where TNew : notnull => Bind(wrappedMap, map => Map(async, map));

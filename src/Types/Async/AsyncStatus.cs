@@ -1,9 +1,10 @@
 namespace DotNetCoreFunctional.Async;
 
-enum AsyncStatus 
+enum AsyncStatus
 {
+    RunningAsync,
     Running,
     Completed,
     Failed,
-    Canceled
+    Canceled,
 }

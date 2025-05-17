@@ -7,6 +7,12 @@ namespace DotNetCoreFunctional.Async;
 /// </summary>
 public static class AsyncResultExtensions
 {
+    public static Async<Result<T, TResult>> AsAsync<T, TResult>(
+        this AsyncResult<T, TResult> asyncResult
+    )
+        where T : notnull
+        where TResult : notnull => asyncResult.WrappedResult;
+
     public static AsyncResult<T, TError> AsAsyncResult<T, TError>(
         this Async<Result<T, TError>> wrappedResult
     )
@@ -179,6 +185,16 @@ public static class AsyncResultExtensions
         where T : notnull
         where TError : notnull => AsyncResult.LiftToError<T, TError>(async);
 
+    public static AsyncResult<(T1, T2), TError> Combine<T1, T2, TError>(
+        this AsyncResult<T1, TError> asyncResult1,
+        AsyncResult<T2, TError> asyncResult2,
+        Func<TError, TError, TError> errorCollisionHandler
+    )
+        where T1 : notnull
+        where T2 : notnull
+        where TError : notnull =>
+        AsyncResult.Combine(asyncResult1, asyncResult2, errorCollisionHandler);
+
     /// <summary>
     /// Maps the success value of an <see cref="AsyncResult{T, TError}"/> to a new value.
     /// </summary>
@@ -210,6 +226,15 @@ public static class AsyncResultExtensions
         Func<T, CancellationToken, TNew> mapper
     )
         where T : notnull
+        where TError : notnull
+        where TNew : notnull => AsyncResult.Map(asyncResult, mapper);
+
+    public static AsyncResult<TNew, TError> Map<T1, T2, TError, TNew>(
+        this AsyncResult<(T1, T2), TError> asyncResult,
+        Func<T1, T2, TNew> mapper
+    )
+        where T1 : notnull
+        where T2 : notnull
         where TError : notnull
         where TNew : notnull => AsyncResult.Map(asyncResult, mapper);
 
@@ -261,6 +286,15 @@ public static class AsyncResultExtensions
         Func<T, CancellationToken, AsyncResult<TNew, TError>> binder
     )
         where T : notnull
+        where TError : notnull
+        where TNew : notnull => AsyncResult.Bind(asyncResult, binder);
+
+    public static AsyncResult<TNew, TError> Bind<T1, T2, TError, TNew>(
+        this AsyncResult<(T1, T2), TError> asyncResult,
+        Func<T1, T2, AsyncResult<TNew, TError>> binder
+    )
+        where T1 : notnull
+        where T2 : notnull
         where TError : notnull
         where TNew : notnull => AsyncResult.Bind(asyncResult, binder);
 

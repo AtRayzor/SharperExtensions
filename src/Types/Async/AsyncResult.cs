@@ -405,6 +405,15 @@ public static class AsyncResult
         where TError : notnull
         where TNew : notnull => Map(asyncResult, (value, _) => mapper(value));
 
+    public static AsyncResult<TNew, TError> Map<T1, T2, TError, TNew>(
+        AsyncResult<(T1, T2), TError> asyncResult,
+        Func<T1, T2, TNew> mapper
+    )
+        where T1 : notnull
+        where T2 : notnull
+        where TError : notnull
+        where TNew : notnull => Map(asyncResult, pair => mapper(pair.Item1, pair.Item2));
+
     /// <summary>
     /// Maps the success value of an <see cref="AsyncResult{T, TError}"/> to a new value.
     /// </summary>
@@ -482,6 +491,15 @@ public static class AsyncResult
         where T : notnull
         where TError : notnull
         where TNew : notnull => Bind(asyncResult, (value, _) => binder(value));
+
+    public static AsyncResult<TNew, TError> Bind<T1, T2, TError, TNew>(
+        AsyncResult<(T1, T2), TError> asyncResult,
+        Func<T1, T2, AsyncResult<TNew, TError>> binder
+    )
+        where T1 : notnull
+        where T2 : notnull
+        where TError : notnull
+        where TNew : notnull => Bind(asyncResult, pair => binder(pair.Item1, pair.Item2));
 
     /// <summary>
     /// Binds the success value of an <see cref="AsyncResult{T, TError}"/> to a new asynchronous result.
@@ -737,10 +755,9 @@ public static class AsyncResult
             where TError : notnull => (await asyncResult).GetErrorOrDefault(error);
     }
 
+    public static Async<T> WithCancellation<T>(this Async<T> async, CancellationToken token)
+        where T : notnull => Async.SetToken(async, token);
 
-    public static Async<T> WithCancellation<T>(this Async<T> async, CancellationToken token) where T : notnull =>
-        Async.SetToken(async, token);
-
-    public static Task<T> AsTask<T>(this Async<T> async) where T : notnull => Async.AsTask(async);
-
+    public static Task<T> AsTask<T>(this Async<T> async)
+        where T : notnull => Async.AsTask(async);
 }

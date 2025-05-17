@@ -8,19 +8,22 @@ namespace DotNetCoreFunctional.Async;
 internal sealed class AsyncCatchState<T>
     where T : notnull
 {
+    public Action? Continuation { get; set; }
+
+    public Action? Action { get; set; }
+
     public bool IsCompleted { get; set; }
-    
+
     public AsyncCatchState()
     {
         return;
     }
 
-
-    public AsyncCatchState(Result<T, Exception> result) : this()
+    public AsyncCatchState(Result<T, Exception> result)
+        : this()
     {
         Result = result;
     }
-
 
     [field: AllowNull, MaybeNull]
     public Result<T, Exception> Result
@@ -36,15 +39,26 @@ internal sealed class AsyncCatchState<T>
             return;
         }
     }
-    
-    public Action? Continuation { get; set; }
+
+    public Func<Result<T, Exception>> CreateExecutionDelegate()
+    {
+        return Execution;
+
+        Result<T, Exception> Execution()
+        {
+            Action?.Invoke();
+
+            return Result;
+        }
+    }
 }
 
 [AsyncMethodBuilder(typeof(AsyncCatchMethodBuilder<>))]
 public struct AsyncCatch<T>
     where T : notnull
 {
-    [field: AllowNull, MaybeNull] internal AsyncCatchState<T> State { get; private init; }
+    [field: AllowNull, MaybeNull]
+    internal AsyncCatchState<T> State { get; private init; }
 
     public AsyncCatch()
     {
@@ -52,21 +66,16 @@ public struct AsyncCatch<T>
     }
 
     internal AsyncCatch(T value)
-        : this(new AsyncCatchState<T>(Result<T, Exception>.Ok(value)))
-    {
-    }
+        : this(new AsyncCatchState<T>(Result<T, Exception>.Ok(value))) { }
 
     internal AsyncCatch(Exception exception)
-        : this(new AsyncCatchState<T>(Result<T, Exception>.Error(exception)))
-    {
-    }
+        : this(new AsyncCatchState<T>(Result<T, Exception>.Error(exception))) { }
 
     internal AsyncCatch(AsyncCatchState<T> state)
         : this()
     {
         State = state;
     }
-
 
     internal void SetResult(T result)
     {
@@ -82,12 +91,13 @@ public struct AsyncCatch<T>
         State.Continuation?.Invoke();
     }
 
-    public AsyncResult<T, Exception> AsAsyncResult() => AsyncResult.Create(State.Result);
+    public AsyncResult<T, Exception> AsAsyncResult() =>
+        new(new Async<Result<T, Exception>>(State.CreateExecutionDelegate(), null));
 
-    public Result<T, Exception> AsResult() => State.Result;
+    public Result<T, Exception> Result() => AsAsyncResult().WrappedResult.Result;
 
     public Result<T, TError> CreateResult<TError>(Func<Exception, TError> errorMapper)
-        where TError : notnull => State.Result.MapError(errorMapper);
+        where TError : notnull => AsAsyncResult().MapError(errorMapper).WrappedResult.Result;
 
     public AsyncResult<T, TError> CreateAsyncResult<TError>(Func<Exception, TError> errorMapper)
         where TError : notnull => AsAsyncResult().MapError(errorMapper);
@@ -139,7 +149,6 @@ public struct AsyncCatchMethodBuilder<TResult>
     public AsyncCatch<TResult> Task { get; private set; }
     private readonly Lock _lock;
 
-
     internal AsyncCatchMethodBuilder(AsyncCatch<TResult> task, Lock @lock)
     {
         Task = task;
@@ -150,8 +159,7 @@ public struct AsyncCatchMethodBuilder<TResult>
     {
         var @lock = new Lock();
         return new AsyncCatchMethodBuilder<TResult>(
-            new AsyncCatch<TResult>(new AsyncCatchState<TResult>(
-            )),
+            new AsyncCatch<TResult>(new AsyncCatchState<TResult>()),
             @lock
         );
     }
@@ -162,16 +170,18 @@ public struct AsyncCatchMethodBuilder<TResult>
         stateMachine.MoveNext();
     }
 
-    public void SetStateMachine(IAsyncStateMachine _)
-    {
-    }
+    public void SetStateMachine(IAsyncStateMachine _) { }
 
     public void AwaitOnCompleted<TAwaiter, TStateMachine>(
         ref TAwaiter awaiter,
         ref TStateMachine stateMachine
     )
         where TAwaiter : INotifyCompletion
-        where TStateMachine : IAsyncStateMachine => awaiter.OnCompleted(stateMachine.MoveNext);
+        where TStateMachine : IAsyncStateMachine
+    {
+        Task.State.Action = stateMachine.MoveNext;
+        awaiter.OnCompleted(stateMachine.MoveNext);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(
@@ -181,6 +191,7 @@ public struct AsyncCatchMethodBuilder<TResult>
         where TAwaiter : ICriticalNotifyCompletion
         where TStateMachine : IAsyncStateMachine
     {
+        Task.State.Action = stateMachine.MoveNext;
         awaiter.UnsafeOnCompleted(stateMachine.MoveNext);
     }
 
@@ -193,5 +204,10 @@ public struct AsyncCatchMethodBuilder<TResult>
     public void SetException(Exception exception)
     {
         Task.SetException(exception);
+    }
+
+    private void CreateWaitForResultAction(Action taskAction)
+    {
+        taskAction.Invoke();
     }
 }
