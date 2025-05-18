@@ -9,14 +9,12 @@ public readonly struct AsyncMethodBuilder<TResult>()
 {
     public Async<TResult> Task { get; } = new();
 
-
-    private AsyncMethodBuilder(AsyncMutableState<TResult> state) 
+    private AsyncMethodBuilder(AsyncMutableState<TResult> state)
         : this() => Task = new Async<TResult>(state);
-    
-    public static AsyncMethodBuilder<TResult> Create() => 
-        new(new AsyncMutableState<TResult>()); 
-    
-    
+
+    public static AsyncMethodBuilder<TResult> Create() =>
+        new(new AsyncMutableState<TResult>());
+
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
         where TStateMachine : IAsyncStateMachine => stateMachine.MoveNext();
 
@@ -27,7 +25,8 @@ public readonly struct AsyncMethodBuilder<TResult>()
         ref TStateMachine stateMachine
     )
         where TAwaiter : INotifyCompletion
-        where TStateMachine : IAsyncStateMachine => awaiter.OnCompleted(stateMachine.MoveNext);
+        where TStateMachine : IAsyncStateMachine =>
+        awaiter.OnCompleted(stateMachine.MoveNext);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(

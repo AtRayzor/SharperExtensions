@@ -394,7 +394,7 @@ public static class Async
     public static Async<TNew> Apply<T, TNew>(Async<T> async, Async<Func<T, TNew>> wrappedMap)
         where T : notnull
         where TNew : notnull => Bind(wrappedMap, map => Map(async, map));
-
+    
     /// <summary>
     /// Executes an asynchronous action on the result of an asynchronous computation.
     /// </summary>
