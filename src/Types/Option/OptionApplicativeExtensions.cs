@@ -31,7 +31,8 @@ public static partial class Option
             where TNew : notnull =>
             await wrappedMappingTask switch
             {
-                Some<Func<T, TNew>> someWrapped => (await optionTask).Map(someWrapped.Value),
+                Some<Func<T, TNew>> someWrapped => 
+                    (await optionTask).Map(someWrapped.Value),
                 _ => new None<TNew>(),
             };
     }
@@ -39,15 +40,6 @@ public static partial class Option
 
 public static class OptionApplicativeExtensions
 {
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Option<TNew> Apply<T, TNew>(
-        this Option<T> option,
-        Option<Func<T, TNew>> wrappedMapping
-    )
-        where T : notnull
-        where TNew : notnull => Option.Applicative.Apply(option, wrappedMapping);
-
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Task<Option<TNew>> ApplyAsync<T, TNew>(

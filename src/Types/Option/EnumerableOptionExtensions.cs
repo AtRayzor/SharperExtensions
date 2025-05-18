@@ -56,6 +56,6 @@ public static class EnumerableOptionExtensions
         where TResult : notnull =>
         options
             .Select(op => op.Apply(optionalSelector))
-            .Where(op => op.IsSome())
+            .Where(op => op.IsSome)
             .Select(op => ((Some<TResult>)op).Value);
 }

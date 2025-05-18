@@ -65,17 +65,6 @@ public static class OptionMonad
 {
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Option<TNew> Bind<T, TNew>(this Option<T> option, Func<T, Option<TNew>> binder)
-        where T : notnull
-        where TNew : notnull => Option.Monad.Bind(option, binder);
-
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Option<T> Flatten<T>(this Option<Option<T>> wrappedOption)
-        where T : notnull => Option.Monad.Flatten(wrappedOption);
-
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Task<Option<TNew>> BindAsync<T, TNew>(
         this Task<Option<T>> optionTask,
         Func<T, CancellationToken, Task<Option<TNew>>> binder,

@@ -56,21 +56,6 @@ public static partial class Option
 
 public static class OptionFunctor
 {
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Option<TNew> Map<T, TNew>(this Option<T> option, Func<T, TNew> mapping)
-        where T : notnull
-        where TNew : notnull => Option.Functor.Map(option, mapping);
-
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TNew Match<T, TNew>(
-        this Option<T> option,
-        Func<T, TNew> someMapping,
-        Func<TNew> noneMapping
-    )
-        where T : notnull
-        where TNew : notnull => Option.Functor.Match(option, someMapping, noneMapping);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
