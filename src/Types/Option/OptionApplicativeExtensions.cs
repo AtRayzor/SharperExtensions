@@ -20,32 +20,5 @@ public static partial class Option
                 Some<Func<T, TNew>> someWrapped => option.Map(someWrapped.Value),
                 _ => new None<TNew>(),
             };
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static async Task<Option<TNew>> ApplyAsync<T, TNew>(
-            Task<Option<T>> optionTask,
-            Task<Option<Func<T, TNew>>> wrappedMappingTask
-        )
-            where T : notnull
-            where TNew : notnull =>
-            await wrappedMappingTask switch
-            {
-                Some<Func<T, TNew>> someWrapped => 
-                    (await optionTask).Map(someWrapped.Value),
-                _ => new None<TNew>(),
-            };
     }
-}
-
-public static class OptionApplicativeExtensions
-{
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Task<Option<TNew>> ApplyAsync<T, TNew>(
-        this Task<Option<T>> optionTask,
-        Task<Option<Func<T, TNew>>> wrappedMappingTask
-    )
-        where T : notnull
-        where TNew : notnull => Option.Applicative.ApplyAsync(optionTask, wrappedMappingTask);
 }

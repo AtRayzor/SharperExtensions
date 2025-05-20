@@ -33,46 +33,5 @@ public static partial class Option
                 _ => new Some<TNew>(noneMapping()),
             };
 
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static async Task<Option<TNew>> MapAsync<T, TNew>(
-            Task<Option<T>> optionTask,
-            Func<T, TNew> mapping
-        )
-            where T : notnull
-            where TNew : notnull => Map(await optionTask, mapping);
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static async Task<TNew> MatchAsync<T, TNew>(
-            Task<Option<T>> optionTask,
-            Func<T, TNew> someMapping,
-            Func<TNew> noneMapping
-        )
-            where T : notnull
-            where TNew : notnull => Match(await optionTask, someMapping, noneMapping);
     }
-}
-
-public static class OptionFunctor
-{
-
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Task<Option<TNew>> MapAsync<T, TNew>(
-        this Task<Option<T>> optionTask,
-        Func<T, TNew> mapping
-    )
-        where T : notnull
-        where TNew : notnull => Option.Functor.MapAsync(optionTask, mapping);
-
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Task<TNew> MatchAsync<T, TNew>(
-        this Task<Option<T>> optionTask,
-        Func<T, TNew> someMapping,
-        Func<TNew> noneMapping
-    )
-        where T : notnull
-        where TNew : notnull => Option.Functor.MatchAsync(optionTask, someMapping, noneMapping);
 }
