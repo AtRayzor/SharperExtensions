@@ -9,7 +9,9 @@ public static partial class Option
     {
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Option<TNew> Bind<T, TNew>(Option<T> option, Func<T, Option<TNew>> binder)
+        public static Option<TNew> Bind<T, TNew>(
+            Option<T> option, Func<T, Option<TNew>> binder
+        )
             where T : notnull
             where TNew : notnull =>
             option switch
