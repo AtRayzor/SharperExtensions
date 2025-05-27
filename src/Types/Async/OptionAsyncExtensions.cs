@@ -34,6 +34,37 @@ public static class OptionAsyncExtensions
         public OptionAsync<T> ToOptionAsync() => OptionAsync.Lift(async);
     }
 
+    extension<T>(Async<Option<T>> asyncOption)
+        where T : notnull
+    {
+        /// <summary>
+        /// Converts an <see cref="Async{Option{T}}"/> to an <see cref="OptionAsync{T}"/>.
+        /// </summary>
+        /// <returns>An <see cref="OptionAsync{T}"/> representing the converted async option.</returns>
+        public OptionAsync<T> AsOptionAsync() => new(asyncOption);
+    }
+    
+    extension<T>(Task<T?> task)
+        where T : notnull
+    {
+        /// <summary>
+        /// Converts a <see cref="Task{T?}"/> to an <see cref="OptionAsync{T}"/>.
+        /// </summary>
+        /// <returns>An <see cref="OptionAsync{T}"/> representing the converted task.</returns>
+        public OptionAsync<T> ToOptionAsync() => OptionAsync.FromTask(task);
+    }
+    
+    
+    extension<T>(ValueTask<T?> valueTask)
+        where T : notnull
+    {
+        /// <summary>
+        /// Converts a <see cref="ValueTask{T?}"/> to an <see cref="OptionAsync{T}"/>.
+        /// </summary>
+        /// <returns>An <see cref="OptionAsync{T}"/> representing the converted value task.</returns>
+        public OptionAsync<T> ToOptionAsync() => OptionAsync.FromValueTask(valueTask);
+    }
+    
     extension<T>(OptionAsync<T> optionAsync)
         where T : notnull
     {
@@ -123,4 +154,91 @@ public static class OptionAsyncExtensions
         OptionAsync.Unsafe.DoAsync(optionAsync, someFunc, noneFunc);
 }
 
+    extension<T>(OptionAsync<T>)
+        where T : notnull
+    {
+        public static OptionAsync<T> FromTask(Task<T?> task) =>
+            OptionAsync.FromTask(task);
+
+        public static OptionAsync<T> FromValueTask(ValueTask<T?> task) =>
+            OptionAsync.FromValueTask(task);
+    }
+
+    extension<T1, T2>(OptionAsync<(T1, T2)> tupleOptionAsync)
+        where T1 : notnull
+        where T2 : notnull
+    {
+        /// <summary>
+        /// Maps the values of a two-element tuple option to a new option using the provided mapping function.
+        /// </summary>
+        /// <typeparam name="TNew">The type of the resulting option's value.</typeparam>
+        /// <param name="mapper">A function that transforms the two tuple elements into a new value.</param>
+        /// <returns>A new <see cref="OptionAsync{TNew}"/> with the mapped value.</returns>
+        public OptionAsync<TNew> Map<TNew>(Func<T1, T2, TNew> mapper)
+            where TNew : notnull => OptionAsync.Map(tupleOptionAsync, mapper);
+            
+        /// <summary>
+        /// Binds the values of a two-element tuple option to a new option using the provided binding function.
+        /// </summary>
+        /// <typeparam name="TNew">The type of the resulting option's value.</typeparam>
+        /// <param name="binder">A function that transforms the two tuple elements into a new option.</param>
+        /// <returns>A new <see cref="OptionAsync{TNew}"/> with the bound value.</returns>
+        public OptionAsync<TNew> Bind<TNew>(
+            Func<T1, T2, OptionAsync<TNew>> binder
+            )
+            where TNew : notnull => OptionAsync.Bind(tupleOptionAsync, binder);
+        }
+    
+    extension<T1, T2, T3>(OptionAsync<(T1, T2, T3)> tupleOptionAsync)
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
+    {
+        /// <summary>
+        /// Maps the values of a three-element tuple option to a new option using the provided mapping function.
+        /// </summary>
+        /// <typeparam name="TNew">The type of the resulting option's value.</typeparam>
+        /// <param name="mapper">A function that transforms the three tuple elements into a new value.</param>
+        /// <returns>A new <see cref="OptionAsync{TNew}"/> with the mapped value.</returns>
+        public OptionAsync<TNew> Map<TNew>(Func<T1, T2, T3, TNew> mapper)
+            where TNew : notnull => OptionAsync.Map(tupleOptionAsync, mapper);
+            
+        /// <summary>
+        /// Binds the values of a three-element tuple option to a new option using the provided binding function.
+        /// </summary>
+        /// <typeparam name="TNew">The type of the resulting option's value.</typeparam>
+        /// <param name="binder">A function that transforms the three tuple elements into a new option.</param>
+        /// <returns>A new <see cref="OptionAsync{TNew}"/> with the bound value.</returns>
+        public OptionAsync<TNew> Bind<TNew>(
+            Func<T1, T2, T3, OptionAsync<TNew>> binder
+        )
+            where TNew : notnull => OptionAsync.Bind(tupleOptionAsync, binder);   
+    }
+
+    extension<T1, T2, T3, T4>(OptionAsync<(T1, T2, T3, T4)> tupleOptionAsync)
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
+        where T4 : notnull
+    {
+        /// <summary>
+        /// Maps the values of a four-element tuple option to a new option using the provided mapping function.
+        /// </summary>
+        /// <typeparam name="TNew">The type of the resulting option's value.</typeparam>
+        /// <param name="mapper">A function that transforms the four tuple elements into a new value.</param>
+        /// <returns>A new <see cref="OptionAsync{TNew}"/> with the mapped value.</returns>
+        public OptionAsync<TNew> Map<TNew>(Func<T1, T2, T3, T4, TNew> mapper)
+            where TNew : notnull => OptionAsync.Map(tupleOptionAsync, mapper);
+            
+        /// <summary>
+        /// Binds the values of a four-element tuple option to a new option using the provided binding function.
+        /// </summary>
+        /// <typeparam name="TNew">The type of the resulting option's value.</typeparam>
+        /// <param name="binder">A function that transforms the four tuple elements into a new option.</param>
+        /// <returns>A new <see cref="OptionAsync{TNew}"/> with the bound value.</returns>
+        public OptionAsync<TNew> Bind<TNew>(
+            Func<T1, T2, T3, T4, OptionAsync<TNew>> binder
+        )
+            where TNew : notnull => OptionAsync.Bind(tupleOptionAsync, binder);      
+    }
 }
