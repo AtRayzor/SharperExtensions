@@ -37,7 +37,8 @@ public readonly struct AsyncResult<T, TError>
     /// <typeparam name="TError">The type of the error value.</typeparam>
     /// <param name="value">The success value to wrap.</param>
     /// <returns>A new <see cref="AsyncResult{T, TError}"/> representing a successful result.</returns>
-    public static AsyncResult<T, TError> Ok(T value) => AsyncResult.CreateOk<T, TError>(value);
+    public static AsyncResult<T, TError> Ok(T value) =>
+        AsyncResult.CreateOk<T, TError>(value);
 
     /// <summary>
     /// Creates a failed <see cref="AsyncResult{T, TError}"/> wrapping the specified error.
@@ -65,7 +66,9 @@ public readonly struct AsyncResult<T, TError>
         Async<Result<T, TError>> wrappedResult
     ) => new(wrappedResult);
 
-    public static implicit operator Async<Result<T, TError>>(AsyncResult<T, TError> asyncResult) =>
+    public static implicit operator Async<Result<T, TError>>(
+        AsyncResult<T, TError> asyncResult
+    ) =>
         asyncResult.WrappedResult;
 }
 
@@ -107,7 +110,9 @@ public static class AsyncResult
     public static AsyncResult<T, TError> Create<T, TError>(T? value, TError nullError)
         where T : notnull
         where TError : notnull =>
-        value is not null ? CreateOk<T, TError>(value) : CreateError<T, TError>(nullError);
+        value is not null
+            ? CreateOk<T, TError>(value)
+            : CreateError<T, TError>(nullError);
 
     /// <summary>
     /// Creates an <see cref="AsyncResult{T, TError}"/> from an existing <see cref="Result{T, TError}"/>.
@@ -144,7 +149,9 @@ public static class AsyncResult
         CancellationToken cancellationToken
     )
         where T : notnull
-        where TError : notnull => new(Async<Result<T, TError>>.FromTask(result, cancellationToken));
+        where TError : notnull => new(
+        Async<Result<T, TError>>.FromTask(result, cancellationToken)
+    );
 
     /// <summary>
     /// Creates an <see cref="AsyncResult{T, TError}"/> from a value task producing a <see cref="Result{T, TError}"/>.
@@ -153,7 +160,9 @@ public static class AsyncResult
     /// <typeparam name="TError">The type of the error value.</typeparam>
     /// <param name="result">The value task producing the result.</param>
     /// <returns>A new <see cref="AsyncResult{T, TError}"/> wrapping the given value task result.</returns>
-    public static AsyncResult<T, TError> Create<T, TError>(ValueTask<Result<T, TError>> result)
+    public static AsyncResult<T, TError> Create<T, TError>(
+        ValueTask<Result<T, TError>> result
+    )
         where T : notnull
         where TError : notnull => Create(result, CancellationToken.None);
 
@@ -195,7 +204,9 @@ public static class AsyncResult
     /// <typeparam name="TError">The type of the error value.</typeparam>
     /// <param name="func">A function that returns a task producing a result.</param>
     /// <returns>A new <see cref="AsyncResult{T, TError}"/> wrapping the result of the given function.</returns>
-    public static AsyncResult<T, TError> Create<T, TError>(Func<Task<Result<T, TError>>> func)
+    public static AsyncResult<T, TError> Create<T, TError>(
+        Func<Task<Result<T, TError>>> func
+    )
         where T : notnull
         where TError : notnull => Create(_ => func(), CancellationToken.None);
 
@@ -235,7 +246,8 @@ public static class AsyncResult
         CancellationToken cancellationToken
     )
         where T : notnull
-        where TError : notnull => LiftToOk<T, TError>(Async<T>.FromTask(task, cancellationToken));
+        where TError : notnull =>
+        LiftToOk<T, TError>(Async<T>.FromTask(task, cancellationToken));
 
     /// <summary>
     /// Lifts an asynchronous value task producing a success value into an <see cref="AsyncResult{T, TError}"/>.
@@ -422,8 +434,8 @@ public static class AsyncResult
         where TError : notnull
         where TNew : notnull =>
         new(
-            asyncResult.WrappedResult.Bind(
-                (result, ct) => Async.New(result.Map(Lambda.Partial(mapper, ct)), ct)
+            asyncResult.WrappedResult.Bind((result, ct) =>
+                Async.New(result.Map(Lambda.Partial(mapper, ct)), ct)
             )
         );
 
@@ -461,8 +473,10 @@ public static class AsyncResult
         where TError : notnull
         where TNewError : notnull =>
         new(
-            asyncResult.WrappedResult.Bind(
-                (result, ct) => Async.New(result.MapError(Lambda.Partial(mapper, ct)), ct)
+            asyncResult.WrappedResult.Bind((result, ct) => Async.New(
+                    result.MapError(Lambda.Partial(mapper, ct)),
+                    ct
+                )
             )
         );
 
@@ -517,7 +531,9 @@ public static class AsyncResult
             return result switch
             {
                 Ok<T, TError> { Value: var value } => binder(value).WrappedResult,
-                Error<T, TError> { Err: var error } => Async.New(Result<TNew, TError>.Error(error)),
+                Error<T, TError> { Err: var error } => Async.New(
+                    Result<TNew, TError>.Error(error)
+                ),
             };
         }
     }
@@ -545,7 +561,10 @@ public static class AsyncResult
         where TError : notnull
         where TNew : notnull
     {
-        return Bind(wrappedMapper, (mapper, ct) => Bind(asyncResult, CreateBinder(mapper, ct)));
+        return Bind(
+            wrappedMapper,
+            (mapper, ct) => Bind(asyncResult, CreateBinder(mapper, ct))
+        );
 
         static Func<T, CancellationToken, AsyncResult<TNew, TError>> CreateBinder(
             Func<T, CancellationToken, TNew> mapper,
@@ -599,7 +618,11 @@ public static class AsyncResult
     )
         where T : notnull
         where TError : notnull =>
-        await MatchAsync(asyncResult, (value, _) => okArm(value), (err, _) => errorArm(err))
+        await MatchAsync(
+                asyncResult,
+                (value, _) => okArm(value),
+                (err, _) => errorArm(err)
+            )
             .ConfigureAwait(ConfigureAwaitOptions.None);
 
     /// <summary>
@@ -623,12 +646,14 @@ public static class AsyncResult
             where TError : notnull
         {
             await asyncResult
-                .WrappedResult.DoAsync(result =>
-                {
-                    result.DoIfOk(action);
+                .WrappedResult
+                .DoAsync(result =>
+                    {
+                        result.DoIfOk(action);
 
-                    return Task.CompletedTask;
-                })
+                        return Task.CompletedTask;
+                    }
+                )
                 .ConfigureAwait(ConfigureAwaitOptions.None);
         }
 
@@ -648,12 +673,14 @@ public static class AsyncResult
             where TError : notnull
         {
             await asyncResult
-                .WrappedResult.DoAsync(result =>
-                {
-                    result.DoIfError(action);
+                .WrappedResult
+                .DoAsync(result =>
+                    {
+                        result.DoIfError(action);
 
-                    return Task.CompletedTask;
-                })
+                        return Task.CompletedTask;
+                    }
+                )
                 .ConfigureAwait(ConfigureAwaitOptions.None);
         }
 
@@ -674,11 +701,13 @@ public static class AsyncResult
             where T : notnull
             where TError : notnull =>
             await asyncResult
-                .WrappedResult.DoAsync(result =>
-                {
-                    result.Do(okAction, errorEAction);
-                    return Task.CompletedTask;
-                })
+                .WrappedResult
+                .DoAsync(result =>
+                    {
+                        result.Do(okAction, errorEAction);
+                        return Task.CompletedTask;
+                    }
+                )
                 .ConfigureAwait(ConfigureAwaitOptions.None);
 
         /// <summary>
@@ -737,10 +766,12 @@ public static class AsyncResult
             where TError : notnull => (await asyncResult).GetErrorOrDefault(error);
     }
 
-
-    public static Async<T> WithCancellation<T>(this Async<T> async, CancellationToken token) where T : notnull =>
+    public static Async<T> WithCancellation<T>(
+        this Async<T> async,
+        CancellationToken token
+    ) where T : notnull =>
         Async.SetToken(async, token);
 
-    public static Task<T> AsTask<T>(this Async<T> async) where T : notnull => Async.AsTask(async);
-
+    public static Task<T> AsTask<T>(this Async<T> async) where T : notnull =>
+        Async.AsTask(async);
 }
