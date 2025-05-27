@@ -104,9 +104,9 @@ internal sealed class AsyncMutableState<T>(
         mres.Wait(Token);
 
         return Result
-            ?? throw new InvalidOperationException(
-                "The result of the async operation could not be returned."
-            );
+               ?? throw new InvalidOperationException(
+                   "The result of the async operation could not be returned."
+               );
 
         void Set() => mres.Set();
 
@@ -135,21 +135,23 @@ internal sealed class AsyncMutableState<T>(
         this switch
         {
             { IsCompleted: true, Result: not null } => () => { },
-            { IsCompleted: true, Exception: { } exception } => () => SetException(exception),
+            { IsCompleted: true, Exception: { } exception } => () =>
+                SetException(exception),
             { Continuation: { } act, ResultCallback: null } => act,
-            { Continuation: null, ResultCallback: { } callback } => () => SetResult(callback()),
+            { Continuation: null, ResultCallback: { } callback } => () =>
+                SetResult(callback()),
             _ => () => SetException(new InvalidOperationException()),
         };
 
     public bool Equals(AsyncMutableState<T>? other)
     {
         return other is not null
-            && EqualityComparer<T?>.Default.Equals(Result, other.Result)
-            && Equals(Exception, other.Exception)
-            && Status == other.Status
-            && Equals(Continuation, other.Continuation)
-            && Token.Equals(other.Token)
-            && Equals(SourceTask, other.SourceTask);
+               && EqualityComparer<T?>.Default.Equals(Result, other.Result)
+               && Equals(Exception, other.Exception)
+               && Status == other.Status
+               && Equals(Continuation, other.Continuation)
+               && Token.Equals(other.Token)
+               && Equals(SourceTask, other.SourceTask);
     }
 
     public override int GetHashCode()
@@ -157,9 +159,15 @@ internal sealed class AsyncMutableState<T>(
         return 0;
     }
 
-    public static bool operator ==(AsyncMutableState<T> left, AsyncMutableState<T> right) =>
+    public static bool operator ==(
+        AsyncMutableState<T> left,
+        AsyncMutableState<T> right
+    ) =>
         Equals(left, right);
 
-    public static bool operator !=(AsyncMutableState<T> left, AsyncMutableState<T> right) =>
+    public static bool operator !=(
+        AsyncMutableState<T> left,
+        AsyncMutableState<T> right
+    ) =>
         !(left == right);
 }

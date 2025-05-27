@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using DotNetCoreFunctional.Option;
 
@@ -32,8 +33,9 @@ public struct OptionAsyncMethodBuilder<T>()
         where TStateMachine : IAsyncStateMachine =>
         awaiter.UnsafeOnCompleted(stateMachine.MoveNext);
 
-    public void SetResult(T result) => Task.WrappedOption.State.SetResult(result);
+    public void SetResult(T? result) => 
+        Task.WrappedOption.State.SetResult(Option.Option.Return(result));
 
-    public void SetException(T result) =>
+    public void SetException(Exception _) =>
         Task.WrappedOption.State.SetResult(Option<T>.None);
 }
