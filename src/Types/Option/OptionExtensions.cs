@@ -19,6 +19,25 @@ public static partial class OptionExtensions
 
         public T ValueOr(T fallback) => Option.GetValueOr(option, fallback);
 
+        public Option<(T, T2)> Combine<T2>(Option<T2> option2)
+            where T2 : notnull => Option.Combine<T, T2>(option, option2);
+
+        public Option<(T, T2, T3)> Combine<T2, T3>(
+            Option<T2> option2,
+            Option<T3> option3
+        )
+            where T2 : notnull
+            where T3 : notnull => Option.Combine(option, option2, option3);
+
+        public Option<(T, T2, T3, T4)> Combine<T1, T2, T3, T4>(
+            Option<T2> option2,
+            Option<T3> option3,
+            Option<T4> option4
+        )
+            where T2 : notnull
+            where T3 : notnull
+            where T4 : notnull => Option.Combine(option, option2, option3, option4);
+        
         public bool TryGetValue([MaybeNullWhen(false)] out T value) =>
             Option.Unsafe.TryGetValue(option, out value);
 
@@ -39,7 +58,7 @@ public static partial class OptionExtensions
 
         public Option<TNew> Map<TNew>(Func<T, TNew> mapper)
             where TNew : notnull => Option.Functor.Map(option, mapper);
-
+        
         public TResult Match<TResult>(
             Func<T, TResult> matchSome,
             Func<TResult> matchNone
@@ -57,6 +76,50 @@ public static partial class OptionExtensions
     extension<T>(Option<Option<T>> nestedOption) 
         where T : notnull
     {
-            public Option<T> Flatten() => Option.Monad.Flatten(nestedOption);
+        public Option<T> Flatten() => Option.Monad.Flatten(nestedOption);
+    }
+
+    extension<T1, T2>(Option<(T1, T2)> tupleOption)
+        where T1 : notnull 
+        where T2 : notnull
+    {
+        public Option<(T1, T2, T3)> Combine<T3>(Option<T3> option3) 
+            where T3 : notnull => Option.Combine(tupleOption, option3);
+
+        public Option<TNew> Map<TNew>(Func<T1, T2, TNew> mapper)
+            where TNew : notnull => Option.Functor.Map(tupleOption, mapper);
+        
+        public Option<TNew> Bind<TNew>(Func<T1, T2, Option<TNew>> binder)
+            where TNew : notnull => Option.Monad.Bind(tupleOption, binder);
+    }
+    
+    extension<T1, T2, T3>(Option<(T1, T2, T3)> tupleOption)
+        where T1 : notnull 
+        where T2 : notnull
+        where T3 : notnull
+    {
+        public Option<(T1, T2, T3, T4)> Combine<T4>(Option<T4> option3) 
+            where T4 : notnull => Option.Combine(tupleOption, option3);
+        
+        public Option<TNew> Map<TNew>(Func<T1, T2, T3, TNew> mapper)
+            where TNew : notnull => Option.Functor.Map(tupleOption, mapper);
+        
+        public Option<TNew> Bind<TNew>(Func<T1, T2, T3, Option<TNew>> bind)
+            where TNew : notnull => Option.Monad.Bind(tupleOption, bind);
+    }
+
+    extension<T1, T2, T3, T4>(Option<(T1, T2, T3, T4)> tupleOption)
+        where T1 : notnull 
+        where T2 : notnull
+        where T3 : notnull
+        where T4 : notnull
+    {
+        public Option<TNew> Map<TNew>(Func<T1, T2, T3, T4, TNew> mapper)
+            where TNew : notnull => Option.Functor.Map(tupleOption, mapper);
+        
+        public Option<TNew> Bind<TNew>(Func<T1, T2, T3, T4, Option<TNew>> bind)
+            where TNew : notnull => Option.Monad.Bind(tupleOption, bind);
     }
 }
+
+

@@ -98,6 +98,112 @@ public static partial class Option
             _ => fallback,
         };
 
+    public static Option<(T1, T2)> Combine<T1, T2>(
+        Option<T1> option1,
+        Option<T2> option2
+    )
+        where T1 : notnull
+        where T2 : notnull => (option1, option2)
+        is (Some<T1> { Value: var value1 }, Some<T2> { Value: var value2 })
+            ? Option<(T1, T2)>.Some((value1, value2))
+            : Option<(T1, T2)>.None;
+
+    public static Option<(T1, T2, T3)> Combine<T1, T2, T3>(
+        Option<T1> option1,
+        Option<T2> option2,
+        Option<T3> option3
+    )
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull => (option1, option2, option3)
+        is (
+        Some<T1> { Value: var value1 },
+        Some<T2> { Value: var value2 },
+        Some<T3> { Value: var value3 }
+        )
+            ? Option<(T1, T2, T3)>.Some((value1, value2, value3))
+            : Option<(T1, T2, T3)>.None;
+
+    public static Option<(T1, T2, T3)> Combine<T1, T2, T3>(
+        Option<(T1, T2)> tuple,
+        Option<T3> option3
+    )
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull => (tuple, option3)
+        is (
+        Some<(T1, T2)> { Value: var (value1, value2) },
+        Some<T3> { Value: var value3 }
+        )
+            ? Option<(T1, T2, T3)>.Some((value1, value2, value3))
+            : Option<(T1, T2, T3)>.None;
+
+    public static Option<(T1, T2, T3, T4)> Combine<T1, T2, T3, T4>(
+        Option<T1> option1,
+        Option<T2> option2,
+        Option<T3> option3,
+        Option<T4> option4
+    )
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
+        where T4 : notnull => (option1, option2, option3, option4)
+        is (
+        Some<T1> { Value: var value1 },
+        Some<T2> { Value: var value2 },
+        Some<T3> { Value: var value3 },
+        Some<T4> { Value: var value4 }
+        )
+            ? Option<(T1, T2, T3, T4)>.Some((value1, value2, value3, value4))
+            : Option<(T1, T2, T3, T4)>.None;
+
+    public static Option<(T1, T2, T3, T4)> Combine<T1, T2, T3, T4>(
+        Option<(T1, T2, T3)> tuple,
+        Option<T4> option3
+    )
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
+        where T4 : notnull => (tuple, option3)
+        is (
+        Some<(T1, T2, T3)> { Value: var (value1, value2, value3) },
+        Some<T4> { Value: var value4 }
+        )
+            ? Option<(T1, T2, T3, T4)>.Some((value1, value2, value3, value4))
+            : Option<(T1, T2, T3, T4)>.None;
+
+    public static Option<T> OrElse<T>(params Option<T>[] options)
+        where T : notnull
+    {
+        foreach (var opt in options)
+        {
+            if (opt is not Some<T> some)
+            {
+                continue;
+            }
+
+            return some;
+        }
+        
+        return Option<T>.None;
+    }
+    
+    public static Option<T> OrElse<T>(params Func<Option<T>>[] optionFuncs)
+        where T : notnull
+    {
+        foreach (var func in optionFuncs)
+        {
+            if (func() is not Some<T> some)
+            {
+                continue;
+            }
+
+            return some;
+        }
+        
+        return Option<T>.None;
+    }
+
     public static partial class Unsafe
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
