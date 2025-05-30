@@ -300,7 +300,7 @@ namespace NetFunction.Types.Tests
             var dummyValue = new DummyValue { Name = "Test", Email = "test@example.com" };
             var asyncResult = AsyncResult.CreateOk<DummyValue, DummyError>(dummyValue);
 
-            var matched = await AsyncResult.MatchAsync(
+            var matched = await AsyncResult.Unsafe.MatchAsync(
                 asyncResult,
                 (val, ct) => val.Name,
                 (err, ct) => err.Message
@@ -315,7 +315,7 @@ namespace NetFunction.Types.Tests
             var dummyError = new DummyError { Message = "Error occurred" };
             var asyncResult = AsyncResult.CreateError<DummyValue, DummyError>(dummyError);
 
-            var matched = await AsyncResult.MatchAsync(
+            var matched = await AsyncResult.Unsafe.MatchAsync(
                 asyncResult,
                 (val, ct) => val.Name,
                 (err, ct) => err.Message
