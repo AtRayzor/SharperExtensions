@@ -63,6 +63,12 @@ public static partial class Option
     public static Option<T> None<T>()
         where T : notnull => new None<T>();
 
+    public static Option<T> Create<TSource, T>(
+        TSource? source,
+        Func<TSource?, T?> factory
+    )
+        where T : notnull => Return(factory(source));
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsSome<T>(Option<T> option)
         where T : notnull => option is Some<T>;
@@ -184,10 +190,10 @@ public static partial class Option
 
             return some;
         }
-        
+
         return Option<T>.None;
     }
-    
+
     public static Option<T> OrElse<T>(params Func<Option<T>>[] optionFuncs)
         where T : notnull
     {
@@ -200,7 +206,7 @@ public static partial class Option
 
             return some;
         }
-        
+
         return Option<T>.None;
     }
 
@@ -219,7 +225,8 @@ public static partial class Option
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryGetValue<T>(
-            Option<T> option, [NotNullWhen(true)] out T? value
+            Option<T> option,
+            [NotNullWhen(true)] out T? value
         )
             where T : notnull
         {

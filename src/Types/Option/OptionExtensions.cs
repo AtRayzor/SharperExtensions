@@ -5,6 +5,18 @@ namespace DotNetCoreFunctional.Option;
 
 public static partial class OptionExtensions
 {
+    extension<T>(T? value)
+        where T : notnull
+    {
+        public Option<T> ToOption() => Option.Return(value);
+    }
+    
+    extension<TSource>(TSource? source)
+    {
+        public Option<T> ToOption<T>(Func<TSource?, T?> factory) where T : notnull =>
+            Option.Create(source, factory);
+    }
+    
     extension<T>(Option<T> option) where T : notnull
     {
         public bool IsSome => Option.IsSome(option);
