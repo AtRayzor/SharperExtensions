@@ -112,44 +112,70 @@ public static class OptionAsyncExtensions
             OptionAsync.Unsafe.MatchAsync(optionAsync, matchSomeAsync, matchNoneAsync);
 
     /// <summary>
-    /// Retrieves the value of the <see cref="OptionAsync{T}"/> as a nullable value, or returns the default value if the option is none.
+    /// Retrieves the value of the <see cref="OptionAsync{T}" /> as a nullable
+    /// value, or returns the default value if the option is none.
     /// </summary>
-    /// <returns>A <see cref="ValueTask{T}"/> representing the nullable value or default.</returns>
+    /// <returns>
+    /// A <see cref="ValueTask{T}" /> representing the nullable value or
+    /// default.
+    /// </returns>
     public ValueTask<T?> ValueOrDefaultAsync =>
         OptionAsync.Unsafe.GetValueOrDefaultAsync(optionAsync);
 
     /// <summary>
-    /// Retrieves the value of the <see cref="OptionAsync{T}"/> or throws a specified exception if the option is none.
+    /// Retrieves the value of the <see cref="OptionAsync{T}" /> or throws a
+    /// specified exception if the option is none.
     /// </summary>
-    /// <typeparam name="TException">The type of exception to throw when the option is none.</typeparam>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation of retrieving the value.</returns>
+    /// <typeparam name="TException">
+    /// The type of exception to throw when the
+    /// option is none.
+    /// </typeparam>
+    /// <returns>
+    /// A <see cref="Task" /> representing the asynchronous operation of
+    /// retrieving the value.
+    /// </returns>
     /// <exception cref="TException">Thrown when the option contains no value.</exception>
     public Task GetValueOrThrowAsync<TException>()
         where TException : Exception =>
         OptionAsync.Unsafe.GetValueOrThrowAsync<T, TException>(optionAsync);
 
     /// <summary>
-    /// Executes an asynchronous function if the <see cref="OptionAsync{T}"/> is some.
+    /// Executes an asynchronous function if the
+    /// <see cref="OptionAsync{T}" /> is some.
     /// </summary>
-    /// <param name="asyncFunc">An asynchronous function to execute when the option contains a value.</param>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <param name="asyncFunc">
+    /// An asynchronous function to execute when the
+    /// option contains a value.
+    /// </param>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     public Task IfSomeAsync(Func<T, Task> asyncFunc) =>
         OptionAsync.Unsafe.IfSomeAsync(optionAsync, asyncFunc);
 
     /// <summary>
-    /// Executes an asynchronous function if the <see cref="OptionAsync{T}"/> is none.
+    /// Executes an asynchronous function if the
+    /// <see cref="OptionAsync{T}" /> is none.
     /// </summary>
-    /// <param name="asyncFunc">An asynchronous function to execute when the option is none.</param>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <param name="asyncFunc">
+    /// An asynchronous function to execute when the
+    /// option is none.
+    /// </param>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     public Task IfNoneAsync(Func<Task> asyncFunc) =>
         OptionAsync.Unsafe.IfNoneAsync(optionAsync, asyncFunc);
 
     /// <summary>
-    /// Executes an asynchronous function based on whether the <see cref="OptionAsync{T}"/> is some or none.
+    /// Executes an asynchronous function based on whether the
+    /// <see cref="OptionAsync{T}" /> is some or none.
     /// </summary>
-    /// <param name="someFunc">An asynchronous function to execute when the option contains a value.</param>
-    /// <param name="noneFunc">An asynchronous function to execute when the option is none.</param>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <param name="someFunc">
+    /// An asynchronous function to execute when the option
+    /// contains a value.
+    /// </param>
+    /// <param name="noneFunc">
+    /// An asynchronous function to execute when the option
+    /// is none.
+    /// </param>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     public Task DoAsync(Func<T, Task> someFunc, Func<Task> noneFunc) =>
         OptionAsync.Unsafe.DoAsync(optionAsync, someFunc, noneFunc);
 }

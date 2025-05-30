@@ -4,7 +4,8 @@ using DotNetCoreFunctional.Result;
 namespace DotNetCoreFunctional.Async;
 
 /// <summary>
-/// Provides extension methods for <see cref="AsyncResult{T, TError}"/> to enable fluent and convenient usage.
+/// Provides extension methods for <see cref="AsyncResult{T, TError}" /> to
+/// enable fluent and convenient usage.
 /// </summary>
 public static class AsyncResultExtensions
 {
@@ -130,21 +131,27 @@ public static class AsyncResultExtensions
             Func<TError, TResult> matchError
         )
             where TResult : notnull =>
-            AsyncResult.MatchAsync(asyncResult, matchOk, matchError);
+            AsyncResult.Unsafe.MatchAsync(asyncResult, matchOk, matchError);
 
         public Task<TResult> MatchAsync<TResult>(
             Func<T, CancellationToken, TResult> matchOk,
             Func<TError, CancellationToken, TResult> matchError
         )
             where TResult : notnull =>
-            AsyncResult.MatchAsync(asyncResult, matchOk, matchError);
+            AsyncResult.Unsafe.MatchAsync(asyncResult, matchOk, matchError);
 
         public Task DoIfOkAsync(Action<T> action) =>
             AsyncResult.Unsafe.DoIfOkAsync(asyncResult, action);
 
+        public Task DoIfOkAsync(Func<T, Task> asyncFunc) =>
+            AsyncResult.Unsafe.DoIfOkAsync(asyncResult, asyncFunc);
+        
         public Task DoIfErrorAsync(Action<TError> errorAction) =>
             AsyncResult.Unsafe.DoIfErrorAsync(asyncResult, errorAction);
 
+        public Task DoIfErrorAsync(Func<TError, Task> errorFunc) =>
+            AsyncResult.Unsafe.DoIfErrorAsync(asyncResult, errorFunc);
+        
         public Task DoAsync(Action<T> okAction, Action<TError> errorAction) =>
             AsyncResult.Unsafe.DoAsync(asyncResult, okAction, errorAction);
 

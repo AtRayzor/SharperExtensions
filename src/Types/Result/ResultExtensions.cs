@@ -5,10 +5,12 @@ using System.Runtime.CompilerServices;
 namespace DotNetCoreFunctional.Result;
 
 /// <summary>
-/// Provides extension methods for working with the Result type, offering convenient methods for handling and transforming Result instances.
+/// Provides extension methods for working with the Result type, offering
+/// convenient methods for handling and transforming Result instances.
 /// </summary>
 /// <remarks>
-/// These extension methods simplify common operations on Result types, such as checking status, inserting values, and chaining operations.
+/// These extension methods simplify common operations on Result types, such
+/// as checking status, inserting values, and chaining operations.
 /// </remarks>
 public static class ResultExtensions
 {

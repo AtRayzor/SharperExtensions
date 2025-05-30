@@ -1,13 +1,12 @@
 namespace DotNetCoreFunctional.Operations;
 
-/// <summary>
-/// Provides utility methods for partial application of functions.
-/// </summary>
+/// <summary>Provides utility methods for partial application of functions.</summary>
 public static class Lambda
 {
     /// <summary>
     /// Partially applies the second argument of a function with two parameters,
-    /// returning a new function that takes the first argument and returns the result.
+    /// returning a new function that takes the first argument and returns the
+    /// result.
     /// </summary>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
@@ -19,8 +18,9 @@ public static class Lambda
         arg1 => func(arg1, arg2);
 
     /// <summary>
-    /// Partially applies the second and third arguments of a function with three parameters,
-    /// returning a new function that takes the first argument and returns the result.
+    /// Partially applies the second and third arguments of a function with three
+    /// parameters, returning a new function that takes the first argument and
+    /// returns the result.
     /// </summary>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
@@ -37,8 +37,9 @@ public static class Lambda
     ) => arg1 => func(arg1, arg2, arg3);
 
     /// <summary>
-    /// Partially applies the second, third, and fourth arguments of a function with four parameters,
-    /// returning a new function that takes the first argument and returns the result.
+    /// Partially applies the second, third, and fourth arguments of a function
+    /// with four parameters, returning a new function that takes the first
+    /// argument and returns the result.
     /// </summary>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
@@ -58,8 +59,9 @@ public static class Lambda
     ) => arg1 => func(arg1, arg2, arg3, arg4);
 
     /// <summary>
-    /// Partially applies the second through fifth arguments of a function with five parameters,
-    /// returning a new function that takes the first argument and returns the result.
+    /// Partially applies the second through fifth arguments of a function with
+    /// five parameters, returning a new function that takes the first argument
+    /// and returns the result.
     /// </summary>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
@@ -82,8 +84,9 @@ public static class Lambda
     ) => arg1 => func(arg1, arg2, arg3, arg4, arg5);
 
     /// <summary>
-    /// Partially applies the second through sixth arguments of a function with six parameters,
-    /// returning a new function that takes the first argument and returns the result.
+    /// Partially applies the second through sixth arguments of a function with
+    /// six parameters, returning a new function that takes the first argument and
+    /// returns the result.
     /// </summary>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
@@ -109,8 +112,9 @@ public static class Lambda
     ) => arg1 => func(arg1, arg2, arg3, arg4, arg5, arg6);
 
     /// <summary>
-    /// Partially applies the second through seventh arguments of a function with seven parameters,
-    /// returning a new function that takes the first argument and returns the result.
+    /// Partially applies the second through seventh arguments of a function with
+    /// seven parameters, returning a new function that takes the first argument
+    /// and returns the result.
     /// </summary>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
@@ -139,8 +143,9 @@ public static class Lambda
     ) => arg1 => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 
     /// <summary>
-    /// Partially applies the second through eighth arguments of a function with eight parameters,
-    /// returning a new function that takes the first argument and returns the result.
+    /// Partially applies the second through eighth arguments of a function with
+    /// eight parameters, returning a new function that takes the first argument
+    /// and returns the result.
     /// </summary>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
@@ -172,8 +177,9 @@ public static class Lambda
     ) => arg1 => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 
     /// <summary>
-    /// Partially applies the second through ninth arguments of a function with nine parameters,
-    /// returning a new function that takes the first argument and returns the result.
+    /// Partially applies the second through ninth arguments of a function with
+    /// nine parameters, returning a new function that takes the first argument
+    /// and returns the result.
     /// </summary>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
@@ -208,8 +214,9 @@ public static class Lambda
     ) => arg1 => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
 
     /// <summary>
-    /// Partially applies the second through tenth arguments of a function with ten parameters,
-    /// returning a new function that takes the first argument and returns the result.
+    /// Partially applies the second through tenth arguments of a function with
+    /// ten parameters, returning a new function that takes the first argument and
+    /// returns the result.
     /// </summary>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>

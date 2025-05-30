@@ -8,7 +8,9 @@ namespace DotNetCoreFunctional.Result;
 #pragma warning disable CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
 
 /// <summary>
-/// Represents the result of an operation, either successful with a value of type <typeparamref name="T"/> or failed with an error of type <typeparamref name="TError"/>.
+/// Represents the result of an operation, either successful with a value of
+/// type <typeparamref name="T" /> or failed with an error of type
+/// <typeparamref name="TError" />.
 /// </summary>
 /// <typeparam name="T">The type of the value in case of success.</typeparam>
 /// <typeparam name="TError">The type of the error in case of failure.</typeparam>
@@ -17,24 +19,24 @@ public abstract record Result<T, TError>
     where T : notnull
     where TError : notnull
 {
-    /// <summary>
-    /// Creates a successful result with the given value.
-    /// </summary>
+    /// <summary>Creates a successful result with the given value.</summary>
     /// <param name="value">The value of the successful result.</param>
-    /// <returns>A <see cref="Result{T, TError}"/> representing a successful operation.</returns>
+    /// <returns>
+    /// A <see cref="Result{T, TError}" /> representing a successful
+    /// operation.
+    /// </returns>
     public static Result<T, TError> Ok(T value) => new Ok<T, TError>(value);
 
-    /// <summary>
-    /// Creates a failed result with the given error.
-    /// </summary>
+    /// <summary>Creates a failed result with the given error.</summary>
     /// <param name="error">The error of the failed result.</param>
-    /// <returns>A <see cref="Result{T, TError}"/> representing a failed operation.</returns>
+    /// <returns>
+    /// A <see cref="Result{T, TError}" /> representing a failed
+    /// operation.
+    /// </returns>
     public static Result<T, TError> Error(TError error) => new Error<T, TError>(error);
 }
 
-/// <summary>
-/// Represents a successful result with a value.
-/// </summary>
+/// <summary>Represents a successful result with a value.</summary>
 /// <typeparam name="T">The type of the value.</typeparam>
 /// <typeparam name="TError">The type of the error (not used in this case).</typeparam>
 public record Ok<T, TError>(T Value) : Result<T, TError>
@@ -42,21 +44,21 @@ public record Ok<T, TError>(T Value) : Result<T, TError>
     where TError : notnull
 {
     /// <summary>
-    /// Implicitly converts a value of type <typeparamref name="T"/> to an <see cref="Ok{T, TError}"/> result.
+    /// Implicitly converts a value of type <typeparamref name="T" /> to an
+    /// <see cref="Ok{T, TError}" /> result.
     /// </summary>
     /// <param name="value">The value to convert.</param>
     public static implicit operator Ok<T, TError>(T value) => new(value);
 
     /// <summary>
-    /// Implicitly converts an <see cref="Ok{T, TError}"/> result to its underlying value of type <typeparamref name="T"/>.
+    /// Implicitly converts an <see cref="Ok{T, TError}" /> result to its
+    /// underlying value of type <typeparamref name="T" />.
     /// </summary>
     /// <param name="okResult">The result to convert.</param>
     public static implicit operator T(Ok<T, TError> okResult) => okResult.Value;
 }
 
-/// <summary>
-/// Represents a failed result with an error.
-/// </summary>
+/// <summary>Represents a failed result with an error.</summary>
 /// <typeparam name="T">The type of the value (not used in this case).</typeparam>
 /// <typeparam name="TError">The type of the error.</typeparam>
 public record Error<T, TError>(TError Err) : Result<T, TError>
@@ -64,65 +66,72 @@ public record Error<T, TError>(TError Err) : Result<T, TError>
     where TError : notnull
 {
     /// <summary>
-    /// Implicitly converts an error of type <typeparamref name="TError"/> to an <see cref="Error{T, TError}"/> result.
+    /// Implicitly converts an error of type <typeparamref name="TError" /> to an
+    /// <see cref="Error{T, TError}" /> result.
     /// </summary>
     /// <param name="error">The error to convert.</param>
     public static implicit operator Error<T, TError>(TError error) => new(error);
 
     /// <summary>
-    /// Implicitly converts an <see cref="Error{T, TError}"/> result to its underlying error of type <typeparamref name="TError"/>.
+    /// Implicitly converts an <see cref="Error{T, TError}" /> result to its
+    /// underlying error of type <typeparamref name="TError" />.
     /// </summary>
     /// <param name="error">The result to convert.</param>
     public static implicit operator TError(Error<T, TError> error) => error.Err;
 }
 
 /// <summary>
-/// Provides static methods for working with <see cref="Result{T, TError}"/> types.
+/// Provides static methods for working with
+/// <see cref="Result{T, TError}" /> types.
 /// </summary>
 public static partial class Result
 {
     private const string DefaultErrorMessage = "Unknown error.";
 
-    /// <summary>
-    /// Creates a successful result with the given value.
-    /// </summary>
+    /// <summary>Creates a successful result with the given value.</summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <typeparam name="TError">The type of the error.</typeparam>
     /// <param name="value">The value of the successful result.</param>
-    /// <returns>A <see cref="Result{T, TError}"/> representing a successful operation.</returns>
+    /// <returns>
+    /// A <see cref="Result{T, TError}" /> representing a successful
+    /// operation.
+    /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<T, TError> Ok<T, TError>(T value)
         where T : notnull
         where TError : notnull => new Ok<T, TError>(value);
 
     /// <summary>
-    /// Creates a <see cref="Result{T, TError}"/> from a potentially null value, returning an error if the value is null.
+    /// Creates a <see cref="Result{T, TError}" /> from a potentially null value,
+    /// returning an error if the value is null.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <typeparam name="TError">The type of the error.</typeparam>
     /// <param name="value">The value to convert to a result.</param>
     /// <param name="nullError">The error to use if the value is null.</param>
-    /// <returns>A successful result containing the value if not null, or an error result.</returns>
+    /// <returns>
+    /// A successful result containing the value if not null, or an error
+    /// result.
+    /// </returns>
     public static Result<T, TError> Create<T, TError>(T? value, TError nullError)
         where T : notnull
         where TError : notnull =>
         value is not null ? Ok<T, TError>(value) : Error<T, TError>(nullError);
 
-    /// <summary>
-    /// Creates a failed result with the given error.
-    /// </summary>
+    /// <summary>Creates a failed result with the given error.</summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <typeparam name="TError">The type of the error.</typeparam>
     /// <param name="error">The error of the failed result.</param>
-    /// <returns>A <see cref="Result{T, TError}"/> representing a failed operation.</returns>
+    /// <returns>
+    /// A <see cref="Result{T, TError}" /> representing a failed
+    /// operation.
+    /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<T, TError> Error<T, TError>(TError error)
         where T : notnull
         where TError : notnull => new Error<T, TError>(error);
 
-    /// <summary>
-    /// Checks if a <see cref="Result{T, TError}"/> is successful (Ok).
-    /// </summary>
+    /// <summary>Checks if a <see cref="Result{T, TError}" /> is successful (Ok).</summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <typeparam name="TError">The type of the error.</typeparam>
     /// <param name="result">The result to check.</param>
@@ -132,9 +141,7 @@ public static partial class Result
         where T : notnull
         where TError : notnull => result is Ok<T, TError>;
 
-    /// <summary>
-    /// Checks if a <see cref="Result{T, TError}"/> is failed (Error).
-    /// </summary>
+    /// <summary>Checks if a <see cref="Result{T, TError}" /> is failed (Error).</summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <typeparam name="TError">The type of the error.</typeparam>
     /// <param name="result">The result to check.</param>
@@ -167,17 +174,22 @@ public static partial class Result
         );
 
     /// <summary>
-    /// Provides unsafe utility methods for working with <see cref="Result{T, TError}"/> types.
+    /// Provides unsafe utility methods for working with
+    /// <see cref="Result{T, TError}" /> types.
     /// </summary>
     public static partial class Unsafe
     {
         /// <summary>
-        /// Retrieves the value from a <see cref="Result{T, TError}"/> if it is successful, otherwise returns the default value.
+        /// Retrieves the value from a <see cref="Result{T, TError}" /> if it is
+        /// successful, otherwise returns the default value.
         /// </summary>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <typeparam name="TError">The type of the error.</typeparam>
         /// <param name="result">The result to extract the value from.</param>
-        /// <returns>The value of the result if successful, or <c>default</c> if the result is an error.</returns>
+        /// <returns>
+        /// The value of the result if successful, or <c>default</c> if the
+        /// result is an error.
+        /// </returns>
         public static T? GetValueOrDefault<T, TError>(Result<T, TError> result)
             where T : notnull
             where TError : notnull
@@ -186,12 +198,16 @@ public static partial class Result
         }
 
         /// <summary>
-        /// Retrieves the error from a <see cref="Result{T, TError}"/> if it is an error, otherwise returns the default value.
+        /// Retrieves the error from a <see cref="Result{T, TError}" /> if it is an
+        /// error, otherwise returns the default value.
         /// </summary>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <typeparam name="TError">The type of the error.</typeparam>
         /// <param name="result">The result to extract the error from.</param>
-        /// <returns>The error of the result if it is an error, or <c>default</c> if the result is successful.</returns>
+        /// <returns>
+        /// The error of the result if it is an error, or <c>default</c> if the result
+        /// is successful.
+        /// </returns>
         public static TError? GetErrorOrDefault<T, TError>(Result<T, TError> result)
             where T : notnull
             where TError : notnull
@@ -200,26 +216,43 @@ public static partial class Result
         }
 
         /// <summary>
-        /// Retrieves the value from a <see cref="Result{T, TError}"/> if it is successful, otherwise returns a specified default value.
+        /// Retrieves the value from a <see cref="Result{T, TError}" /> if it is
+        /// successful, otherwise returns a specified default value.
         /// </summary>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <typeparam name="TError">The type of the error.</typeparam>
         /// <param name="result">The result to extract the value from.</param>
-        /// <param name="defaultValue">The default value to return if the result is an error.</param>
-        /// <returns>The value of the result if successful, or the specified <paramref name="defaultValue"/> if the result is an error.</returns>
-        public static T GetValueOrDefault<T, TError>(Result<T, TError> result, T defaultValue)
+        /// <param name="defaultValue">
+        /// The default value to return if the result is an
+        /// error.
+        /// </param>
+        /// <returns>
+        /// The value of the result if successful, or the specified
+        /// <paramref name="defaultValue" /> if the result is an error.
+        /// </returns>
+        public static T GetValueOrDefault<T, TError>(
+            Result<T, TError> result,
+            T defaultValue
+        )
             where T : notnull
             where TError : notnull =>
             result is Ok<T, TError> { Value: var value } ? value : defaultValue;
 
         /// <summary>
-        /// Retrieves the error from a <see cref="Result{T, TError}"/> if it is an error, otherwise returns a specified default error.
+        /// Retrieves the error from a <see cref="Result{T, TError}" /> if it is an
+        /// error, otherwise returns a specified default error.
         /// </summary>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <typeparam name="TError">The type of the error.</typeparam>
         /// <param name="result">The result to extract the error from.</param>
-        /// <param name="defaultError">The default error to return if the result is not an error.</param>
-        /// <returns>The error of the result if it is an error, or the specified <paramref name="defaultError"/> if the result is successful.</returns>
+        /// <param name="defaultError">
+        /// The default error to return if the result is
+        /// not an error.
+        /// </param>
+        /// <returns>
+        /// The error of the result if it is an error, or the specified
+        /// <paramref name="defaultError" /> if the result is successful.
+        /// </returns>
         public static TError GetErrorOrDefault<T, TError>(
             Result<T, TError> result,
             TError defaultError
@@ -229,13 +262,21 @@ public static partial class Result
             result is Error<T, TError> { Err: var error } ? error : defaultError;
 
         /// <summary>
-        /// Tries to get the value from a <see cref="Result{T, TError}"/> instance.
+        /// Tries to get the value from a <see cref="Result{T, TError}" />
+        /// instance.
         /// </summary>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <typeparam name="TError">The type of the error.</typeparam>
         /// <param name="result">The result to get the value from.</param>
-        /// <param name="value">When this method returns, contains the value of the result if it is Ok, or the default value of type <typeparamref name="T"/> if it is an error. This parameter is passed uninitialized.</param>
-        /// <returns><c>true</c> if the result is Ok and the value was successfully retrieved; otherwise, <c>false</c>.</returns>
+        /// <param name="value">
+        /// When this method returns, contains the value of the result if it is Ok, or
+        /// the default value of type <typeparamref name="T" /> if it is an error.
+        /// This parameter is passed uninitialized.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the result is Ok and the value was successfully retrieved;
+        /// otherwise, <c>false</c>.
+        /// </returns>
         public static bool TryGetValue<T, TError>(
             Result<T, TError> result,
             [MaybeNullWhen(false)] out T value
@@ -254,13 +295,21 @@ public static partial class Result
         }
 
         /// <summary>
-        /// Tries to get the error from a <see cref="Result{T, TError}"/> instance.
+        /// Tries to get the error from a <see cref="Result{T, TError}" />
+        /// instance.
         /// </summary>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <typeparam name="TError">The type of the error.</typeparam>
         /// <param name="result">The result to get the error from.</param>
-        /// <param name="error">When this method returns, contains the error of the result if it is an error, or the default value of type <typeparamref name="TError"/> if it is Ok. This parameter is passed uninitialized.</param>
-        /// <returns><c>true</c> if the result is an error and the error was successfully retrieved; otherwise, <c>false</c>.</returns>
+        /// <param name="error">
+        /// When this method returns, contains the error of the result if it is an
+        /// error, or the default value of type <typeparamref name="TError" /> if it
+        /// is Ok. This parameter is passed uninitialized.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the result is an error and the error was successfully
+        /// retrieved; otherwise, <c>false</c>.
+        /// </returns>
         public static bool TryGetError<T, TError>(
             Result<T, TError> result,
             [NotNullWhen(true)] out TError? error
@@ -278,9 +327,7 @@ public static partial class Result
             return true;
         }
 
-        /// <summary>
-        /// Executes an action if the <see cref="Result{T, TError}"/> is Ok.
-        /// </summary>
+        /// <summary>Executes an action if the <see cref="Result{T, TError}" /> is Ok.</summary>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <typeparam name="TError">The type of the error.</typeparam>
         /// <param name="result">The result to check.</param>
@@ -296,13 +343,17 @@ public static partial class Result
         }
 
         /// <summary>
-        /// Executes an action if the <see cref="Result{T, TError}"/> is an error.
+        /// Executes an action if the <see cref="Result{T, TError}" /> is an
+        /// error.
         /// </summary>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <typeparam name="TError">The type of the error.</typeparam>
         /// <param name="result">The result to check.</param>
         /// <param name="action">The action to execute if the result is an error.</param>
-        public static void DoIfError<T, TError>(Result<T, TError> result, Action<TError> action)
+        public static void DoIfError<T, TError>(
+            Result<T, TError> result,
+            Action<TError> action
+        )
             where T : notnull
             where TError : notnull
         {
@@ -313,7 +364,8 @@ public static partial class Result
         }
 
         /// <summary>
-        /// Executes an action based on whether the <see cref="Result{T, TError}"/> is Ok or an error.
+        /// Executes an action based on whether the <see cref="Result{T, TError}" />
+        /// is Ok or an error.
         /// </summary>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <typeparam name="TError">The type of the error.</typeparam>
