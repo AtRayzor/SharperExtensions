@@ -64,17 +64,17 @@ public static partial class Result
             where TError : notnull
         {
             if (error is string message)
-                return message.ToSome();
+                return message.ToOption();
 
             if (error as IErrorWithMessage is { } errorWithMessage)
-                return errorWithMessage.Message.ToSome();
+                return errorWithMessage.Message.ToOption();
 
             if (
                 error.GetType().GetProperties().FirstOrDefault(type => type.Name == "Message")
                     is { } messagePropertyInfo
                 && messagePropertyInfo.GetValue(error) is string errorMessage
             )
-                return errorMessage.ToSome();
+                return errorMessage.ToOption();
 
             return Option.Option.None<string>();
         }
