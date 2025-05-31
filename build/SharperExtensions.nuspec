@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<package>
+    <metadata>
+        <id>SharperExtensions</id>
+        <version>1.0.0-alpha-0.0.1</version>
+        <authors>Timothy Ray</authors>
+        <description>
+            A collection of experimental functional programming extensions
+        </description>
+        <copyright>Copyright 2025 Timothy Ray</copyright>
+        <releaseNotes>Initial alpha version release</releaseNotes>
+        <license type="file">LICENSE.txt</license>
+        <repository type="git"
+                    url="https://github.com/AtRayzor/SharperExtensions.git"
+                    branch="main"/>
+        <readme>README.md</readme>
+        <dependencies>
+            <group targetFramework="net10.0">
+                <dependency id="SharperExtensions.Core" version="1.0.0-alpha-0.0.1"/>
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="../LICENSE.txt" target=""/>
+        <file src="../README.md" target=""/>
+        <file src="../bld/1.0.0-alpha-0.0.1/Release/netstandard2.0/SharperExtensions.Analyzers.dll"
+              target="../analyzers/dotnet/cs"/>
+        <file src="../bld/1.0.0-alpha-0.0.1/Release/net10.0/SharperExtensions.Core.dll"
+              target="/lib/net10.0/"/>
+        <file src="../bld/1.0.0-alpha-0.0.1/Release/net10.0/SharperExtensions.Async.dll"
+              target="/lib/net10.0/"/>
+        <file src="../bld/1.0.0-alpha-0.0.1/Release/net10.0/SharperExtensions.Collections.dll"
+              target="/lib/net10.0/"/>
+    </files>
+</package>
