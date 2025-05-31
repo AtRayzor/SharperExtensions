@@ -1,0 +1,23 @@
+<Project>
+    <PropertyGroup>
+        <LangVersion>preview</LangVersion>
+        <ImplicitUsings>true</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <AssemblyName>SharperExtensions.$(MSBuildProjectName)</AssemblyName>
+    </PropertyGroup>
+
+    <Choose>
+        <When Condition="$(MsBuildProjectName) == Core">
+            <PropertyGroup>
+                <RootNamespace>SharperExtensions</RootNamespace>
+            </PropertyGroup>
+        </When>
+        <Otherwise>
+            <PropertyGroup>
+                <RootNamespace>SharperExtensions.$(MSBuildProjectName)</RootNamespace>
+            </PropertyGroup>
+        </Otherwise>
+    </Choose>
+    
+</Project>

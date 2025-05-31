@@ -1,0 +1,8 @@
+<Project>
+    <Import Project="./common.base.props"/>
+    <Import Condition="$(Configuration) == Release" Project="./common.release.props"/>
+    
+    <!--<ItemGroup>
+        <InternalsVisibleTo Include="$(AssemblyName).Tests" />
+    </ItemGroup>-->
+</Project>

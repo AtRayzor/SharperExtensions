@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<package>
+    <metadata>
+        <id>SharperExtensions.Async</id>
+        <version>1.0.0-alpha-0.0.1</version>
+        <authors>Timothy Ray</authors>
+        <description>
+            A set of functional types and operations which run asynchronously.
+        </description>
+        <repository type="git" url="https://github.com/AtRayzor/SharperExtensions.git"
+                    branch="main"/>
+        <license type="file">LICENCE.txt</license>
+        <readme>README.md</readme>
+        <copyright>Copyright 2025 Timothy Ray</copyright>
+        <releaseNotes>Initial alpha version release</releaseNotes>
+    </metadata>
+    <files>
+        <file src="../LICENSE.txt" target="LICENCE.txt"/>
+        <file src="../README.md" target="README.md"/>
+        <file src="../packages/1.0.0-alpha-0.0.1/Release/netstandard2.0/SharperExtensions.Analyzers.dll"
+              target="/analyzers/dotnet/cs"/>
+        <file src="../packages/1.0.0-alpha-0.0.1/net10.0/Release/SharperExtensions.Async.dll"
+              target="/lib/"/>
+    </files>
+</package>

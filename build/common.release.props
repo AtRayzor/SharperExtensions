@@ -1,0 +1,12 @@
+<Project>
+    <PropertyGroup>
+        <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
+        <BaseOutputPath>../../bld/$(Version)</BaseOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="../../LICENSE.txt" Pack="true" PackagePath="/"/>
+        <None Include="../../README.md" Pack="true" PackagePath="/"/>
+    </ItemGroup>
+
+</Project>

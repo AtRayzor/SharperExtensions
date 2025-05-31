@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    </PropertyGroup>
+
+    <Import Project="../../build/common.tests.props"/>
+
+    <ItemGroup>
+        <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AwesomeAssertions" Version="9.0.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0"/>
+        <PackageReference Include="Verify.XunitV3" Version="30.1.0" />
+        <PackageReference Include="xunit.v3" Version="2.0.2"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.1.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Core\Core.csproj" />
+      <ProjectReference Include="..\..\tools\TestUtils\TestUtils.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="OptionSerializationTests.DeserializedNestedSomeOption.verified.txt">
+        <ParentFile>OptionSerializationTests</ParentFile>
+        <DependentUpon>OptionSerializationTests.cs</DependentUpon>
+      </None>
+      <None Update="OptionSerializationTests.DeserializeNoneOption.verified.txt">
+        <ParentFile>OptionSerializationTests</ParentFile>
+        <DependentUpon>OptionSerializationTests.cs</DependentUpon>
+      </None>
+      <None Update="OptionSerializationTests.DeserializeSomeOption_IntValue.verified.txt">
+        <ParentFile>OptionSerializationTests</ParentFile>
+        <DependentUpon>OptionSerializationTests.cs</DependentUpon>
+      </None>
+      <None Update="OptionSerializationTests.DeserializeSomeOption_ObjectValue.verified.txt">
+        <ParentFile>OptionSerializationTests</ParentFile>
+        <DependentUpon>OptionSerializationTests.cs</DependentUpon>
+      </None>
+      <None Update="OptionSerializationTests.SerializeNestedSomeOption.verified.txt">
+        <ParentFile>OptionSerializationTests</ParentFile>
+        <DependentUpon>OptionSerializationTests.cs</DependentUpon>
+      </None>
+      <None Update="OptionSerializationTests.SerializeNoneOption.verified.txt">
+        <ParentFile>OptionSerializationTests</ParentFile>
+        <DependentUpon>OptionSerializationTests.cs</DependentUpon>
+      </None>
+      <None Update="OptionSerializationTests.SerializeSomeOption_IntValue.verified.txt">
+        <ParentFile>OptionSerializationTests</ParentFile>
+        <DependentUpon>OptionSerializationTests.cs</DependentUpon>
+      </None>
+      <None Update="OptionSerializationTests.SerializeSomeOption_ObjectValue.verified.txt">
+        <ParentFile>OptionSerializationTests</ParentFile>
+        <DependentUpon>OptionSerializationTests.cs</DependentUpon>
+      </None>
+    </ItemGroup>
+
+</Project>

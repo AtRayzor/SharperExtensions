@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<package>
+    <metadata>
+        <id>SharperExtensions.Collections</id>
+        <version>1.0.0-alpha-0.0.1</version>
+        <authors>Timothy Ray</authors>
+        <description>
+            The core types and operations for SharperExtensions.
+        </description>
+        <repository type="git"
+                    url="https://github.com/AtRayzor/SharperExtensions.git"
+                    branch="main"/>
+        <license type="MIT-0"/>
+        <copyright>Copyright 2025 Timothy Ray</copyright>
+        <releaseNotes>Initial alpha version release</releaseNotes>
+        <license type="file">LICENCE.txt</license>
+        <readme>README.md</readme>
+    </metadata>
+    <files>
+        <file src="LICENSE.txt" target="LICENCE.txt"/>
+        <file src="README.txt" target="README.txt"/>
+        <file src="packages/1.0.0-alpha-0.0.1/Release/netstandard2.0/SharperExtensions.Analyzers.dll"
+              target="/analyzers/dotnet/cs"/>
+        <file src="packages/1.0.0-alpha-0.0.1/net10.0/Release/SharperExtensions.Collections.dll"
+              target="/lib/"/>
+    </files>
+</package>
