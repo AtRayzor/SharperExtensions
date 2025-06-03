@@ -11,7 +11,7 @@ namespace SharperExtensions.Collections;
 /// This internal static class serves as a helper for sequence creation and manipulation
 /// within the Sequence type implementation.
 /// </remarks>
-internal static class SequenceInstance
+public static class SequenceInstance
 {
     /// <summary>
     /// Creates a new <see cref="Sequence{T}"/> from the given enumerable collection.
