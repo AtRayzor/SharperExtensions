@@ -497,11 +497,15 @@ public readonly struct Sequence<T> : ISequence<T>
     /// </returns>
     public Sequence<int> AllIndicesOf(T item, EqualityComparer<T> equalityComparer)
     {
-        return IsEmpty
-            ? []
-            : new Sequence<int>(YieldAllIndices(item, Items, equalityComparer));
+        if (IsEmpty)
+        {
+            return [];
+        }
 
-        static IEnumerable<int> YieldAllIndices(
+        var indices = YieldAllIndices(item, Items, equalityComparer);
+        return new Sequence<int>(indices);
+
+        static ReadOnlySpan<int> YieldAllIndices(
             T item,
             T[] itemsArray,
             EqualityComparer<T> equalityComparer
@@ -513,6 +517,14 @@ public readonly struct Sequence<T> : ISequence<T>
             {
                 var value = itemsArray[i];
 
+                if (bufferIndex == bufferSize)
+                {
+                    var tempBuffer = buffer;
+                    bufferSize *= 2;
+                    buffer = new int[bufferSize];
+                    tempBuffer.CopyTo(buffer);
+                }
+                
                 if (
                     equalityComparer.GetHashCode(value) != itemHash
                     || !equalityComparer.Equals(value, item)
