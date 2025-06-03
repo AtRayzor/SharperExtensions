@@ -351,7 +351,7 @@ public readonly struct Sequence<T> : ISequence<T>
         var sequenceSpan = AsSpan();
         Span<T> destination = new T[Length - 1];
         sequenceSpan[..index].CopyTo(destination);
-        sequenceSpan[(index + 1) ..].CopyTo(destination[(index - 1)..]);
+        sequenceSpan[(index + 1) ..].CopyTo(destination[index..]);
 
         return FromSpan(destination);
     }
