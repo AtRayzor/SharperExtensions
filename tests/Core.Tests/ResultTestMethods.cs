@@ -14,15 +14,17 @@ public static class ResultTestMethods
 
     public static Result<DummyNewValue, DummyError> TestBinder(DummyValue value)
     {
-        return new Ok<DummyNewValue, DummyError>(
+        return Result.Ok<DummyNewValue, DummyError>(
             new DummyNewValue { NameAllCaps = value.Name.ToUpper() }
         );
     }
 
-    public static Task<Result<DummyNewValue, DummyError>> AsyncTestBinder(DummyValue value)
+    public static Task<Result<DummyNewValue, DummyError>> AsyncTestBinder(
+        DummyValue value
+    )
     {
         return Task.FromResult<Result<DummyNewValue, DummyError>>(
-            new Ok<DummyNewValue, DummyError>(
+            Result.Ok<DummyNewValue, DummyError>(
                 new DummyNewValue { NameAllCaps = value.Name.ToUpper() }
             )
         );

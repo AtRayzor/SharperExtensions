@@ -20,7 +20,10 @@ public class OptionTests
 
     [Theory]
     [ClassData(typeof(GetRefTypeValueOrdDefaultTestCases))]
-    public void GetValueOrDefaultTests_ReferenceType(Option<DummyValue> option, DummyValue? value)
+    public void GetValueOrDefaultTests_ReferenceType(
+        Option<DummyValue> option,
+        DummyValue? value
+    )
     {
         Option.Unsafe.GetValueOrDefault(option).Should().Be(value);
     }
@@ -35,14 +38,22 @@ public class OptionTests
     [Fact]
     public void TryGetValue_CallWithSome_ReturnsTrueAndOutputsValue()
     {
-        Option.Unsafe.TryGetValue(OptionTestData.SomeValue, out var value).Should().BeTrue();
+        Option
+            .Unsafe
+            .TryGetValue(OptionTestData.SomeValue, out var value)
+            .Should()
+            .BeTrue();
         value.Should().BeEquivalentTo(OptionTestData.Value);
     }
 
     [Fact]
     public void TryGetValue_CallWithNone_ReturnsFalseAndOutputsValue()
     {
-        Option.Unsafe.TryGetValue(OptionTestData.NoneValue, out var value).Should().BeFalse();
+        Option
+            .Unsafe
+            .TryGetValue(OptionTestData.NoneValue, out var value)
+            .Should()
+            .BeFalse();
         value.Should().BeNull();
     }
 

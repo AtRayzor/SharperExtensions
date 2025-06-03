@@ -16,7 +16,13 @@ public class ResultFunctorTests
             .Functor
             .Map(result, mapper)
             .Should()
-            .BeEquivalentTo(expected, config => config.PreferringRuntimeMemberTypes());
+            .Satisfy<Result<DummyNewValue, DummyError>>(r =>
+                r.Value.Should().BeEquivalentTo(expected.Value)
+            )
+            .And
+            .Satisfy<Result<DummyNewValue, DummyError>>(r =>
+                r.ErrorValue.Should().BeEquivalentTo(expected.ErrorValue)
+            );
     }
 
     [Theory]
@@ -31,7 +37,13 @@ public class ResultFunctorTests
             .Functor
             .MapError(result, mapper)
             .Should()
-            .BeEquivalentTo(expected, config => config.PreferringRuntimeMemberTypes());
+            .Satisfy<Result<DummyValue, DummyNewError>>(r =>
+                r.Value.Should().BeEquivalentTo(expected.Value)
+            )
+            .And
+            .Satisfy<Result<DummyValue, DummyNewError>>(r =>
+                r.ErrorValue.Should().BeEquivalentTo(expected.ErrorValue)
+            );
     }
 
     [Theory]
@@ -116,95 +128,6 @@ file class MatchTestCases : IEnumerable<object[]>
         yield return
         [
             Result.Error<DummyValue, DummyError>(ResultTestData.Error),
-            (Func<DummyValue, DummyNewValue>)ResultTestMethods.MatchOk,
-            (Func<DummyError, DummyNewValue>)ResultTestMethods.MatchError,
-            new DummyNewValue { NameAllCaps = "ERROR" },
-        ];
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-}
-
-file class MapAsyncTestCases : IEnumerable<object[]>
-{
-    public IEnumerator<object[]> GetEnumerator()
-    {
-        yield return
-        [
-            () => Task.FromResult(
-                Result.Ok<DummyValue, DummyError>(ResultTestData.Value)
-            ),
-            (Func<DummyValue, DummyNewValue>)ResultTestMethods.TestMapping,
-            Result.Ok<DummyNewValue, DummyError>(ResultTestData.NewValue),
-        ];
-
-        yield return
-        [
-            () => Task.FromResult(
-                Result.Error<DummyValue, DummyError>(ResultTestData.Error)
-            ),
-            (Func<DummyValue, DummyNewValue>)ResultTestMethods.TestMapping,
-            Result.Error<DummyNewValue, DummyError>(ResultTestData.Error),
-        ];
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-}
-
-file class MapErrorAsyncTestCases : IEnumerable<object[]>
-{
-    public IEnumerator<object[]> GetEnumerator()
-    {
-        yield return
-        [
-            () => Task.FromResult(
-                Result.Error<DummyValue, DummyError>(ResultTestData.Error)
-            ),
-            (Func<DummyError, DummyNewError>)ResultTestMethods.TestErrorMapping,
-            Result.Error<DummyValue, DummyNewError>(ResultTestData.NewError),
-        ];
-
-        yield return
-        [
-            () => Task.FromResult(
-                Result.Ok<DummyValue, DummyError>(ResultTestData.Value)
-            ),
-            (Func<DummyError, DummyNewError>)ResultTestMethods.TestErrorMapping,
-            Result.Ok<DummyValue, DummyNewError>(ResultTestData.Value),
-        ];
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-}
-
-file class MatchAsyncTestCases : IEnumerable<object[]>
-{
-    public IEnumerator<object[]> GetEnumerator()
-    {
-        yield return
-        [
-            () => Task.FromResult(
-                Result.Ok<DummyValue, DummyError>(ResultTestData.Value)
-            ),
-            (Func<DummyValue, DummyNewValue>)ResultTestMethods.MatchOk,
-            (Func<DummyError, DummyNewValue>)ResultTestMethods.MatchError,
-            ResultTestData.NewValue,
-        ];
-
-        yield return
-        [
-            () => Task.FromResult(
-                Result.Error<DummyValue, DummyError>(ResultTestData.Error)
-            ),
             (Func<DummyValue, DummyNewValue>)ResultTestMethods.MatchOk,
             (Func<DummyError, DummyNewValue>)ResultTestMethods.MatchError,
             new DummyNewValue { NameAllCaps = "ERROR" },

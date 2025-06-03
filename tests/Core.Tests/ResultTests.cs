@@ -5,19 +5,19 @@ public class ResultTests
     [Fact]
     public void Ok_CreatesOkResult()
     {
-        var ok = Result.Ok<DummyValue, DummyError>(ResultTestData.Value);
+        var result = Result.Ok<DummyValue, DummyError>(ResultTestData.Value);
 
-        ok.Should().BeOfType<Ok<DummyValue, DummyError>>();
-        ok.As<Ok<DummyValue, DummyError>>().Value.Should().Be(ResultTestData.Value);
+        result.IsOk.Should().BeTrue();
+        result.Value.Should().BeEquivalentTo(ResultTestData.Value);
     }
 
     [Fact]
     public void Error_CreatesErrorResult()
     {
-        var error = Result.Error<DummyValue, DummyError>(ResultTestData.Error);
+        var result = Result.Error<DummyValue, DummyError>(ResultTestData.Error);
 
-        error.Should().BeOfType<Error<DummyValue, DummyError>>();
-        error.As<Error<DummyValue, DummyError>>().Err.Should().Be(ResultTestData.Error);
+        result.IsError.Should().BeTrue();
+        result.ErrorValue.Should().BeEquivalentTo(ResultTestData.Error);
     }
 
     [Fact]

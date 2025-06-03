@@ -1,0 +1,6 @@
+﻿{
+  Value: {
+    IsSome: true,
+    IsNone: false
+  }
+}

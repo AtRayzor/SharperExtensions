@@ -16,7 +16,13 @@ public class MonadTests
             .Monad
             .Bind(result, binder)
             .Should()
-            .BeEquivalentTo(expected, config => config.PreferringRuntimeMemberTypes());
+            .Satisfy<Result<DummyNewValue, DummyError>>(r =>
+                r.Value.Should().BeEquivalentTo(expected.Value)
+            )
+            .And
+            .Satisfy<Result<DummyNewValue, DummyError>>(r =>
+                r.ErrorValue.Should().BeEquivalentTo(expected.ErrorValue)
+            );
     }
 
     [Theory]
@@ -30,7 +36,13 @@ public class MonadTests
             .Monad
             .Flatten(wrappedResult)
             .Should()
-            .BeEquivalentTo(expected, config => config.PreferringRuntimeMemberTypes());
+            .Satisfy<Result<DummyValue, DummyError>>(r =>
+                r.Value.Should().BeEquivalentTo(expected.Value)
+            )
+            .And
+            .Satisfy<Result<DummyValue, DummyError>>(r =>
+                r.ErrorValue.Should().BeEquivalentTo(expected.ErrorValue)
+            );
     }
 }
 
