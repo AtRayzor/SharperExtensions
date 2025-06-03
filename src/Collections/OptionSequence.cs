@@ -31,7 +31,7 @@ public static class OptionSequence
     /// values converted to options.
     /// </returns>
     public static OptionSequence<T> Create<T>(IEnumerable<T?> enumerable)
-        where T : notnull => new(enumerable.Cast<Option<T>>());
+        where T : notnull => new(enumerable.Select(Option<T> (value) => value));
 
     /// <summary>
     /// Creates an <see cref="OptionSequence{T}" /> from a
