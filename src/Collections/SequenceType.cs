@@ -154,9 +154,6 @@ public readonly struct Sequence<T> : ISequence<T>
         return GetEnumerator();
     }
 
-    private ReadOnlySpan<T> EnumerableToSpan(IEnumerable<T> enumerable) =>
-        Unsafe.As<IEnumerable<T>, T[]>(ref enumerable).AsSpan();
-
     /// <inheritdoc />
     public ReadOnlySpan<T> AsSpan() =>
         Items is not null ? Items.AsSpan() : [];
@@ -319,7 +316,7 @@ public readonly struct Sequence<T> : ISequence<T>
             return this;
         }
 
-        var rangeSpan = EnumerableToSpan(range);
+        Span<T> rangeSpan = [..range];
         var sequenceSpan = AsSpan();
         var length = Length + rangeSpan.Length;
         Span<T> destination = new T[length];
