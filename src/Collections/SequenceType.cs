@@ -513,6 +513,8 @@ public readonly struct Sequence<T> : ISequence<T>
             var bufferSize =
                 itemsArray.Length <= 100 ? itemsArray.Length : itemsArray.Length / 10;
             var itemHash = equalityComparer.GetHashCode(item);
+            Span<int> buffer = new int[bufferSize];
+            var bufferIndex = 0;
 
             for (var i = 0; i < itemsArray.Length; i++)
             {
@@ -534,8 +536,10 @@ public readonly struct Sequence<T> : ISequence<T>
                     continue;
                 }
 
-                yield return i;
+                buffer[bufferIndex++] = i;
             }
+
+            return buffer[..bufferIndex];
         }
     }
 
