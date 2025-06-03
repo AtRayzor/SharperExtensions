@@ -12,14 +12,20 @@
         <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Using Include="Xunit"/>
-    </ItemGroup>
+
 
     <ItemGroup>
+        <PackageReference Include="AwesomeAssertions" Version="9.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0"/>
         <PackageReference Include="xunit.v3" Version="2.0.2"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="3.1.0"/>
+    </ItemGroup>
+
+
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Collections\Collections.csproj" />
+      <ProjectReference Include="..\..\tools\TestUtils\TestUtils.csproj" />
     </ItemGroup>
 
 </Project>
