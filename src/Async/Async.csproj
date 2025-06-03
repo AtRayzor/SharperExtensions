@@ -7,6 +7,7 @@
     
     <ItemGroup>
       <ProjectReference Include="..\..\tools\TestUtils\TestUtils.csproj" />
+      <ProjectReference Include="..\Collections\Collections.csproj" />
       <ProjectReference Include="..\Core\Core.csproj" />
     </ItemGroup>
     

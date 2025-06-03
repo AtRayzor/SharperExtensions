@@ -1,3 +1,5 @@
+using Xunit;
+
 namespace SharperExtensions.Async;
 
 #pragma warning disable CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
@@ -53,19 +55,41 @@ public readonly struct AsyncResult<T, TError>
     public static AsyncResult<T, TError> Error(TError error) =>
         AsyncResult.CreateError<T, TError>(error);
 
-    /// <summary>
-    /// Gets an awaiter used to await this
-    /// <see cref="AsyncResult{T, TError}" />.
-    /// </summary>
-    /// <returns>A configured task awaiter.</returns>
-    public AsyncAwaiter<Result<T, TError>> GetAwaiter() => WrappedResult.GetAwaiter();
+    public AsyncAwaiter<Result<T, TError>, Result<T, TError>> GetAwaiter() =>
+        WrappedResult
+            .ConfigureAwaitInternal(
+                new ResultAsyncResultProvider<T, TError>(WrappedResult.State)
+            );
+
+    public AsyncAwaiter<Result<T, TError>, Result<T, TError>> ConfigureAwaiter(
+        Func<TError> defaultErrorFactory
+    ) =>
+        WrappedResult.ConfigureAwaitInternal(
+            new ResultAsyncResultProvider<T, TError>(
+                WrappedResult.State,
+                defaultErrorFactory
+            )
+        );
+
+    public AsyncAwaiter<Result<T, TError>, Result<T, TError>> ConfigureAwaiter(
+        Func<TError> defaultErrorFactory,
+        Func<Exception, TError> exceptionHandler
+    ) =>
+        WrappedResult.ConfigureAwaitInternal(
+            new ResultAsyncResultProvider<T, TError>(
+                WrappedResult.State,
+                defaultErrorFactory,
+                exceptionHandler
+            )
+        );
 
     /// <summary>
     /// Returns the underlying task representing the asynchronous
     /// operation.
     /// </summary>
     /// <returns>The task of the result.</returns>
-    public Task<Result<T, TError>> AsTask() => Async.AsTask(WrappedResult);
+    public Task<Result<T, TError>> AsTask(Func<Exception, TError> errorFactory) =>
+        Async.AsTask(WrappedResult);
 
     public static implicit operator AsyncResult<T, TError>(
         Async<Result<T, TError>> wrappedResult
@@ -539,12 +563,20 @@ public static class AsyncResult
             )
         );
 
-        Result<(T1, T2), TError> ResultCallback()
+        Option<Result<Result<(T1, T2), TError>, Exception>>  ResultCallback()
         {
             var result1 = asyncResult1.WrappedResult.Result;
             var result2 = asyncResult2.WrappedResult.Result;
 
-            return Result.Combine(result1, result2, errorCollisionHandler);
+            return result1
+            .Combine(
+                result2,
+                (excption1, exception2) =>
+                    new AggregateException(excption1, exception2)
+            )
+            .Map((r1, r2) => Result.Combine(r1, r2, errorCollisionHandler));
+           
+    
         }
     }
 
@@ -730,13 +762,10 @@ public static class AsyncResult
             Func<T, AsyncResult<TNew, TError>> binder
         )
         {
-            return result switch
-            {
-                Ok<T, TError> { Value: var value } => binder(value).WrappedResult,
-                Error<T, TError> { Err: var error } => Async.New(
-                    Result<TNew, TError>.Error(error)
-                ),
-            };
+            return result.Match(
+                value => binder(value).WrappedResult,
+                error => Async.New(Result.Error<TNew, TError>(error))
+            );
         }
     }
 
@@ -785,63 +814,66 @@ public static class AsyncResult
     }
 
     /// <summary>
+    /// Matches on the result of an <see cref="AsyncResult{T, TError}" />,
+    /// invoking the appropriate function for success or error.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <typeparam name="TOut">The return type of the match functions.</typeparam>
+    /// <param name="asyncResult">The asynchronous result to match on.</param>
+    /// <param name="okArm">Function to invoke if the result is success.</param>
+    /// <param name="errorArm">Function to invoke if the result is error.</param>
+    /// <returns>A task producing the result of the invoked function.</returns>
+    public static Async<TOut> MatchAsync<T, TError, TOut>(
+        AsyncResult<T, TError> asyncResult,
+        Func<T, CancellationToken, Async<TOut>> okArm,
+        Func<TError, CancellationToken, Async<TOut>> errorArm
+    )
+        where T : notnull
+        where TError : notnull
+        where TOut : notnull
+    {
+        var token = asyncResult.WrappedResult.State.Token;
+        return asyncResult.WrappedResult.Bind(Match);
+
+        Async<TOut> Match(Result<T, TError> result) =>
+            result.Match(
+                value => okArm(value, token),
+                error => errorArm(error, token)
+            );
+    }
+
+    /// <summary>
+    /// Matches on the result of an <see cref="AsyncResult{T, TError}" />,
+    /// invoking the appropriate function for success or error.
+    /// </summary>
+    /// <typeparam name="T">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <typeparam name="TOut">The return type of the match functions.</typeparam>
+    /// <param name="asyncResult">The asynchronous result to match on.</param>
+    /// <param name="okArm">Function to invoke if the result is success.</param>
+    /// <param name="errorArm">Function to invoke if the result is error.</param>
+    /// <returns>A task producing the result of the invoked function.</returns>
+    public static Async<TOut> MatchAsync<T, TError, TOut>(
+        AsyncResult<T, TError> asyncResult,
+        Func<T, Async<TOut>> okArm,
+        Func<TError, Async<TOut>> errorArm
+    )
+        where T : notnull
+        where TError : notnull
+        where TOut : notnull =>
+        MatchAsync(
+            asyncResult,
+            (value, _) => okArm(value),
+            (err, _) => errorArm(err)
+        );
+
+    /// <summary>
     /// Provides unsafe operations on
     /// <see cref="AsyncResult{T, TError}" />.
     /// </summary>
     public static class Unsafe
     {
-        /// <summary>
-        /// Matches on the result of an <see cref="AsyncResult{T, TError}" />,
-        /// invoking the appropriate function for success or error.
-        /// </summary>
-        /// <typeparam name="T">The type of the success value.</typeparam>
-        /// <typeparam name="TError">The type of the error value.</typeparam>
-        /// <typeparam name="TOut">The return type of the match functions.</typeparam>
-        /// <param name="asyncResult">The asynchronous result to match on.</param>
-        /// <param name="okArm">Function to invoke if the result is success.</param>
-        /// <param name="errorArm">Function to invoke if the result is error.</param>
-        /// <returns>A task producing the result of the invoked function.</returns>
-        public static async Task<TOut> MatchAsync<T, TError, TOut>(
-            AsyncResult<T, TError> asyncResult,
-            Func<T, CancellationToken, TOut> okArm,
-            Func<TError, CancellationToken, TOut> errorArm
-        )
-            where T : notnull
-            where TError : notnull
-        {
-            var token = asyncResult.WrappedResult.State.Token;
-            return await asyncResult.WrappedResult switch
-            {
-                Ok<T, TError> { Value: var value } => okArm(value, token),
-                Error<T, TError> { Err: var error } => errorArm(error, token),
-            };
-        }
-
-        /// <summary>
-        /// Matches on the result of an <see cref="AsyncResult{T, TError}" />,
-        /// invoking the appropriate function for success or error.
-        /// </summary>
-        /// <typeparam name="T">The type of the success value.</typeparam>
-        /// <typeparam name="TError">The type of the error value.</typeparam>
-        /// <typeparam name="TOut">The return type of the match functions.</typeparam>
-        /// <param name="asyncResult">The asynchronous result to match on.</param>
-        /// <param name="okArm">Function to invoke if the result is success.</param>
-        /// <param name="errorArm">Function to invoke if the result is error.</param>
-        /// <returns>A task producing the result of the invoked function.</returns>
-        public static async Task<TOut> MatchAsync<T, TError, TOut>(
-            AsyncResult<T, TError> asyncResult,
-            Func<T, TOut> okArm,
-            Func<TError, TOut> errorArm
-        )
-            where T : notnull
-            where TError : notnull =>
-            await MatchAsync(
-                    asyncResult,
-                    (value, _) => okArm(value),
-                    (err, _) => errorArm(err)
-                )
-                .ConfigureAwait(ConfigureAwaitOptions.None);
-
         /// <summary>
         /// Executes an asynchronous function if the
         /// <see cref="AsyncResult{T, TError}" /> is successful.
@@ -947,31 +979,37 @@ public static class AsyncResult
             }
         );
 
-        /// <summary>
-        /// Executes actions depending on whether the
-        /// <see cref="AsyncResult{T, TError}" /> is success or error.
-        /// </summary>
-        /// <typeparam name="T">The type of the success value.</typeparam>
-        /// <typeparam name="TError">The type of the error value.</typeparam>
-        /// <param name="asyncResult">The asynchronous result.</param>
-        /// <param name="okAction">Action to execute if success.</param>
-        /// <param name="errorEAction">Action to execute if error.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public static async Task DoAsync<T, TError>(
+        public static Task DoAsync<T, TError>(
             AsyncResult<T, TError> asyncResult,
             Action<T> okAction,
-            Action<TError> errorEAction
+            Action<TError> errorAction
+        )
+            where T : notnull
+            where TError : notnull =>
+            DoAsync(
+                asyncResult,
+                value =>
+                {
+                    okAction(value);
+                    return Task.CompletedTask;
+                },
+                error =>
+                {
+                    errorAction(error);
+                    return Task.CompletedTask;
+                }
+            );
+
+        public static async Task DoAsync<T, TError>(
+            AsyncResult<T, TError> asyncResult,
+            Func<T, Task> okFunc,
+            Func<TError, Task> errorFunc
         )
             where T : notnull
             where TError : notnull =>
             await asyncResult
                 .WrappedResult
-                .DoAsync(result =>
-                    {
-                        result.Do(okAction, errorEAction);
-                        return Task.CompletedTask;
-                    }
-                )
+                .DoAsync(async result => { await result.Match(okFunc, errorFunc); })
                 .ConfigureAwait(ConfigureAwaitOptions.None);
 
         /// <summary>Gets the success value or default asynchronously.</summary>
@@ -1027,6 +1065,6 @@ public static class AsyncResult
     )
         where T : notnull => Async.SetToken(async, token);
 
-    public static Task<T> AsTask<T>(this Async<T> async)
+    public static Task<T?> AsTask<T>(this Async<T> async)
         where T : notnull => Async.AsTask(async);
 }

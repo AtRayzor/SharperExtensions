@@ -123,19 +123,19 @@ public static class AsyncResultExtensions
         ) where T2 : notnull =>
             AsyncResult.Combine(asyncResult, asyncResult2, errorCollisionHandler);
 
-        public Task<TResult> MatchAsync<TResult>(
-            Func<T, TResult> matchOk,
-            Func<TError, TResult> matchError
+        public Async<TResult> MatchAsync<TResult>(
+            Func<T, Async<TResult>> matchOk,
+            Func<TError, Async<TResult>> matchError
         )
             where TResult : notnull =>
-            AsyncResult.Unsafe.MatchAsync(asyncResult, matchOk, matchError);
+            AsyncResult.MatchAsync(asyncResult, matchOk, matchError);
 
-        public Task<TResult> MatchAsync<TResult>(
-            Func<T, CancellationToken, TResult> matchOk,
-            Func<TError, CancellationToken, TResult> matchError
+        public Async<TResult> MatchAsync<TResult>(
+            Func<T, CancellationToken, Async<TResult>> matchOk,
+            Func<TError, CancellationToken, Async<TResult>> matchError
         )
             where TResult : notnull =>
-            AsyncResult.Unsafe.MatchAsync(asyncResult, matchOk, matchError);
+            AsyncResult.MatchAsync(asyncResult, matchOk, matchError);
 
         public Task DoIfOkAsync(Action<T> action) =>
             AsyncResult.Unsafe.DoIfOkAsync(asyncResult, action);

@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Xunit.Internal;
 
 namespace SharperExtensions.Async;
 
@@ -11,14 +12,28 @@ namespace SharperExtensions.Async;
 /// computation.
 /// </typeparam>
 [AsyncMethodBuilder(typeof(AsyncMethodBuilder<>))]
-public struct Async<T> : IEquatable<Async<T>>
+public readonly struct Async<T> : IEquatable<Async<T>>
     where T : notnull
 {
     internal AsyncMutableState<T> State { get; }
 
-    private Async<Unit> New => Async.New(Unit.Value);
+    /// <summary>
+    /// Creates a new <see cref="Async{T}"/> instance with a <see cref="Unit"/> value.
+    /// </summary>
+    /// <remarks>
+    /// Provides a convenient way to create an asynchronous computation that represents a completed void operation.
+    /// </remarks>
+    public Async<Unit> New => Async.New(Unit.Value);
 
-    public T Result => State.GetResultBlocking();
+    /// <summary>
+    /// Gets the result of the asynchronous computation, representing either the successful value of type <typeparamref name="T"/> or an <see cref="Exception"/> if the computation failed.
+    /// </summary>
+    /// <returns>A <see cref="Result{T, Exception}"/> containing either the successful value or an error.</returns>
+    public Result<T, Exception> Result =>
+        State
+            .GetResultBlocking()
+            .Map(box => box.Value)
+            .ValueOr(Result<T, Exception>.Error(new InvalidOperationException()));
 
     internal Async(
         T value,
@@ -32,53 +47,141 @@ public struct Async<T> : IEquatable<Async<T>>
 
     internal Async(
         Func<T> resultCallback,
-        ExecutionContext? executionContext,
+        bool shouldStart = false,
+        CancellationToken cancellationToken = default
+    ) : this(
+        () => Result<T, Exception>.Ok(resultCallback()),
+        null,
+        shouldStart,
+        cancellationToken
+    ) { }
+
+    internal Async(
+        Func<Option<Result<T, Exception>>> resultCallback,
+        ExecutionContext? executionContext = null,
+        bool shouldStart = false,
+        CancellationToken cancellationToken = default
+    ) : this(
+        new AsyncMutableState<T>(
+            executionContext,
+            resultCallback: resultCallback,
+            token: cancellationToken
+        ),
+        shouldStart,
+        cancellationToken
+    ) { }
+
+    internal Async(
+        AsyncMutableState<T> state,
+        bool shouldStart = false,
         CancellationToken cancellationToken = default
     )
     {
-        State = new AsyncMutableState<T>(executionContext, cancellationToken)
-        {
-            ResultCallback = resultCallback,
-        };
-    }
-
-    internal Async(AsyncMutableState<T> state, CancellationToken cancellationToken = default)
-    {
         State = state;
         State.CaptureLocalContext();
-        State.Status = AsyncStatus.RunningAsync;
+
+        if (shouldStart)
+        {
+            State.Start();
+        }
     }
 
     public static Async<T> FromTask(Task<T> task, CancellationToken token = default)
     {
-        return ConvertAsync(task);
+        var state = new AsyncMutableState<T>(
+                resultCallback: (Option<Func<Option<Result<T, Exception>>>>)Callback,
+                token: token
+            )
+            { };
 
-        static async Async<T> ConvertAsync(Task<T> task) =>
-            await task.ConfigureAwait(ConfigureAwaitOptions.None);
+
+        return new Async<T>(state, shouldStart: true);
+
+        Option<Result<T, Exception>> Callback() =>
+            task.Result.ToOption().Map(Result<T, Exception>.Ok);
     }
 
-    public static Async<T> FromValueTask(ValueTask<T> task, CancellationToken token = default)
+    public static Async<T> FromValueTask(
+        ValueTask<T> task,
+        CancellationToken token = default
+    )
     {
-        return ConvertAsync(task);
+        var state = new AsyncMutableState<T>(
+            resultCallback: (Option<Func<Option<Result<T, Exception>>>>)Callback,
+            token: token
+        );
 
-        static async Async<T> ConvertAsync(ValueTask<T> valueTask) =>
-            await valueTask.ConfigureAwait(false);
+
+        return new Async<T>(state, shouldStart: true);
+
+        Option<Result<T, Exception>> Callback() =>
+            task.Result.ToOption().Map(Result<T, Exception>.Ok);
     }
 
-    /// <summary>Gets an awaiter used to await this asynchronous operation.</summary>
-    /// <returns>A task awaiter.</returns>
-    public AsyncAwaiter<T> GetAwaiter() => new(State);
+    internal AsyncAwaiter<T, TResult> ConfigureAwaitInternal<TResult>(
+        ResultProvider<T, TResult> resultProvider
+    ) =>
+        new(State, resultProvider);
 
+    /// <summary>
+    /// Configures the awaiter to return an <see cref="Option{T}"/> representing the result of the asynchronous operation.
+    /// </summary>
+    /// <returns>An <see cref="AsyncAwaiter{T, Option{T}}"/> that can be used to await the asynchronous operation.</returns>
+    public AsyncAwaiter<T, Option<T>> ConfigureAwait() =>
+        ConfigureAwaitInternal(new OptionResultProvider<T>(State));
+
+    /// <summary>
+    /// Configures the awaiter to return a <see cref="Result{T, TError}"/> with a predefined error value.
+    /// </summary>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="error">The error value to use if the asynchronous operation fails.</param>
+    /// <returns>An <see cref="AsyncAwaiter{T, Result{T, TError}}"/> that can be used to await the asynchronous operation.</returns>
+    public AsyncAwaiter<T, Result<T, TError>> ConfigureAwait<TError>(TError error)
+        where TError : notnull => ConfigureAwait(() => error);
+
+    /// <summary>
+    /// Configures the awaiter to return a <see cref="Result{T, TError}"/> with a default error factory.
+    /// </summary>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="defaultErrorFactory">A function that provides the default error value if the asynchronous operation fails.</param>
+    /// <returns>An <see cref="AsyncAwaiter{T, Result{T, TError}}"/> that can be used to await the asynchronous operation.</returns>
+    public AsyncAwaiter<T, Result<T, TError>> ConfigureAwait<TError>(
+        Func<TError> defaultErrorFactory
+    ) where TError : notnull => ConfigureAwait(
+        defaultErrorFactory,
+        Option<Func<Exception, TError>>.None
+    );
+
+    /// <summary>
+    /// Configures the awaiter to return a <see cref="Result{T, TError}"/> with a custom error handling strategy.
+    /// </summary>
+    /// <typeparam name="TError">The type of the error value.</typeparam>
+    /// <param name="defaultErrorFactory">A function that provides the default error value if the asynchronous operation fails.</param>
+    /// <param name="errorHandler">An optional function to transform an exception into a specific error value.</param>
+    /// <returns>An <see cref="AsyncAwaiter{T, Result{T, TError}}"/> that can be used to await the asynchronous operation.</returns>
+    public AsyncAwaiter<T, Result<T, TError>> ConfigureAwait<TError>(
+        Func<TError> defaultErrorFactory,
+        Option<Func<Exception, TError>> errorHandler
+    ) where TError : notnull => ConfigureAwaitInternal(
+        new ResultTypeResultProvider<T, TError>(State, defaultErrorFactory, errorHandler)
+    );
+
+    internal AsyncAwaiter<T, T> GetAwaiter() =>
+        new(State, new UnsafeResultProvider<T>(State));
+
+    /// <inheritdoc />
     public bool Equals(Async<T> other)
     {
         return State.Equals(other.State);
     }
 
+    /// <inheritdoc />
     public override bool Equals(object? obj)
     {
         return obj is Async<T> other && Equals(other);
     }
 
+    /// <inheritdoc />
     public override int GetHashCode()
     {
         return State.GetHashCode();
@@ -147,7 +250,10 @@ public static class Async
     /// this async operation.
     /// </param>
     /// <returns>An <see cref="Async{T}" /> wrapping the specified value task.</returns>
-    public static Async<T> FromValueTask<T>(ValueTask<T> task, CancellationToken cancellationToken)
+    public static Async<T> FromValueTask<T>(
+        ValueTask<T> task,
+        CancellationToken cancellationToken
+    )
         where T : notnull => Async<T>.FromValueTask(task, cancellationToken);
 
     /// <summary>
@@ -194,7 +300,8 @@ public static class Async
     /// An <see cref="Async{Unit}" /> representing the completion of the
     /// task.
     /// </returns>
-    public static Async<Unit> FromTask(Task task) => FromTask(task, CancellationToken.None);
+    public static Async<Unit> FromTask(Task task) =>
+        FromTask(task, CancellationToken.None);
 
     /// <summary>
     /// Creates a new <see cref="Async{Unit}" /> from a <see cref="ValueTask" />
@@ -209,7 +316,10 @@ public static class Async
     /// An <see cref="Async{Unit}" /> representing the completion of the
     /// value task.
     /// </returns>
-    public static Async<Unit> FromValueTask(ValueTask task, CancellationToken cancellationToken)
+    public static Async<Unit> FromValueTask(
+        ValueTask task,
+        CancellationToken cancellationToken
+    )
     {
         return ToUnitTask(task);
 
@@ -221,26 +331,33 @@ public static class Async
         }
     }
 
-    public static Task<T> AsTask<T>(Async<T> async)
+    public static Task<T?> AsTask<T>(Async<T> async)
         where T : notnull
     {
-        return ToTaskAsync(async);
+        var tcs = async.State.Tcs;
 
-        static async Task<T> ToTaskAsync(Async<T> async)
-        {
-            return await async;
-        }
+        Task.Factory.StartNew(() =>
+            {
+                async
+                    .Result
+                    .Do(tcs.SetResult, tcs.SetException);
+            }
+        );
+
+        return tcs.Task;
     }
 
-    public static ValueTask<T> AsValueTask<T>(Async<T> async)
+    public static ValueTask<T?> AsValueTask<T>(Async<T> async)
         where T : notnull
     {
-        return ToValueTaskAsync(async);
-
-        static async ValueTask<T> ToValueTaskAsync(Async<T> async)
+        return async.State switch
         {
-            return await async;
-        }
+            { IsCompleted: true } when async.State.Result.ValueOrDefault is
+                    { Value: var result } =>
+                result.Match(ValueTask.FromResult<T?>, ValueTask.FromException<T?>),
+            { IsCompleted: true } => ValueTask.FromResult<T?>(default),
+            _ => new ValueTask<T?>(AsTask(async)),
+        };
     }
 
     public static Async<T> SetToken<T>(Async<T> async, CancellationToken token)
@@ -293,7 +410,8 @@ public static class Async
     {
         return new Async<TNew>(ResultCallback, async.State.ExecutionContext);
 
-        TNew ResultCallback() => mapper(async.Result, cancellationToken);
+        Option<Result<TNew, Exception>> ResultCallback() =>
+            async.Result.Map(value => mapper(value, cancellationToken));
     }
 
     /// <summary>
@@ -312,7 +430,10 @@ public static class Async
     /// asynchronous computation.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Async<TNew> Map<T, TNew>(Async<T> async, Func<T, CancellationToken, TNew> map)
+    public static Async<TNew> Map<T, TNew>(
+        Async<T> async,
+        Func<T, CancellationToken, TNew> map
+    )
         where T : notnull
         where TNew : notnull => Map(async, map, CancellationToken.None);
 
@@ -364,9 +485,14 @@ public static class Async
         where T : notnull
         where TNew : notnull
     {
-        return new Async<TNew>(ResultCallback, async.State.ExecutionContext, cancellationToken);
+        return new Async<TNew>(
+            ResultCallback,
+            executionContext: async.State.ExecutionContext,
+            cancellationToken: cancellationToken
+        );
 
-        TNew ResultCallback() => binder(async.Result, cancellationToken).Result;
+        Option<Result<TNew, Exception>> ResultCallback() =>
+            async.Result.Bind(value => binder(value, cancellationToken).Result);
     }
 
     /// <summary>
@@ -410,7 +536,11 @@ public static class Async
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Async<TNew> Bind<T, TNew>(Async<T> async, Func<T, Async<TNew>> binder)
         where T : notnull
-        where TNew : notnull => Bind(async, (value, _) => binder(value), async.State.Token);
+        where TNew : notnull => Bind(
+        async,
+        (value, _) => binder(value),
+        async.State.Token
+    );
 
     /// <summary>Flattens a nested asynchronous computation.</summary>
     /// <typeparam name="T">
@@ -425,11 +555,12 @@ public static class Async
     {
         return new Async<T>(
             ResultCallback,
-            nestedAsync.State.ExecutionContext,
-            nestedAsync.State.Token
+            executionContext: nestedAsync.State.ExecutionContext,
+            cancellationToken: nestedAsync.State.Token
         );
 
-        T ResultCallback() => nestedAsync.Result.Result;
+        Option<Result<T, Exception>> ResultCallback() =>
+            nestedAsync.Result.Bind(async => async.Result);
     }
 
     /// <summary>
@@ -460,9 +591,16 @@ public static class Async
         where T : notnull
         where TNew : notnull
     {
-        return new Async<TNew>(ResultCallback, async.State.ExecutionContext, cancellationToken);
+        return new Async<TNew>(
+            ResultCallback,
+            executionContext: async.State.ExecutionContext,
+            cancellationToken: cancellationToken
+        );
 
-        TNew ResultCallback() => wrappedMap.Result.Invoke(async.Result, cancellationToken);
+        Option<Result<TNew, Exception>> ResultCallback() =>
+            wrappedMap.Result.Bind(mapper =>
+                async.Result.Map((value) => mapper(value, cancellationToken))
+            );
     }
 
     /// <summary>
@@ -504,7 +642,10 @@ public static class Async
     /// mapping function.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Async<TNew> Apply<T, TNew>(Async<T> async, Async<Func<T, TNew>> wrappedMap)
+    public static Async<TNew> Apply<T, TNew>(
+        Async<T> async,
+        Async<Func<T, TNew>> wrappedMap
+    )
         where T : notnull
         where TNew : notnull => Bind(wrappedMap, map => Map(async, map));
 
@@ -523,14 +664,27 @@ public static class Async
     /// this async operation.
     /// </param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public static async Task DoAsync<T>(
+    public static Task DoAsync<T>(
         Async<T> async,
         Func<T, CancellationToken, Task> actionAsync,
         CancellationToken cancellationToken
     )
         where T : notnull
     {
-        await actionAsync(await async, cancellationToken)
-            .ConfigureAwait(ConfigureAwaitOptions.None);
+        var tcs = async.State.Tcs;
+        
+        Task.Factory.StartNew(
+            () =>
+                async.Result.Do(Execute, tcs.SetException),
+            cancellationToken
+        );
+
+        return tcs.Task;
+
+        void Execute(T result)
+        {
+            actionAsync(result, cancellationToken).Wait(cancellationToken);
+            tcs.SetResult(result);
+        }
     }
 }

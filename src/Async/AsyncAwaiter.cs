@@ -2,33 +2,32 @@ using System.Runtime.CompilerServices;
 
 namespace SharperExtensions.Async;
 
-public struct AsyncAwaiter<T> : ICriticalNotifyCompletion
+public struct AsyncAwaiter<T, TResult> : ICriticalNotifyCompletion
     where T : notnull
 {
     private AsyncMutableState<T> _state;
+    private ResultProvider<T, TResult> _provider;
     public bool IsCompleted => _state.IsCompleted;
 
-    internal AsyncAwaiter(AsyncMutableState<T> state)
+    internal AsyncAwaiter(
+        AsyncMutableState<T> state,
+        ResultProvider<T, TResult> resultProvider
+    )
     {
         _state = state;
+        _provider = resultProvider;
     }
 
     public void OnCompleted(Action continuation) => _state.OnComplete(continuation);
 
     public void UnsafeOnCompleted(Action continuation) => OnCompleted(continuation);
 
-    public T GetResult()
+    public TResult GetResult()
     {
-        return _state switch
-        {
-            { Status: AsyncStatus.Completed, Result: { } result } => result,
-            { Status: AsyncStatus.Failed, Exception: { } exception } => throw exception,
-            { Status: AsyncStatus.Canceled } => throw new TaskCanceledException(),
-            _ => throw new InvalidOperationException("The result was invalid."),
-        };
+        return _provider.GetResult();
     }
 
-    public AsyncAwaiter<T> GetAwaiter()
+    public AsyncAwaiter<T, TResult> GetAwaiter()
     {
         return this;
     }

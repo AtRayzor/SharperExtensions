@@ -77,6 +77,34 @@ public static class AsyncExtensions
                 (value, _) => asyncFunc(value),
                 CancellationToken.None
             );
+
+
+        public AsyncResult<T, Exception> AsyncResult
+        {
+            get
+            {
+                var wrappedResult = new Async<Result<T, Exception>>(() => async.Result);
+
+                return new AsyncResult<T, Exception>(wrappedResult);
+            }
+        }
+
+        public OptionAsync<T> OptionAsyncResult
+        {
+            get
+            {
+                var wrappedOption =
+                    async.AsyncResult
+                    .MatchAsync(value =>
+                        Async.New(value.ToOption()
+                    ), _ =>
+                    Async.New(Option<T>.None
+                    )
+                );
+
+                return new OptionAsync<T>(wrappedOption);
+            }
+        }   
     }
 
     extension<T>(Async<Async<T>> nestedAsync)
