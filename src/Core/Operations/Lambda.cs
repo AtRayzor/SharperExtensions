@@ -14,7 +14,10 @@ public static class Lambda
     /// <param name="func">The original function with two parameters.</param>
     /// <param name="arg2">The value to partially apply as the second argument.</param>
     /// <returns>A function that takes the first argument and returns the result.</returns>
-    public static Func<T1, TResult> Partial<T1, T2, TResult>(Func<T1, T2, TResult> func, T2 arg2) =>
+    public static Func<T1, TResult> Partial<T1, T2, TResult>(
+        Func<T1, T2, TResult> func,
+        T2 arg2
+    ) =>
         arg1 => func(arg1, arg2);
 
     /// <summary>
@@ -240,7 +243,8 @@ public static class Lambda
     /// <param name="arg9">The value to partially apply as the ninth argument.</param>
     /// <param name="arg10">The value to partially apply as the tenth argument.</param>
     /// <returns>A function that takes the first argument and returns the result.</returns>
-    public static Func<T1, TResult> Partial<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(
+    public static Func<T1, TResult> Partial<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10,
+        TResult>(
         Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> func,
         T2 arg2,
         T3 arg3,

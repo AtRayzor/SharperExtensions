@@ -1,4 +1,6 @@
+using System.Data;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection.Metadata;
 
 namespace SharperExtensions;
 
@@ -40,6 +42,12 @@ public static class ResultExtensions
         /// </summary>
         /// <returns>True if the Result contains an error, otherwise false.</returns>
         public bool IsError() => Result.IsError(result);
+
+
+        public Result<(T, T2), TError> Combine<T2>(
+            Result<T2, TError> result2,
+            Func<TError, TError, TError> errorCollisionHandler
+        ) where T2 : notnull => Result.Combine(result, result2, errorCollisionHandler);
 
         /// <summary>
         /// Attempts to retrieve the value from the Result if it represents a successful outcome.
@@ -181,5 +189,31 @@ public static class ResultExtensions
         /// </summary>
         /// <returns>A Result containing the inner value if both the outer and inner Results are successful, otherwise returns the first encountered error.</returns>
         public Result<T, TError> Flatten() => Result.Monad.Flatten(nestedResult);
+    }
+
+    extension<T1, T2, TError>(Result<(T1, T2), TError> result)
+        where T1 : notnull
+        where T2 : notnull
+        where TError : notnull
+    {
+        public Result<TNew, TError> Map<TNew>(Func<T1, T2, TNew> mapper)
+            where TNew : notnull => Result.Functor.Map(result, mapper);
+
+        public Result<TNew, TError> Bind<TNew>(
+            Func<T1, T2, Result<TNew, TError>> binder
+        )
+            where TNew : notnull => Result.Monad.Bind(result, binder);
+    }
+
+    extension<T>(Result<T, Exception> result)
+        where T : notnull
+    {
+#pragma warning disable CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
+        public T ValueOrThrow => result switch
+        {
+            { IsOk: true, Value: var value } => value,
+            { IsError: true, ErrorValue: var exception } => throw exception,
+        };
+#pragma warning restore CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
     }
 }

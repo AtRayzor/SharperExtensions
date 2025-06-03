@@ -51,8 +51,9 @@ public static partial class Result
             wrappedMapping switch
 #pragma warning restore CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
             {
-                Ok<Func<T, TNew>, TError> okMapping => Functor.Map(result, okMapping.Value),
-                Error<Func<T, TNew>, TError> error => new Error<TNew, TError>(error),
+                { IsOk: true, Value: var mapper } => Functor.Map(result, mapper),
+                { IsError: true, ErrorValue: var error } =>
+                    Error<TNew, TError>(error),
             };
     }
 }
@@ -95,4 +96,6 @@ public static class ApplicativeResultExtensions
         where T : notnull
         where TError : notnull
         where TNew : notnull => Result.Applicative.Apply(result, wrappedMapping);
+    
+ 
 }

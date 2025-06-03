@@ -7,4 +7,10 @@
 
     <Import Project="../../build/common.dotnetcore.props"/>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="SharperExtensions.Async.Tests"/>
+        <InternalsVisibleTo Include="SharperExtensions.Collections.Tests"/>
+        <InternalsVisibleTo Include="SharperExtensions.Core.Tests"/>
+    </ItemGroup>
+
 </Project>

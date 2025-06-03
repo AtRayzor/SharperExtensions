@@ -41,8 +41,8 @@ public static partial class Result
             where TNew : notnull =>
             result switch
             {
-                Ok<T, TError> ok => new Ok<TNew, TError>(mapping(ok)),
-                Error<T, TError> error => new Error<TNew, TError>(error),
+                { IsOk: true, Value: var value } => Ok<TNew, TError>(mapping(value)),
+                { IsError: true, ErrorValue: var error } => Error<TNew, TError>(error)
             };
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -79,8 +79,9 @@ public static partial class Result
             where TNewError : notnull =>
             result switch
             {
-                Error<T, TError> error => new Error<T, TNewError>(mapping(error)),
-                Ok<T, TError> ok => new Ok<T, TNewError>(ok),
+                { IsError: true, ErrorValue: var error } =>
+                    Error<T, TNewError>(mapping(error)),
+                { IsOk: true, Value: var value } => Ok<T, TNewError>(value),
             };
 
         /// <summary>
@@ -107,8 +108,8 @@ public static partial class Result
             where TError : notnull =>
             result switch
             {
-                Ok<T, TError> ok => matchOk(ok),
-                Error<T, TError> error => matchError(error),
+                { IsOk: true, Value: var value } => matchOk(value),
+                { IsError: true, ErrorValue: var error } => matchError(error),
             };
     }
 }

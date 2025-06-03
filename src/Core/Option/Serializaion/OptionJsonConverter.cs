@@ -7,7 +7,7 @@ namespace SharperExtensions.Serializaion;
 public class OptionJsonConverter<T> : JsonConverter<Option<T>>
     where T : notnull
 {
-    public override Option<T>? Read(
+    public override Option<T> Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,
         JsonSerializerOptions options
@@ -18,7 +18,9 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>>
 
         if (reader.TokenType != JsonTokenType.StartObject)
         {
-            throw new JsonException("Option types are required to be serialized as an object");
+            throw new JsonException(
+                "Option types are required to be serialized as an object"
+            );
         }
 
         while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
@@ -50,7 +52,11 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>>
         return valueFound ? Option<T>.Some(value!) : Option<T>.None;
     }
 
-    public T ReadValue(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public T ReadValue(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options
+    )
     {
         while (true)
         {
@@ -72,7 +78,9 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>>
                 case JsonTokenType.StartArray:
                     return ReadObjectOrArrayValue(ref reader, typeToConvert, options);
                 case JsonTokenType.PropertyName:
-                    throw new JsonException("A property name cannot occur before an object start");
+                    throw new JsonException(
+                        "A property name cannot occur before an object start"
+                    );
                 case JsonTokenType.Null:
                     throw new JsonException("An option value cannot be null.");
                 case JsonTokenType.String:
@@ -80,7 +88,7 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>>
                 case JsonTokenType.True:
                 case JsonTokenType.False:
                     return JsonSerializer.Deserialize<T>(reader.ValueSpan)
-                        ?? throw new JsonException("The could not be deserialized");
+                           ?? throw new JsonException("The could not be deserialized");
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -128,11 +136,11 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>>
                 previousTokenType is JsonTokenType.PropertyName
                 && reader.TokenType
                     is JsonTokenType.String
-                        or JsonTokenType.Number
-                        or JsonTokenType.True
-                        or JsonTokenType.False
-                        or JsonTokenType.EndArray
-                        or JsonTokenType.EndObject;
+                    or JsonTokenType.Number
+                    or JsonTokenType.True
+                    or JsonTokenType.False
+                    or JsonTokenType.EndArray
+                    or JsonTokenType.EndObject;
 
             ReadOnlySpan<char> valueRead = reader.TokenType switch
             {
@@ -156,7 +164,8 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>>
             separator.CopyTo(buffer.Slice(bufferIndex, 1));
             bufferIndex += separator.Length;
 
-            if (reader.TokenType == terminationToken && reader.CurrentDepth == baselineDepth)
+            if (reader.TokenType == terminationToken
+                && reader.CurrentDepth == baselineDepth)
             {
                 break;
             }
@@ -166,7 +175,8 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>>
 
         if (bufferIndex == 0 && overflow is null or []) { }
 
-        ReadOnlySpan<char> valueBytes = overflow is null ? buffer[..bufferIndex] : [.. overflow];
+        ReadOnlySpan<char> valueBytes =
+            overflow is null ? buffer[..bufferIndex] : [.. overflow];
 
         if (JsonSerializer.Deserialize<T>(valueBytes, options) is not { } value)
         {
@@ -184,7 +194,7 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>>
     {
         switch (option)
         {
-            case Some<T> { Value: var value }:
+            case { Type: OptionType.Some, Value: var value }:
                 var serializedValue = JsonSerializer.Serialize(value, serializerOptions);
                 const string propertyName = "Value";
                 var serializedPropertyName =
@@ -196,7 +206,7 @@ public class OptionJsonConverter<T> : JsonConverter<Option<T>>
                 writer.WriteRawValue(serializedValue);
                 writer.WriteEndObject();
                 break;
-            case None<T>:
+            case { Type: OptionType.None }:
                 writer.WriteStartObject();
                 writer.WriteEndObject();
                 break;

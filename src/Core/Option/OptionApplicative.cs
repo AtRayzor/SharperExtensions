@@ -17,8 +17,8 @@ public static partial class Option
             where TNew : notnull =>
             wrappedMapping switch
             {
-                Some<Func<T, TNew>> someWrapped => option.Map(someWrapped.Value),
-                _ => new None<TNew>(),
+                { IsSome: true, Value: var mapper } => option.Map(mapper),
+                _ => None<TNew>(),
             };
     }
 }

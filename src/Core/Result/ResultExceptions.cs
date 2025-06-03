@@ -1,6 +1,5 @@
 namespace SharperExtensions;
 
-
 #pragma warning disable CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
 public static partial class Result
 {
@@ -52,8 +51,8 @@ public static partial class Result
         {
             return result switch
             {
-                Ok<T, TError> ok => ok,
-                Error<T, TError> error => throw exceptionFactory(error),
+                { IsOk: true, Value: var value } => value,
+                { IsError: true, ErrorValue: var error } => throw exceptionFactory(error)
             };
         }
 
@@ -67,7 +66,10 @@ public static partial class Result
                 return errorWithMessage.Message.ToOption();
 
             if (
-                error.GetType().GetProperties().FirstOrDefault(type => type.Name == "Message")
+                error
+                        .GetType()
+                        .GetProperties()
+                        .FirstOrDefault(type => type.Name == "Message")
                     is { } messagePropertyInfo
                 && messagePropertyInfo.GetValue(error) is string errorMessage
             )
@@ -76,15 +78,16 @@ public static partial class Result
             return Option.None<string>();
         }
 
-        private static TException DefaultExceptionFactory<TError, TException>(TError error)
+        private static TException DefaultExceptionFactory<TError, TException>(
+            TError error
+        )
             where TError : notnull
             where TException : Exception
         {
             return ConstructErrorMessage(error) switch
             {
-                Some<string> message => ExceptionHelpers.TryToConstructException<TException>(
-                    [message]
-                ),
+                { IsSome: true, Value: var message } => ExceptionHelpers
+                    .TryToConstructException<TException>([message]),
                 _ => ExceptionHelpers.TryToConstructException<TException>(),
             };
         }

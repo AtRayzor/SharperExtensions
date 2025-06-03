@@ -11,7 +11,10 @@ public static partial class Option
             where T : notnull
             where TException : Exception
         {
-            return GetValueOrThrowRequestedException<T, TException>(option, constructorArgs);
+            return GetValueOrThrowRequestedException<T, TException>(
+                option,
+                constructorArgs
+            );
         }
 
         public static void DoOrThrow<T, TException>(
@@ -22,7 +25,9 @@ public static partial class Option
             where T : notnull
             where TException : Exception
         {
-            action(GetValueOrThrowRequestedException<T, TException>(option, constructorArgs));
+            action(
+                GetValueOrThrowRequestedException<T, TException>(option, constructorArgs)
+            );
         }
 
         private static T GetValueOrThrowRequestedException<T, TException>(
@@ -32,13 +37,12 @@ public static partial class Option
             where T : notnull
             where TException : Exception
         {
-            var activatedException = ExceptionHelpers.TryToConstructException<TException>(
-                constructorArgs
-            );
+            var activatedException =
+                ExceptionHelpers.TryToConstructException<TException>(constructorArgs);
 
             return option switch
             {
-                Some<T> some => some.Value,
+                { IsSome: true, Value: var value } => value,
                 _ => throw activatedException,
             };
         }

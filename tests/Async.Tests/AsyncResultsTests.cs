@@ -12,12 +12,14 @@ namespace SharperExtensions.Async.Tests
 
             var result = await asyncResult;
 
-            result.Should().BeOfType<Ok<DummyValue, DummyError>>();
             result
-                .As<Ok<DummyValue, DummyError>>()
-                .Value
                 .Should()
-                .BeEquivalentTo(dummyValue);
+                .BeOfType<Result<DummyValue, DummyError>>()
+                .Which
+                .IsOk
+                .Should()
+                .BeTrue();
+            result.Value.Should().BeEquivalentTo(dummyValue);
         }
 
         [Fact]
@@ -27,13 +29,14 @@ namespace SharperExtensions.Async.Tests
             var asyncResult = AsyncResult.CreateError<DummyValue, DummyError>(dummyError);
 
             var result = await asyncResult;
-
-            result.Should().BeOfType<Error<DummyValue, DummyError>>();
             result
-                .As<Error<DummyValue, DummyError>>()
-                .Err
                 .Should()
-                .BeEquivalentTo(dummyError);
+                .BeOfType<Result<DummyValue, DummyError>>()
+                .Which
+                .IsError
+                .Should()
+                .BeTrue();
+            result.ErrorValue.Should().BeEquivalentTo(dummyError);
         }
 
         [Fact]
@@ -45,12 +48,14 @@ namespace SharperExtensions.Async.Tests
 
             var result = await asyncResult;
 
-            result.Should().BeOfType<Ok<DummyValue, DummyError>>();
             result
-                .As<Ok<DummyValue, DummyError>>()
-                .Value
                 .Should()
-                .BeEquivalentTo(dummyValue);
+                .BeOfType<Result<DummyValue, DummyError>>()
+                .Which
+                .IsOk
+                .Should()
+                .BeTrue();
+            result.Value.Should().BeEquivalentTo(dummyValue);
         }
 
         [Fact]
@@ -61,10 +66,13 @@ namespace SharperExtensions.Async.Tests
             var result = await CreateAsyncResult();
 
             result
-                .As<Ok<DummyValue, DummyError>>()
-                .Value
                 .Should()
-                .BeEquivalentTo(dummyValue);
+                .BeOfType<Result<DummyValue, DummyError>>()
+                .Which
+                .IsOk
+                .Should()
+                .BeTrue();
+            result.Value.Should().BeEquivalentTo(dummyValue);
 
             return;
 
@@ -87,12 +95,14 @@ namespace SharperExtensions.Async.Tests
 
             var result = await asyncResult;
 
-            result.Should().BeOfType<Ok<DummyValue, DummyError>>();
             result
-                .As<Ok<DummyValue, DummyError>>()
-                .Value
                 .Should()
-                .BeEquivalentTo(dummyValue);
+                .BeOfType<Result<DummyValue, DummyError>>()
+                .Which
+                .IsOk
+                .Should()
+                .BeTrue();
+            result.Value.Should().BeEquivalentTo(dummyValue);
         }
 
         [Fact]
@@ -104,12 +114,14 @@ namespace SharperExtensions.Async.Tests
 
             var result = await asyncResult;
 
-            result.Should().BeOfType<Error<DummyValue, DummyError>>();
             result
-                .As<Error<DummyValue, DummyError>>()
-                .Err
                 .Should()
-                .BeEquivalentTo(dummyError);
+                .BeOfType<Result<DummyValue, DummyError>>()
+                .Which
+                .IsError
+                .Should()
+                .BeTrue();
+            result.ErrorValue.Should().BeEquivalentTo(dummyError);
         }
 
         [Fact]
@@ -126,13 +138,14 @@ namespace SharperExtensions.Async.Tests
 
             var result = await mapped;
 
-            result.Should().BeOfType<Ok<DummyNewValue, DummyError>>();
             result
-                .As<Ok<DummyNewValue, DummyError>>()
-                .Value
-                .NameAllCaps
                 .Should()
-                .Be("TEST");
+                .BeOfType<Result<DummyNewValue, DummyError>>()
+                .Which
+                .IsOk
+                .Should()
+                .BeTrue();
+            result.Value!.NameAllCaps.Should().Be("TEST");
         }
 
         [Fact]
@@ -149,12 +162,15 @@ namespace SharperExtensions.Async.Tests
 
             var result = await mapped;
 
-            result.Should().BeOfType<Error<DummyNewValue, DummyError>>();
+
             result
-                .As<Error<DummyNewValue, DummyError>>()
-                .Err
                 .Should()
-                .BeEquivalentTo(dummyError);
+                .BeOfType<Result<DummyNewValue, DummyError>>()
+                .Which
+                .IsError
+                .Should()
+                .BeTrue();
+            result.ErrorValue.Should().Be(dummyError);
         }
 
         //
@@ -170,13 +186,15 @@ namespace SharperExtensions.Async.Tests
 
             var result = await mapped;
 
-            result.Should().BeOfType<Ok<DummyNewValue, DummyError>>();
+
             result
-                .As<Ok<DummyNewValue, DummyError>>()
-                .Value
-                .NameAllCaps
                 .Should()
-                .Be("TEST");
+                .BeOfType<Result<DummyNewValue, DummyError>>()
+                .Which
+                .IsOk
+                .Should()
+                .BeTrue();
+            result.Value!.NameAllCaps.Should().Be("TEST");
 
             return;
 
@@ -201,12 +219,14 @@ namespace SharperExtensions.Async.Tests
 
             var result = await mapped;
 
-            result.Should().BeOfType<Error<DummyNewValue, DummyError>>();
             result
-                .As<Error<DummyNewValue, DummyError>>()
-                .Err
                 .Should()
-                .BeEquivalentTo(dummyError);
+                .BeOfType<Result<DummyNewValue, DummyError>>()
+                .Which
+                .IsError
+                .Should()
+                .BeTrue();
+            result.ErrorValue.Should().Be(dummyError);
 
             return;
 
@@ -229,13 +249,14 @@ namespace SharperExtensions.Async.Tests
 
             var result = await mapped;
 
-            result.Should().BeOfType<Ok<DummyNewValue, DummyError>>();
             result
-                .As<Ok<DummyNewValue, DummyError>>()
-                .Value
-                .NameAllCaps
                 .Should()
-                .Be("TEST");
+                .BeOfType<Result<DummyNewValue, DummyError>>()
+                .Which
+                .IsOk
+                .Should()
+                .BeTrue();
+            result.Value!.NameAllCaps.Should().Be("TEST");
 
             return;
 
@@ -251,7 +272,7 @@ namespace SharperExtensions.Async.Tests
                                     return Result.Ok<DummyValue, DummyError>(dummyValue);
                                 }
                             )
-                            .AsTask();
+                            .AsTask(exc => new DummyError { Message = exc.Message });
                     }
                 );
         }
@@ -274,13 +295,15 @@ namespace SharperExtensions.Async.Tests
 
             var result = await bound;
 
-            result.Should().BeOfType<Ok<DummyNewValue, DummyError>>();
+
             result
-                .As<Ok<DummyNewValue, DummyError>>()
-                .Value
-                .NameAllCaps
                 .Should()
-                .Be("TEST");
+                .BeOfType<Result<DummyNewValue, DummyError>>()
+                .Which
+                .IsOk
+                .Should()
+                .BeTrue();
+            result.Value!.NameAllCaps.Should().Be("TEST");
         }
 
         [Fact]
@@ -301,12 +324,14 @@ namespace SharperExtensions.Async.Tests
 
             var result = await bound;
 
-            result.Should().BeOfType<Error<DummyNewValue, DummyError>>();
             result
-                .As<Error<DummyNewValue, DummyError>>()
-                .Err
                 .Should()
-                .BeEquivalentTo(dummyError);
+                .BeOfType<Result<DummyNewValue, DummyError>>()
+                .Which
+                .IsError
+                .Should()
+                .BeTrue();
+            result.ErrorValue.Should().Be(dummyError);
         }
 
         [Fact]
@@ -327,13 +352,15 @@ namespace SharperExtensions.Async.Tests
 
             var result = await applied;
 
-            result.Should().BeOfType<Ok<DummyNewValue, DummyError>>();
+
             result
-                .As<Ok<DummyNewValue, DummyError>>()
-                .Value
-                .NameAllCaps
                 .Should()
-                .Be("TEST");
+                .BeOfType<Result<DummyNewValue, DummyError>>()
+                .Which
+                .IsOk
+                .Should()
+                .BeTrue();
+            result.Value!.NameAllCaps.Should().Be("TEST");
         }
 
         [Fact]
@@ -352,12 +379,15 @@ namespace SharperExtensions.Async.Tests
 
             var result = await applied;
 
-            result.Should().BeOfType<Error<DummyNewValue, DummyError>>();
+
             result
-                .As<Error<DummyNewValue, DummyError>>()
-                .Err
                 .Should()
-                .BeEquivalentTo(dummyError);
+                .BeOfType<Result<DummyNewValue, DummyError>>()
+                .Which
+                .IsError
+                .Should()
+                .BeTrue();
+            result.ErrorValue.Should().Be(dummyError);
         }
 
         [Fact]
@@ -366,10 +396,10 @@ namespace SharperExtensions.Async.Tests
             var dummyValue = new DummyValue { Name = "Test", Email = "test@example.com" };
             var asyncResult = AsyncResult.CreateOk<DummyValue, DummyError>(dummyValue);
 
-            var matched = await AsyncResult.Unsafe.MatchAsync(
+            var matched = await AsyncResult.MatchAsync(
                 asyncResult,
-                (val, ct) => val.Name,
-                (err, ct) => err.Message
+                (val, ct) => Async.New(val.Name, ct),
+                (err, ct) => Async.New(err.Message, ct)
             );
 
             matched.Should().Be("Test");
@@ -381,10 +411,10 @@ namespace SharperExtensions.Async.Tests
             var dummyError = new DummyError { Message = "Error occurred" };
             var asyncResult = AsyncResult.CreateError<DummyValue, DummyError>(dummyError);
 
-            var matched = await AsyncResult.Unsafe.MatchAsync(
+            var matched = await AsyncResult.MatchAsync(
                 asyncResult,
-                (val, ct) => val.Name,
-                (err, ct) => err.Message
+                (val, ct) => Async.New(val.Name, ct),
+                (err, ct) => Async.New(err.Message, ct)
             );
 
             matched.Should().Be("Error occurred");

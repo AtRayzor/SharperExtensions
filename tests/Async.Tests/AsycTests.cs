@@ -1,3 +1,5 @@
+using System.Security.Cryptography.X509Certificates;
+
 namespace SharperExtensions.Async.Tests;
 
 public class AsyncTests
@@ -44,7 +46,7 @@ public class AsyncTests
     public async Task GetAwaiter_ReturnsValue()
     {
         var dummy = new DummyValue
-            { Email = "jack.black@examply.com", Name = "Jack Black" };
+        { Email = "jack.black@examply.com", Name = "Jack Black" };
         var asyncDummy = new Async<DummyValue>(dummy);
 
         var returned = await asyncDummy.GetAwaiter();
@@ -97,7 +99,7 @@ public class AsyncTests
         var asyncDummy = Async.New(dummy, TestContext.Current.CancellationToken);
 
         var mapped = asyncDummy.Map((d, _) => new DummyNewValue
-            { NameAllCaps = d.Name.ToUpper() }
+        { NameAllCaps = d.Name.ToUpper() }
         );
 
         var result = await mapped;
@@ -394,7 +396,14 @@ public class AsyncTests
         var dummy = new DummyValue { Name = "John", Email = "john@example.com" };
         var dummyAsync = new Async<DummyValue>(dummy);
 
-        dummyAsync.Result.Should().Be(dummy);
+        dummyAsync
+            .Result
+            .Should()
+            .Satisfy<Result<DummyValue, Exception>>(o => o.IsOk.Should().BeTrue())
+            .And
+            .Satisfy<Result<DummyValue, Exception>>(o =>
+                o.Value.Should().BeEquivalentTo(dummy)
+            );
     }
 
     [Fact]
@@ -407,11 +416,18 @@ public class AsyncTests
 
         var dummyAsync = CreateValueAsync();
 
-        dummyAsync.Result.Should().BeEquivalentTo(expected);
+        dummyAsync
+            .Result
+            .Should()
+            .Satisfy<Result<DummyValue, Exception>>(o => o.IsOk.Should().BeTrue())
+            .And
+            .Satisfy<Result<DummyValue, Exception>>(o =>
+                o.Value.Should().BeEquivalentTo(expected)
+            );
 
         async Async<DummyValue> CreateValueAsync()
         {
-            await Task.Delay(2000);
+            await Task.Delay(1000);
 
             return new DummyValue { Email = email, Name = name };
         }
@@ -425,9 +441,19 @@ public class AsyncTests
 
         var expected = new DummyValue { Name = name, Email = email };
 
-        var dummyAsync = new Async<DummyValue>(CreateValue, ExecutionContext.Capture());
+        var dummyAsync = new Async<DummyValue>(
+            CreateValue,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        dummyAsync.Result.Should().BeEquivalentTo(expected);
+        dummyAsync
+            .Result
+            .Should()
+            .Satisfy<Result<DummyValue, Exception>>(o => o.IsOk.Should().BeTrue())
+            .And
+            .Satisfy<Result<DummyValue, Exception>>(o =>
+                o.Value.Should().BeEquivalentTo(expected)
+            );
 
         static DummyValue CreateValue()
         {
@@ -436,4 +462,211 @@ public class AsyncTests
             return new DummyValue { Email = email, Name = name };
         }
     }
+
+    [Fact]
+    public async Task ConfigureAwait_AwaitReturnsSome()
+    {
+        const string name = "John";
+        const string email = "john@example.com";
+        var value = new DummyValue { Name = name, Email = email };
+
+        var asyncValue = Async.New(value, TestContext.Current.CancellationToken);
+        var returned = await asyncValue.ConfigureAwait();
+
+        returned
+            .Should()
+            .BeOfType<Option<DummyValue>>()
+            .Which
+            .Value
+            .Should()
+            .BeEquivalentTo(value);
+    }
+
+    [Fact]
+    public async Task ConfigureAwait_AsyncMethodThrows_AwaitReturnsNone()
+    {
+        const string name = "John";
+        const string email = "john@example.com";
+        var value = new DummyValue { Name = name, Email = email };
+
+        var asyncValue = CreateValueAsync();
+        var returned = await asyncValue.ConfigureAwait();
+
+        returned
+            .Should()
+            .Satisfy<Option<DummyValue>>(o => o.IsSome.Should().BeTrue())
+            .And
+            .Satisfy<Option<DummyValue>>(o => o.Value.Should().BeEquivalentTo(value));
+
+        return;
+
+        static async Async<DummyValue> CreateValueAsync()
+        {
+            var value = new DummyValue { Name = name, Email = email };
+            await Task.Delay(1000);
+
+            return value;
+        }
+    }
+
+    [Fact]
+    public async Task ConfigureAwait_CreateFromAsyncMethod_AwaitReturnsSome()
+    {
+        var asyncValue = CreateValueAsync();
+        var returned = await asyncValue.ConfigureAwait();
+
+        returned.Should().BeOfType<Option<DummyValue>>().Which.IsNone.Should().BeTrue();
+
+        return;
+
+        static async Async<DummyValue> CreateValueAsync()
+        {
+            await Task.Delay(1000);
+
+            throw new InvalidOperationException();
+        }
+    }
+
+        [Fact]
+    public void AsyncResult_ReturnsOk()
+    {
+        var async = 
+            Async.New(
+                OptionAsyncTestData.DummyValue, 
+                TestContext.Current.CancellationToken
+            );
+
+        async
+        .AsyncResult
+        .WrappedResult
+        .Result
+        .Value
+        .Should()
+        .Satisfy<Result<DummyValue, Exception>>(r => r.IsOk.Should().BeTrue())
+        .And
+        .Satisfy<Result<DummyValue, Exception>>(r =>
+            r.Value.Should().BeEquivalentTo(OptionAsyncTestData.DummyValue)
+        );
+
+    }
+
+    [Fact]
+    public void AsyncResult_ConstructedWithAsyncMethod_ReturnsOk()
+    {
+        var async = CreateValueAsync();
+
+        async
+        .AsyncResult
+        .WrappedResult
+        .Result
+        .Value
+        .Should()
+        .Satisfy<Result<DummyValue, Exception>>(r => r.IsOk.Should().BeTrue())
+        .And
+        .Satisfy<Result<DummyValue, Exception>>(r =>
+            r.Value.Should().BeEquivalentTo(OptionAsyncTestData.DummyValue)
+        );
+
+
+        async Async<DummyValue> CreateValueAsync()
+        {
+            await Task.Delay(1000);
+
+            return OptionAsyncTestData.DummyValue;
+        }
+    }
+    
+    [Fact]
+    public void OptionAsyncResult_AsyncMethodThrows_ReturnsExceptionError()
+    {
+        var async = CreateValueAsync();
+
+        async
+            .AsyncResult
+            .WrappedResult
+            .Result.Value
+            .Should()
+            .Satisfy<Result<DummyValue, Exception>>(r => r.IsError.Should().BeTrue())
+            .And
+            .Satisfy<Result<DummyValue, Exception>>(r =>
+                r.ErrorValue.Should().BeOfType<InvalidOperationException>()
+            );
+
+        async Async<DummyValue> CreateValueAsync()
+        {
+            await Task.Delay(1000);
+
+            throw new InvalidOperationException();
+        }
+    }
+
+    [Fact]
+    public void OptionAsyncResult_ReturnsSome()
+    {
+        var async = 
+            Async.New(
+                OptionAsyncTestData.DummyValue, 
+                TestContext.Current.CancellationToken
+            );
+
+        async
+            .OptionAsyncResult
+            .WrappedOption
+            .Result
+            .Value
+            .Should()
+            .Satisfy<Option<DummyValue>>(o => o.IsSome.Should().BeTrue())
+            .And
+            .Satisfy<Option<DummyValue>>(o =>
+                o.Value.Should().BeEquivalentTo(OptionAsyncTestData.DummyValue)
+            );
+    }
+
+    [Fact]
+    public void OptionAsyncResult_ConstructedWithAsyncMethod_ReturnsSome()
+    {
+        var async = CreateValueAsync();
+
+        async
+            .OptionAsyncResult
+            .WrappedOption
+            .Result
+            .Value
+            .Should()
+            .Satisfy<Option<DummyValue>>(o => o.IsSome.Should().BeTrue())
+            .And
+            .Satisfy<Option<DummyValue>>(o =>
+                o.Value.Should().BeEquivalentTo(OptionAsyncTestData.DummyValue)
+            );
+
+        async Async<DummyValue> CreateValueAsync()
+        {
+            await Task.Delay(1000);
+
+            return OptionAsyncTestData.DummyValue;
+        }
+    }
+    
+    [Fact]
+    public void OptionAsyncResult_AsyncMethodThrows_ReturnsNone()
+    {
+        var async = CreateValueAsync();
+
+        async
+            .OptionAsyncResult
+            .WrappedOption
+            .Result
+            .Value
+            .Should()
+            .Satisfy<Option<DummyValue>>(o => o.IsNone.Should().BeTrue());
+
+
+        async Async<DummyValue> CreateValueAsync()
+        {
+            await Task.Delay(1000);
+
+            throw new InvalidOperationException();
+        }
+    }
+
 }

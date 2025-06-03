@@ -54,12 +54,8 @@ public class OptionAsyncTests
 
         var option = await optionAsync;
 
-        option.Should().BeOfType<Some<DummyValue>>();
-        option
-            .As<Some<DummyValue>>()
-            .Value
-            .Should()
-            .BeEquivalentTo(OptionAsyncTestData.DummyValue);
+        option.Should().BeOfType<Option<DummyValue>>().Which.IsSome.Should().BeTrue();
+        option.Value.Should().BeEquivalentTo(OptionAsyncTestData.DummyValue);
     }
 
     [Fact]
@@ -69,7 +65,7 @@ public class OptionAsyncTests
 
         var option = await optionAsync;
 
-        option.Should().BeOfType<None<DummyValue>>();
+        option.Should().BeOfType<Option<DummyValue>>().Which.IsNone.Should().BeTrue();
     }
 
     [Fact]
@@ -80,12 +76,8 @@ public class OptionAsyncTests
 
         var option = await optionAsync;
 
-        option.Should().BeOfType<Some<DummyValue>>();
-        option
-            .As<Some<DummyValue>>()
-            .Value
-            .Should()
-            .BeEquivalentTo(OptionAsyncTestData.DummyValue);
+        option.Should().BeOfType<Option<DummyValue>>().Which.IsSome.Should().BeTrue();
+        option.Value.Should().BeEquivalentTo(OptionAsyncTestData.DummyValue);
     }
 
     [Fact]
@@ -96,7 +88,7 @@ public class OptionAsyncTests
 
         var option = await optionAsync;
 
-        option.Should().BeOfType<None<DummyValue>>();
+        option.IsNone.Should().BeTrue();
     }
 
     [Fact]
@@ -110,12 +102,8 @@ public class OptionAsyncTests
 
         var option = await optionAsync;
 
-        option.Should().BeOfType<Some<DummyValue>>();
-        option
-            .As<Some<DummyValue>>()
-            .Value
-            .Should()
-            .BeEquivalentTo(OptionAsyncTestData.DummyValue);
+        option.Should().BeOfType<Option<DummyValue>>().Which.IsSome.Should().BeTrue();
+        option.Value.Should().BeEquivalentTo(OptionAsyncTestData.DummyValue);
     }
 
     [Fact]
@@ -130,12 +118,13 @@ public class OptionAsyncTests
 
         var mappedOption = await mappedOptionAsync;
 
-        mappedOption.Should().BeOfType<Some<DummyNewValue>>();
         mappedOption
-            .As<Some<DummyNewValue>>()
-            .Value
             .Should()
-            .BeEquivalentTo(OptionAsyncTestData.DummyNewValue);
+            .BeOfType<Option<DummyNewValue>>()
+            .Which.IsSome
+            .Should()
+            .BeTrue();
+        mappedOption.Value.Should().BeEquivalentTo(OptionAsyncTestData.DummyNewValue);
     }
 
     [Fact]
@@ -150,7 +139,13 @@ public class OptionAsyncTests
 
         var mappedOption = await mappedOptionAsync;
 
-        mappedOption.Should().BeOfType<None<DummyNewValue>>();
+        mappedOption
+            .Should()
+            .BeOfType<Option<DummyNewValue>>()
+            .Which
+            .IsNone
+            .Should()
+            .BeTrue();
     }
 
     [Fact]
@@ -165,12 +160,15 @@ public class OptionAsyncTests
 
         var boundOption = await boundOptionAsync;
 
-        boundOption.Should().BeOfType<Some<DummyNewValue>>();
+
         boundOption
-            .As<Some<DummyNewValue>>()
-            .Value
             .Should()
-            .BeEquivalentTo(OptionAsyncTestData.DummyNewValue);
+            .BeOfType<Option<DummyNewValue>>()
+            .Which
+            .IsSome
+            .Should()
+            .BeTrue();
+        boundOption.Value.Should().BeEquivalentTo(OptionAsyncTestData.DummyNewValue);
     }
 
     [Fact]
@@ -185,7 +183,13 @@ public class OptionAsyncTests
 
         var boundOption = await boundOptionAsync;
 
-        boundOption.Should().BeOfType<None<DummyNewValue>>();
+        boundOption
+            .Should()
+            .BeOfType<Option<DummyNewValue>>()
+            .Which
+            .IsNone
+            .Should()
+            .BeTrue();
     }
 
     [Fact]
@@ -204,7 +208,13 @@ public class OptionAsyncTests
 
         var boundOption = await boundOptionAsync;
 
-        boundOption.Should().BeOfType<None<DummyNewValue>>();
+        boundOption
+            .Should()
+            .BeOfType<Option<DummyNewValue>>()
+            .Which
+            .IsNone
+            .Should()
+            .BeTrue();
         binderCalled.Should().BeFalse();
     }
 
@@ -218,12 +228,14 @@ public class OptionAsyncTests
 
         var appliedOption = await appliedOptionAsync;
 
-        appliedOption.Should().BeOfType<Some<DummyNewValue>>();
         appliedOption
-            .As<Some<DummyNewValue>>()
-            .Value
             .Should()
-            .BeEquivalentTo(OptionAsyncTestData.DummyNewValue);
+            .BeOfType<Option<DummyNewValue>>()
+            .Which
+            .IsSome
+            .Should()
+            .BeTrue();
+        appliedOption.Value.Should().BeEquivalentTo(OptionAsyncTestData.DummyNewValue);
     }
 
     [Fact]
@@ -236,7 +248,13 @@ public class OptionAsyncTests
 
         var appliedOption = await appliedOptionAsync;
 
-        appliedOption.Should().BeOfType<None<DummyNewValue>>();
+        appliedOption
+            .Should()
+            .BeOfType<Option<DummyNewValue>>()
+            .Which
+            .IsNone
+            .Should()
+            .BeTrue();
     }
 
     [Fact]
@@ -249,7 +267,13 @@ public class OptionAsyncTests
 
         var appliedOption = await appliedOptionAsync;
 
-        appliedOption.Should().BeOfType<None<DummyNewValue>>();
+        appliedOption
+            .Should()
+            .BeOfType<Option<DummyNewValue>>()
+            .Which
+            .IsNone
+            .Should()
+            .BeTrue();
     }
 
     [Fact]
@@ -264,7 +288,13 @@ public class OptionAsyncTests
 
         var appliedOption = await appliedOptionAsync;
 
-        appliedOption.Should().BeOfType<None<DummyNewValue>>();
+        appliedOption
+            .Should()
+            .BeOfType<Option<DummyNewValue>>()
+            .Which
+            .IsNone
+            .Should()
+            .BeTrue();
     }
 
     [Fact]
