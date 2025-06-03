@@ -228,7 +228,6 @@ public readonly struct Sequence<T> : ISequence<T>
         Span<T> destination = new T[sequenceSpan.Length];
         var itemHash = equalityComparer.GetHashCode(item);
         var startIndex = 0;
-        var endIndex = 0;
         var destinationIndex = 0;
 
         for (var i = 0; i < sequenceSpan.Length; i++)
