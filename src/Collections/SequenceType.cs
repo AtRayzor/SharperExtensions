@@ -388,7 +388,7 @@ public readonly struct Sequence<T> : ISequence<T>
     /// <inheritdoc />
     public Option<T> GetValueOrNone(int index)
     {
-        if (IsEmpty || index >= Length)
+        if (IsEmpty || index < 0 || index >= Length)
         {
             return Option<T>.None;
         }
