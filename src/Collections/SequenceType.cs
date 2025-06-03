@@ -191,7 +191,7 @@ public readonly struct Sequence<T> : ISequence<T>
     /// </returns>
     public Sequence<T> AddRange(IEnumerable<T> range)
     {
-        var items = Unsafe.As<IEnumerable<T>, T[]>(ref range);
+        Span<T> items = [.. range];
         var sequenceSpan = AsSpan();
         var destinationLength = sequenceSpan.Length + items.Length;
         Span<T> destination = new T[destinationLength];
@@ -386,7 +386,7 @@ public readonly struct Sequence<T> : ISequence<T>
             destination[index++] = item;
         }
 
-        return FromSpan(destination[index..]);
+        return FromSpan(destination[..index]);
     }
 
     /// <inheritdoc />
