@@ -83,12 +83,12 @@ public readonly struct Sequence<T> : ISequence<T>
 
     internal Sequence(IEnumerable<T>? enumerable)
     {
-        if (enumerable is null)
+        if (enumerable?.ToArray() is not { Length: > 0 } items)
         {
             return;
         }
 
-        Items = Unsafe.As<IEnumerable<T>, T[]?>(ref enumerable);
+        Items = items;
     }
 
     private Sequence(ReadOnlySpan<T> span)
