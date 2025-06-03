@@ -246,16 +246,15 @@ public readonly struct Sequence<T> : ISequence<T>
                 continue;
             }
 
-            endIndex = i + 1;
-            var currentSlice = sequenceSpan[startIndex .. endIndex];
+            var currentSlice = sequenceSpan[startIndex .. i];
             currentSlice.CopyTo(destination[destinationIndex..]);
             destinationIndex += currentSlice.Length;
-            startIndex = endIndex;
+            startIndex = i + 1;
         }
 
-        if (endIndex != sequenceSpan.Length)
+        if (startIndex != sequenceSpan.Length)
         {
-            var currentSlice = sequenceSpan[endIndex ..];
+            var currentSlice = sequenceSpan[startIndex ..];
             currentSlice.CopyTo(destination[destinationIndex..]);
             destinationIndex += currentSlice.Length;
         }
@@ -511,6 +510,8 @@ public readonly struct Sequence<T> : ISequence<T>
             EqualityComparer<T> equalityComparer
         )
         {
+            var bufferSize =
+                itemsArray.Length <= 100 ? itemsArray.Length : itemsArray.Length / 10;
             var itemHash = equalityComparer.GetHashCode(item);
 
             for (var i = 0; i < itemsArray.Length; i++)
