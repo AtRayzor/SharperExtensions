@@ -1,9 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
+using SharperExtensions.Serialization;
 
 namespace SharperExtensions;
 
 #pragma warning disable CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
+
 
 internal enum ResultType : byte
 {
@@ -18,6 +21,7 @@ internal enum ResultType : byte
 /// </summary>
 /// <typeparam name="T">The type of the value in case of success.</typeparam>
 /// <typeparam name="TError">The type of the error in case of failure.</typeparam>
+[JsonConverter(typeof(ResultJsonConverterFactory))]
 public readonly struct Result<T, TError> : IEquatable<Result<T, TError>>
     where T : notnull
     where TError : notnull
