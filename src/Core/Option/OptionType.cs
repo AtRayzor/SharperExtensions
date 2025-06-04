@@ -1,9 +1,8 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
-using SharperExtensions.Serializaion;
+using SharperExtensions.Serialization;
 
 namespace SharperExtensions;
 
@@ -26,6 +25,7 @@ internal enum OptionType : byte
 public readonly struct Option<T>() : IOption<T>, IEquatable<Option<T>>
     where T : notnull
 {
+    [JsonInclude]
     internal T? Value { get; } = default;
 
     internal OptionType Type

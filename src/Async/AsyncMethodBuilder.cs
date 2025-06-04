@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using SharperExtensions.Async;
 
 // ReSharper disable once CheckNamespace

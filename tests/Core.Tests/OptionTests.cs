@@ -38,8 +38,7 @@ public class OptionTests
     [Fact]
     public void TryGetValue_CallWithSome_ReturnsTrueAndOutputsValue()
     {
-        Option
-            .Unsafe
+        Option.Unsafe
             .TryGetValue(OptionTestData.SomeValue, out var value)
             .Should()
             .BeTrue();
@@ -49,8 +48,7 @@ public class OptionTests
     [Fact]
     public void TryGetValue_CallWithNone_ReturnsFalseAndOutputsValue()
     {
-        Option
-            .Unsafe
+        Option.Unsafe
             .TryGetValue(OptionTestData.NoneValue, out var value)
             .Should()
             .BeFalse();

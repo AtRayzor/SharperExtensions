@@ -12,8 +12,7 @@ public class MonadTests
         Result<DummyNewValue, DummyError> expected
     )
     {
-        Result
-            .Monad
+        Result.Monad
             .Bind(result, binder)
             .Should()
             .Satisfy<Result<DummyNewValue, DummyError>>(r =>
@@ -32,8 +31,7 @@ public class MonadTests
         Result<DummyValue, DummyError> expected
     )
     {
-        Result
-            .Monad
+        Result.Monad
             .Flatten(wrappedResult)
             .Should()
             .Satisfy<Result<DummyValue, DummyError>>(r =>

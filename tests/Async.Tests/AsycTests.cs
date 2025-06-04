@@ -1,5 +1,3 @@
-using System.Security.Cryptography.X509Certificates;
-
 namespace SharperExtensions.Async.Tests;
 
 public class AsyncTests

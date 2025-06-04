@@ -1,6 +1,5 @@
-using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 
 namespace SharperExtensions;
 
@@ -14,6 +13,30 @@ namespace SharperExtensions;
 /// </remarks>
 public static class ResultExtensions
 {
+    extension<T>(T value) where T : notnull
+    {
+        /// <summary>
+        /// Converts the current value to a successful Result with the specified error type.
+        /// </summary>
+        /// <typeparam name="TError">The type of the error.</typeparam>
+        /// <returns>A Result representing a successful outcome with the current value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Result<T, TError> ToOk<TError>()
+            where TError : notnull => Result<T, TError>.Ok(value);
+    }
+
+    extension<TError>(TError error) where TError : notnull
+    {
+        /// <summary>
+        /// Converts the current error to an error Result with the specified value type.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <returns>A Result representing an error outcome with the current error.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Result<T, TError> ToError<T>()
+            where T : notnull => Result<T, TError>.Error(error);
+    }
+
     extension<T>(T? value)
         where T : notnull
     {

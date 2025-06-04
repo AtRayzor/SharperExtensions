@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using SharperExtensions.Analyzers.Comparers;
 

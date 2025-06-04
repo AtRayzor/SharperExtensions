@@ -1,8 +1,6 @@
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
 using SharperExtensions.Analyzers.Tests.TestSources;
-using Xunit;
 
 namespace SharperExtensions.Analyzers.Tests;
 

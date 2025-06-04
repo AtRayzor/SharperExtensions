@@ -1,5 +1,3 @@
-using SharperExtensions.Collections;
-
 namespace SharperExtensions.Async;
 
 internal class OptionResultProvider<T>(AsyncMutableState<T> state)

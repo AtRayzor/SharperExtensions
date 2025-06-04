@@ -12,8 +12,7 @@ public class ResultFunctorTests
         Result<DummyNewValue, DummyError> expected
     )
     {
-        Result
-            .Functor
+        Result.Functor
             .Map(result, mapper)
             .Should()
             .Satisfy<Result<DummyNewValue, DummyError>>(r =>
@@ -33,8 +32,7 @@ public class ResultFunctorTests
         Result<DummyValue, DummyNewError> expected
     )
     {
-        Result
-            .Functor
+        Result.Functor
             .MapError(result, mapper)
             .Should()
             .Satisfy<Result<DummyValue, DummyNewError>>(r =>
@@ -55,8 +53,7 @@ public class ResultFunctorTests
         DummyNewValue expected
     )
     {
-        Result
-            .Functor
+        Result.Functor
             .Match(result, okMapper, errorMapper)
             .Should()
             .BeEquivalentTo(expected, config => config.PreferringRuntimeMemberTypes());

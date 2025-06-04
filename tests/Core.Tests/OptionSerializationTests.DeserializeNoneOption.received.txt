@@ -1,4 +1,0 @@
-﻿{
-  IsSome: false,
-  IsNone: true
-}

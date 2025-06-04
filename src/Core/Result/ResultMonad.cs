@@ -100,7 +100,7 @@ public static partial class Result
             result switch
             {
                 { IsError: true, ErrorValue: var error } => binder(error),
-                { IsOk: true, Value: var value } => Result.Ok<T, TNewError>(value),
+                { IsOk: true, Value: var value } => Ok<T, TNewError>(value),
             };
 
         /// <summary>
