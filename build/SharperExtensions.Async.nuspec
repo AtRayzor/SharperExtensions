@@ -2,24 +2,30 @@
 <package>
     <metadata>
         <id>SharperExtensions.Async</id>
-        <version>1.0.0-alpha-0.0.1</version>
+        <version>1.0.0-alpha0.0.1</version>
         <authors>Timothy Ray</authors>
         <description>
             A set of functional types and operations which run asynchronously.
         </description>
         <repository type="git" url="https://github.com/AtRayzor/SharperExtensions.git"
                     branch="main"/>
-        <license type="file">LICENCE.txt</license>
+        <license type="file">LICENSE.txt</license>
         <readme>README.md</readme>
         <copyright>Copyright 2025 Timothy Ray</copyright>
         <releaseNotes>Initial alpha version release</releaseNotes>
+        <dependencies>
+            <group targetFramework="net10.0">
+                <dependency id="SharperExtensions.Core" version="1.0.0-alpha0.0.1"/>
+                <dependency id="SharperExtensions.Collections" version="1.0.0-alpha0.0.1"/>
+            </group>
+        </dependencies>
     </metadata>
     <files>
-        <file src="../LICENSE.txt" target="LICENCE.txt"/>
-        <file src="../README.md" target="README.md"/>
-        <file src="../packages/1.0.0-alpha-0.0.1/Release/netstandard2.0/SharperExtensions.Analyzers.dll"
+        <file src="../LICENSE.txt" target=""/>
+        <file src="../README.md" target=""/>
+        <file src="../bld/1.0.0-alpha0.0.1/Release/netstandard2.0/SharperExtensions.Analyzers.dll"
               target="/analyzers/dotnet/cs"/>
-        <file src="../packages/1.0.0-alpha-0.0.1/net10.0/Release/SharperExtensions.Async.dll"
-              target="/lib/"/>
+        <file src="../bld/1.0.0-alpha0.0.1/Release/net10.0/SharperExtensions.Async.dll"
+              target="/lib/net10.0/"/>
     </files>
 </package>

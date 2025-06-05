@@ -2,7 +2,7 @@
 <package>
     <metadata>
         <id>SharperExtensions</id>
-        <version>1.0.0-alpha-0.0.1</version>
+        <version>1.0.0-alpha0.0.1</version>
         <authors>Timothy Ray</authors>
         <description>
             A collection of experimental functional programming extensions
@@ -16,20 +16,20 @@
         <readme>README.md</readme>
         <dependencies>
             <group targetFramework="net10.0">
-                <dependency id="SharperExtensions.Core" version="1.0.0-alpha-0.0.1"/>
+                <dependency id="SharperExtensions.Core" version="1.0.0-alpha0.0.1"/>
             </group>
         </dependencies>
     </metadata>
     <files>
         <file src="../LICENSE.txt" target=""/>
         <file src="../README.md" target=""/>
-        <file src="../bld/1.0.0-alpha-0.0.1/Release/netstandard2.0/SharperExtensions.Analyzers.dll"
+        <file src="../bld/1.0.0-alpha0.0.1/Release/netstandard2.0/SharperExtensions.Analyzers.dll"
               target="../analyzers/dotnet/cs"/>
-        <file src="../bld/1.0.0-alpha-0.0.1/Release/net10.0/SharperExtensions.Core.dll"
+        <file src="../bld/1.0.0-alpha0.0.1/Release/net10.0/SharperExtensions.Core.dll"
               target="/lib/net10.0/"/>
-        <file src="../bld/1.0.0-alpha-0.0.1/Release/net10.0/SharperExtensions.Async.dll"
+        <file src="../bld/1.0.0-alpha0.0.1/Release/net10.0/SharperExtensions.Async.dll"
               target="/lib/net10.0/"/>
-        <file src="../bld/1.0.0-alpha-0.0.1/Release/net10.0/SharperExtensions.Collections.dll"
+        <file src="../bld/1.0.0-alpha0.0.1/Release/net10.0/SharperExtensions.Collections.dll"
               target="/lib/net10.0/"/>
     </files>
 </package>
