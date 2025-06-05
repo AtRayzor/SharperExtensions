@@ -18,6 +18,8 @@ var handlers = new UiEventHandlers(state);
 Cli.Command.Add(Cli.VersionArgument);
 Cli.Command.Add(Cli.SuffixOption);
 Cli.Command.Add(Cli.BuildOption);
+Cli.Command.Add(Cli.KeyOption);
+Cli.Command.Add(Cli.pushOption);
 Cli.Command.SetHandler(handlers.InvocationHandler);
 
 await Cli.Command.InvokeAsync(args);
@@ -102,8 +104,9 @@ sealed class UiEventHandlers(State state)
             }
 
             var suffix = suffixOption is not null ? $".{suffixOption}" : string.Empty;
-            var packagePath = $"SharperExtensions{suffix}.nupkg";
-            var command = $"nuget push {packagePath} --source https://api.nuget.org/v3/index.json --api-key {key}";
+            var packagePath = $"SharperExtensions{suffix}.{version}.nupkg";
+            var command = $"cd ../packages/{version};nuget push {packagePath} -Source https://api.nuget.org/v3/index.json -ApiKey {key}";
+            commandsToRun.Add(command);
         }
 
         commandsToRun.Add(nugetCommand);
