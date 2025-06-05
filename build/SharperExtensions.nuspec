@@ -15,9 +15,7 @@
                     branch="main"/>
         <readme>README.md</readme>
         <dependencies>
-            <group targetFramework="net10.0">
-                <dependency id="SharperExtensions.Core" version="1.0.0-alpha0.0.1"/>
-            </group>
+            <group targetFramework="net10.0"/>
         </dependencies>
     </metadata>
     <files>
