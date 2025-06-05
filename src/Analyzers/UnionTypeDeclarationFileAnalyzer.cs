@@ -58,10 +58,12 @@ public class UnionTypeDeclarationFileAnalyzer : DiagnosticAnalyzer
     )
     {
         return baseDeclaredSymbol is { Locations.Length: 1 }
-            && caseDeclaredSymbol is { Locations.Length: 1 }
-            && caseDeclaredSymbol.Locations[0] is { SourceTree.FilePath: { } caseFilePath }
-            && baseDeclaredSymbol.Locations[0] is { SourceTree.FilePath: { } baseFilePath }
-            && caseFilePath.Equals(baseFilePath);
+               && caseDeclaredSymbol is { Locations.Length: 1 }
+               && caseDeclaredSymbol.Locations[0] is
+                   { SourceTree.FilePath: { } caseFilePath }
+               && baseDeclaredSymbol.Locations[0] is
+                   { SourceTree.FilePath: { } baseFilePath }
+               && caseFilePath.Equals(baseFilePath);
     }
 }
 
@@ -82,11 +84,12 @@ file static class Configuration
         typeof(Resources)
     );
 
-    private static readonly LocalizableString MessageFormat = new LocalizableResourceString(
-        nameof(Resources.NF0003MessageFormat),
-        Resources.ResourceManager,
-        typeof(Resources)
-    );
+    private static readonly LocalizableString MessageFormat =
+        new LocalizableResourceString(
+            nameof(Resources.NF0003MessageFormat),
+            Resources.ResourceManager,
+            typeof(Resources)
+        );
 
     public static readonly DiagnosticDescriptor Rule = new(
         DiagnosticId,

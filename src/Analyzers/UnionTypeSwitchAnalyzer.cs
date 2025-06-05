@@ -17,11 +17,12 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
         typeof(Resources)
     );
 
-    private static readonly LocalizableString MessageFormat = new LocalizableResourceString(
-        nameof(Resources.NF0001MessageFormat),
-        Resources.ResourceManager,
-        typeof(Resources)
-    );
+    private static readonly LocalizableString MessageFormat =
+        new LocalizableResourceString(
+            nameof(Resources.NF0001MessageFormat),
+            Resources.ResourceManager,
+            typeof(Resources)
+        );
 
     private static readonly LocalizableString Description = new LocalizableResourceString(
         nameof(Resources.NF0001Description),
@@ -75,11 +76,17 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
             .Select(op =>
                 op switch
                 {
-                    IRecursivePatternOperation { MatchedType: INamedTypeSymbol matchedType } =>
+                    IRecursivePatternOperation
+                        {
+                            MatchedType: INamedTypeSymbol matchedType
+                        } =>
                         matchedType,
                     ITypePatternOperation { MatchedType: INamedTypeSymbol matchedType } =>
                         matchedType,
-                    IDeclarationPatternOperation { MatchedType: INamedTypeSymbol matchedType } =>
+                    IDeclarationPatternOperation
+                        {
+                            MatchedType: INamedTypeSymbol matchedType
+                        } =>
                         matchedType,
                     _ => null,
                 }
@@ -93,11 +100,13 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
             && (
                 switchCaseOperations.Last()
                     is IDiscardPatternOperation
-                        or IDefaultCaseClauseOperation
+                    or IDefaultCaseClauseOperation
                 || (
                     childTypes.Length == switchCaseTypes.Length
-                    && childTypes.Intersect(switchCaseTypes, SymbolEqualityComparer.Default).Count()
-                        == childTypes.Length
+                    && childTypes
+                        .Intersect(switchCaseTypes, SymbolEqualityComparer.Default)
+                        .Count()
+                    == childTypes.Length
                 )
             )
         )
@@ -128,7 +137,10 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
                 );
             case ISwitchOperation switchOperation:
                 caseOperations = GetSwitchStatementCaseOperations(switchOperation);
-                return TryGetNamedSwitchValueType(switchOperation.Value, out switchValueType);
+                return TryGetNamedSwitchValueType(
+                    switchOperation.Value,
+                    out switchValueType
+                );
 
             default:
                 caseOperations = ImmutableArray<IOperation>.Empty;
@@ -146,7 +158,10 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
 
         if (
             valueParameter
-            is not { Type: INamedTypeSymbol { TypeKind: TypeKind.Class } referenceOperationType }
+            is not
+            {
+                Type: INamedTypeSymbol { TypeKind: TypeKind.Class } referenceOperationType
+            }
         )
         {
             return false;
@@ -154,8 +169,8 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
 
         if (
             referenceOperationType
-                .GetAttributes()
-                .All(a => a is not { AttributeClass.Name: "ClosedAttribute" })
+            .GetAttributes()
+            .All(a => a is not { AttributeClass.Name: "ClosedAttribute" })
         )
         {
             return false;
@@ -172,9 +187,11 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
         return
         [
             .. switchExpressionOperation
-                .Arms.Select(arm => arm.ChildOperations)
+                .Arms
+                .Select(arm => arm.ChildOperations)
                 .SelectMany(ops =>
-                    ops.Select(o =>
+                    ops
+                        .Select(o =>
                             o switch
                             {
                                 IRecursivePatternOperation rpo => rpo,
@@ -196,15 +213,25 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
     )
     {
         return switchOperation
-            .Cases.Select(sc => sc.Clauses)
+            .Cases
+            .Select(sc => sc.Clauses)
             .SelectMany(clauses =>
                 clauses.Select(cco =>
                     cco switch
                     {
-                        IPatternCaseClauseOperation { Pattern: IRecursivePatternOperation rpo } =>
+                        IPatternCaseClauseOperation
+                            {
+                                Pattern: IRecursivePatternOperation rpo
+                            } =>
                             (IOperation)rpo,
-                        IPatternCaseClauseOperation { Pattern: ITypePatternOperation tpo } => tpo,
-                        IPatternCaseClauseOperation { Pattern: IDeclarationPatternOperation dpo } =>
+                        IPatternCaseClauseOperation
+                        {
+                            Pattern: ITypePatternOperation tpo
+                        } => tpo,
+                        IPatternCaseClauseOperation
+                            {
+                                Pattern: IDeclarationPatternOperation dpo
+                            } =>
                             dpo,
                         IDefaultCaseClauseOperation dpo => dpo,
                         _ => null,
@@ -227,7 +254,10 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
 
         var unionTypeChecker = ResolveUnionTypeChecker(unionTypeSymbol);
 
-        return typesToCheck.Where(unionTypeChecker).Select(GetComparableNamedTypeSymbol).ToArray();
+        return typesToCheck
+            .Where(unionTypeChecker)
+            .Select(GetComparableNamedTypeSymbol)
+            .ToArray();
     }
 
     private static bool ValueTypeChecker(
@@ -246,10 +276,10 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
         var comparableTypeSymbol = GetComparableNamedTypeSymbol(typeSymbol);
 
         return caseTypeSymbol.BaseType is { } baseType
-            && comparableTypeSymbol.Equals(
-                GetComparableNamedTypeSymbol(baseType),
-                SymbolEqualityComparer.Default
-            );
+               && comparableTypeSymbol.Equals(
+                   GetComparableNamedTypeSymbol(baseType),
+                   SymbolEqualityComparer.Default
+               );
     }
 
     private static Func<INamedTypeSymbol, bool> ResolveUnionTypeChecker(
@@ -265,8 +295,12 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
         };
     }
 
-    private static INamedTypeSymbol GetComparableNamedTypeSymbol(INamedTypeSymbol typeSymbol)
+    private static INamedTypeSymbol GetComparableNamedTypeSymbol(
+        INamedTypeSymbol typeSymbol
+    )
     {
-        return !typeSymbol.IsGenericType ? typeSymbol : typeSymbol.ConstructUnboundGenericType();
+        return !typeSymbol.IsGenericType
+            ? typeSymbol
+            : typeSymbol.ConstructUnboundGenericType();
     }
 }

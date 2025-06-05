@@ -18,11 +18,12 @@ public class ClosedUnionTypeDeclarationAnalyzer : DiagnosticAnalyzer
         typeof(Resources)
     );
 
-    private static readonly LocalizableString MessageFormat = new LocalizableResourceString(
-        nameof(Resources.NF0002MessageFormat),
-        Resources.ResourceManager,
-        typeof(Resources)
-    );
+    private static readonly LocalizableString MessageFormat =
+        new LocalizableResourceString(
+            nameof(Resources.NF0002MessageFormat),
+            Resources.ResourceManager,
+            typeof(Resources)
+        );
 
     private static readonly LocalizableString Description = new LocalizableResourceString(
         nameof(Resources.NF0002Description),
@@ -59,15 +60,20 @@ public class ClosedUnionTypeDeclarationAnalyzer : DiagnosticAnalyzer
     {
         if (
             context.Node is not TypeDeclarationSyntax typeDeclarationSyntax
-            || context.SemanticModel.GetDeclaredSymbol(typeDeclarationSyntax) is not { } typeSymbol
+            || context.SemanticModel.GetDeclaredSymbol(typeDeclarationSyntax) is not
+                { } typeSymbol
             || typeSymbol
                 .GetAttributes()
                 .All(att => att is not { AttributeClass.Name: "ClosedAttribute" })
-            || typeDeclarationSyntax.Modifiers.Any(mod => mod.IsKind(SyntaxKind.AbstractKeyword))
+            || typeDeclarationSyntax.Modifiers.Any(mod =>
+                mod.IsKind(SyntaxKind.AbstractKeyword)
+            )
         )
             return;
 
-        var typeModifier = typeDeclarationSyntax is RecordDeclarationSyntax ? "record" : "class";
+        var typeModifier = typeDeclarationSyntax is RecordDeclarationSyntax
+            ? "record"
+            : "class";
 
         var diagnostic = Diagnostic.Create(
             Rule,

@@ -11,10 +11,14 @@ public class UnionParameterAnalyzer : DiagnosticAnalyzer
     internal static string InvalidParamTypeDiagnosticId =>
         InvalidParamTypeConfiguration.DiagnosticId;
 
-    internal static DiagnosticDescriptor InvalidParamTypeRule => InvalidParamTypeConfiguration.Rule;
+    internal static DiagnosticDescriptor InvalidParamTypeRule =>
+        InvalidParamTypeConfiguration.Rule;
 
-    internal static string InvalidArgumentDiagnosticId => InvalidArgumentConfiguration.DiagnosticId;
-    internal static DiagnosticDescriptor InvalidArgumentRule => InvalidArgumentConfiguration.Rule;
+    internal static string InvalidArgumentDiagnosticId =>
+        InvalidArgumentConfiguration.DiagnosticId;
+
+    internal static DiagnosticDescriptor InvalidArgumentRule =>
+        InvalidArgumentConfiguration.Rule;
 
     public override void Initialize(AnalysisContext context)
     {
@@ -22,7 +26,10 @@ public class UnionParameterAnalyzer : DiagnosticAnalyzer
         context.EnableConcurrentExecution();
 
         context.RegisterSymbolAction(AnalyzeParameterSymbol, SymbolKind.Parameter);
-        context.RegisterOperationAction(AnalyzeInvocationOperation, OperationKind.Invocation);
+        context.RegisterOperationAction(
+            AnalyzeInvocationOperation,
+            OperationKind.Invocation
+        );
     }
 
     private static void AnalyzeParameterSymbol(SymbolAnalysisContext context)
@@ -44,7 +51,11 @@ public class UnionParameterAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var diagnostic = Diagnostic.Create(InvalidParamTypeRule, location, type.MetadataName);
+        var diagnostic = Diagnostic.Create(
+            InvalidParamTypeRule,
+            location,
+            type.MetadataName
+        );
         context.ReportDiagnostic(diagnostic);
     }
 
@@ -52,7 +63,10 @@ public class UnionParameterAnalyzer : DiagnosticAnalyzer
     {
         if (
             context.Operation
-            is not IInvocationOperation { TargetMethod: var targetMethod, Arguments: var arguments }
+            is not IInvocationOperation
+            {
+                TargetMethod: var targetMethod, Arguments: var arguments
+            }
         )
         {
             return;
@@ -60,12 +74,17 @@ public class UnionParameterAnalyzer : DiagnosticAnalyzer
 
         if (
             targetMethod
-                .Parameters.Select(p =>
+                .Parameters
+                .Select(p =>
                     (
                         Parameter: p,
-                        Types: p.GetAttributes()
-                            .SingleOrDefault(a => a.AttributeClass is { Name: "UnionAttribute" })
-                            ?.ConstructorArguments.Select(ExtractTypeFromConstant)
+                        Types: p
+                            .GetAttributes()
+                            .SingleOrDefault(a => a.AttributeClass is
+                                { Name: "UnionAttribute" }
+                            )
+                            ?.ConstructorArguments
+                            .Select(ExtractTypeFromConstant)
                             .OfType<ITypeSymbol>()
                             .ToImmutableArray()
                     )
@@ -87,9 +106,19 @@ public class UnionParameterAnalyzer : DiagnosticAnalyzer
                 (a, pp) => (a, pp)
             )
             .Where(j =>
-                j.a.ChildOperations.SingleOrDefault()?.ChildOperations.SingleOrDefault()?.Type
+                j
+                        .a
+                        .ChildOperations
+                        .SingleOrDefault()
+                        ?.ChildOperations
+                        .SingleOrDefault()
+                        ?.Type
                     is { } argType
-                && j.pp.Types!.Value.All(t => !argType.Equals(t, SymbolEqualityComparer.Default))
+                && j.pp.Types!.Value.All(t => !argType.Equals(
+                        t,
+                        SymbolEqualityComparer.Default
+                    )
+                )
             )
             .Select(j => (j.a, j.pp))
             .ToImmutableArray();
@@ -114,7 +143,8 @@ public class UnionParameterAnalyzer : DiagnosticAnalyzer
 
         switch (type)
         {
-            case {
+            case
+            {
                 OriginalDefinition: IArrayTypeSymbol
                 {
                     ElementType: { ContainingNamespace.Name: "System", Name: "Type" }
@@ -176,11 +206,12 @@ file static class InvalidParamTypeConfiguration
         typeof(Resources)
     );
 
-    private static readonly LocalizableString MessageFormat = new LocalizableResourceString(
-        nameof(Resources.NF0004MessageFormat),
-        Resources.ResourceManager,
-        typeof(Resources)
-    );
+    private static readonly LocalizableString MessageFormat =
+        new LocalizableResourceString(
+            nameof(Resources.NF0004MessageFormat),
+            Resources.ResourceManager,
+            typeof(Resources)
+        );
 
     public static readonly DiagnosticDescriptor Rule = new(
         DiagnosticId,
@@ -210,11 +241,12 @@ file static class InvalidArgumentConfiguration
         typeof(Resources)
     );
 
-    private static readonly LocalizableString MessageFormat = new LocalizableResourceString(
-        nameof(Resources.NF0005MessageFormat),
-        Resources.ResourceManager,
-        typeof(Resources)
-    );
+    private static readonly LocalizableString MessageFormat =
+        new LocalizableResourceString(
+            nameof(Resources.NF0005MessageFormat),
+            Resources.ResourceManager,
+            typeof(Resources)
+        );
 
     public static readonly DiagnosticDescriptor Rule = new(
         DiagnosticId,
