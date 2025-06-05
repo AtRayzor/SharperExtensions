@@ -16,6 +16,7 @@ msbuild.wrn
 *.userosscache
 *.sln.docstates
 *.Dot
+nuget.config
 
 /packages/
 riderModule.iml
@@ -25,3 +26,5 @@ assets/
 .idea/
 .vscode
 .git
+
+LocalRun.cs
