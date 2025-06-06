@@ -40,18 +40,24 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
 
         yield return
         [
-            CreateAnalyzer("../../../TestSources/AllCasesSwitch.cs", CompilerDiagnostics.Errors),
+            CreateAnalyzer(
+                "../../../TestSources/AllCasesSwitch.cs",
+                CompilerDiagnostics.Errors
+            ),
         ];
         yield return
         [
-            CreateAnalyzer("../../../TestSources/DefaultCaseSwitch.cs", CompilerDiagnostics.Errors),
+            CreateAnalyzer(
+                "../../../TestSources/DefaultCaseSwitch.cs",
+                CompilerDiagnostics.Errors
+            ),
         ];
         yield return
         [
             CreateAnalyzer(
                 "../../../TestSources/MissingCaseSwitch.cs",
                 CompilerDiagnostics.Errors,
-                baseDiagnostic.WithLocation("MissingCaseSwitch.cs", 19, 16),
+                baseDiagnostic.WithLocation("MissingCaseSwitch.cs", 22, 16),
                 genericBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 28, 16),
                 baseDiagnostic.WithLocation("MissingCaseSwitch.cs", 37, 9),
                 genericBaseDiagnostic.WithLocation("MissingCaseSwitch.cs", 50, 9),
@@ -60,7 +66,10 @@ internal class UnionTypeSwitchAnalyzerTestCases : IEnumerable<object[]>
         ];
         yield return
         [
-            CreateAnalyzer("../../../TestSources/PatternMatchCases.cs", CompilerDiagnostics.Errors),
+            CreateAnalyzer(
+                "../../../TestSources/PatternMatchCases.cs",
+                CompilerDiagnostics.Errors
+            ),
         ];
     }
 

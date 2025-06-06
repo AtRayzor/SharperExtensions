@@ -6,7 +6,8 @@ namespace SharperExtensions.Analyzers.Tests;
 
 internal static class TestContextFactory
 {
-    public static CSharpAnalyzerTest<TAnalyzer, DefaultVerifier> CreateContext<TAnalyzer>()
+    public static CSharpAnalyzerTest<TAnalyzer, DefaultVerifier>
+        CreateContext<TAnalyzer>()
         where TAnalyzer : DiagnosticAnalyzer, new()
     {
         return new CSharpAnalyzerTest<TAnalyzer, DefaultVerifier>
@@ -20,17 +21,21 @@ internal static class TestContextFactory
                 {
                     (
                         "Closed.cs",
-                        SourceTextFactory.CreateSourceText("../../../../../UnionTypes/Closed.cs")
+                        SourceTextFactory.CreateSourceText(
+                            "../../../../../src/Core/Closed.cs"
+                        )
                     ),
                     (
                         "UnionAttribute.cs",
                         SourceTextFactory.CreateSourceText(
-                            "../../../../../UnionTypes/UnionAttribute.cs"
+                            "../../../../../src/Core/UnionAttribute.cs"
                         )
                     ),
                     (
                         "GlobalUsings",
-                        SourceTextFactory.CreateSourceText("../../../TestSources/GlobalUsings.cs")
+                        SourceTextFactory.CreateSourceText(
+                            "../../../TestSources/GlobalUsings.cs"
+                        )
                     ),
                 },
             },

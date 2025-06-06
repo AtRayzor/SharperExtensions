@@ -36,7 +36,7 @@ public class UnionParameterAnalyzerTests
         context.ExpectedDiagnostics.Add(
             DiagnosticResult
                 .CompilerError(UnionParameterAnalyzer.InvalidParamTypeDiagnosticId)
-                .WithLocation("ValidParams.cs", 7, 45)
+                .WithLocation("ValidParams.cs", 5, 45)
         );
 
         await context.RunAsync();

@@ -1,4 +1,5 @@
 using Microsoft.CodeAnalysis.Testing;
+using SharperExtensions.Analyzers.Tests.TestSources;
 
 namespace SharperExtensions.Analyzers.Tests;
 
@@ -7,11 +8,14 @@ public class CloseUnionTypeDeclarationAnalyzerTests
     [Fact]
     public async Task TestNoDiagnostic()
     {
-        var context = TestContextFactory.CreateContext<ClosedUnionTypeDeclarationAnalyzer>();
+        var context =
+            TestContextFactory.CreateContext<ClosedUnionTypeDeclarationAnalyzer>();
         context.TestState.Sources.Add(
             (
                 "ClosedTestType.cs",
-                SourceTextFactory.CreateSourceText("../../../TestSources/ClosedTestType.cs")
+                SourceTextFactory.CreateSourceText(
+                    "../../../TestSources/ClosedTestType.cs"
+                )
             )
         );
         context.CompilerDiagnostics = CompilerDiagnostics.Errors;
@@ -22,7 +26,8 @@ public class CloseUnionTypeDeclarationAnalyzerTests
     [Fact]
     public async Task TestDiagnostic()
     {
-        var context = TestContextFactory.CreateContext<ClosedUnionTypeDeclarationAnalyzer>();
+        var context =
+            TestContextFactory.CreateContext<ClosedUnionTypeDeclarationAnalyzer>();
         context.TestState.Sources.Add(
             (
                 "NonAbstractClosedDeclaration.cs",
@@ -37,9 +42,9 @@ public class CloseUnionTypeDeclarationAnalyzerTests
             new DiagnosticResult(ClosedUnionTypeDeclarationAnalyzer.Rule)
                 .WithArguments(
                     "record",
-                    "DotNetCoreFunctional.Analyzers.Tests.TestSources.NonAbstractClosedDeclaration"
+                    $"{typeof(NonAbstractClosedDeclaration).FullName}"
                 )
-                .WithLocation("NonAbstractClosedDeclaration.cs", 5, 1)
+                .WithLocation("NonAbstractClosedDeclaration.cs", 4, 1)
                 .WithSeverity(DiagnosticSeverity.Error)
         );
 
