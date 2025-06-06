@@ -8,6 +8,9 @@
 //------------------------------------------------------------------------------
 
 namespace SharperExtensions.Analyzers {
+    using System;
+    
+    
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -25,7 +28,7 @@ namespace SharperExtensions.Analyzers {
         internal static System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.Equals(null, resourceMan)) {
-                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("DotNetCoreFunctional.UnionTypes.Analyzers.Resources", typeof(Resources).Assembly);
+                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("SharperExtensions.Analyzers.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -42,99 +45,99 @@ namespace SharperExtensions.Analyzers {
             }
         }
         
-        internal static string NF0001Title {
+        internal static string SE0001Title {
             get {
-                return ResourceManager.GetString("NF0001Title", resourceCulture);
+                return ResourceManager.GetString("SE0001Title", resourceCulture);
             }
         }
         
-        internal static string NF0001Description {
+        internal static string SE0001Description {
             get {
-                return ResourceManager.GetString("NF0001Description", resourceCulture);
+                return ResourceManager.GetString("SE0001Description", resourceCulture);
             }
         }
         
-        internal static string NF0001MessageFormat {
+        internal static string SE0001MessageFormat {
             get {
-                return ResourceManager.GetString("NF0001MessageFormat", resourceCulture);
+                return ResourceManager.GetString("SE0001MessageFormat", resourceCulture);
             }
         }
         
-        internal static string NF0002Title {
+        internal static string SE0002Title {
             get {
-                return ResourceManager.GetString("NF0002Title", resourceCulture);
+                return ResourceManager.GetString("SE0002Title", resourceCulture);
             }
         }
         
-        internal static string NF0002Description {
+        internal static string SE0002Description {
             get {
-                return ResourceManager.GetString("NF0002Description", resourceCulture);
+                return ResourceManager.GetString("SE0002Description", resourceCulture);
             }
         }
         
-        internal static string NF0002MessageFormat {
+        internal static string SE0002MessageFormat {
             get {
-                return ResourceManager.GetString("NF0002MessageFormat", resourceCulture);
+                return ResourceManager.GetString("SE0002MessageFormat", resourceCulture);
             }
         }
         
-        internal static string NF0002CodeFixTitle {
+        internal static string SE0002CodeFixTitle {
             get {
-                return ResourceManager.GetString("NF0002CodeFixTitle", resourceCulture);
+                return ResourceManager.GetString("SE0002CodeFixTitle", resourceCulture);
             }
         }
         
-        internal static string NF0003Title {
+        internal static string SE0003Title {
             get {
-                return ResourceManager.GetString("NF0003Title", resourceCulture);
+                return ResourceManager.GetString("SE0003Title", resourceCulture);
             }
         }
         
-        internal static string NF0003Description {
+        internal static string SE0003Description {
             get {
-                return ResourceManager.GetString("NF0003Description", resourceCulture);
+                return ResourceManager.GetString("SE0003Description", resourceCulture);
             }
         }
         
-        internal static string NF0003MessageFormat {
+        internal static string SE0003MessageFormat {
             get {
-                return ResourceManager.GetString("NF0003MessageFormat", resourceCulture);
+                return ResourceManager.GetString("SE0003MessageFormat", resourceCulture);
             }
         }
         
-        internal static string NF0004Title {
+        internal static string SE0004Title {
             get {
-                return ResourceManager.GetString("NF0004Title", resourceCulture);
+                return ResourceManager.GetString("SE0004Title", resourceCulture);
             }
         }
         
-        internal static string NF0004Description {
+        internal static string SE0004Description {
             get {
-                return ResourceManager.GetString("NF0004Description", resourceCulture);
+                return ResourceManager.GetString("SE0004Description", resourceCulture);
             }
         }
         
-        internal static string NF0004MessageFormat {
+        internal static string SE0004MessageFormat {
             get {
-                return ResourceManager.GetString("NF0004MessageFormat", resourceCulture);
+                return ResourceManager.GetString("SE0004MessageFormat", resourceCulture);
             }
         }
         
-        internal static string NF0005Title {
+        internal static string SE0005Title {
             get {
-                return ResourceManager.GetString("NF0005Title", resourceCulture);
+                return ResourceManager.GetString("SE0005Title", resourceCulture);
             }
         }
         
-        internal static string NF0005Description {
+        internal static string SE0005Description {
             get {
-                return ResourceManager.GetString("NF0005Description", resourceCulture);
+                return ResourceManager.GetString("SE0005Description", resourceCulture);
             }
         }
         
-        internal static string NF0005MessageFormat {
+        internal static string SE0005MessageFormat {
             get {
-                return ResourceManager.GetString("NF0005MessageFormat", resourceCulture);
+                return ResourceManager.GetString("SE0005MessageFormat", resourceCulture);
             }
         }
     }

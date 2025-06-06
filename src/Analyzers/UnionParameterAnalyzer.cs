@@ -195,20 +195,20 @@ file static class InvalidParamTypeConfiguration
     private const string Category = "Unions";
 
     private static readonly LocalizableString Title = new LocalizableResourceString(
-        nameof(Resources.NF0004Title),
+        nameof(Resources.SE0004Title),
         Resources.ResourceManager,
         typeof(Resources)
     );
 
     private static readonly LocalizableString Description = new LocalizableResourceString(
-        nameof(Resources.NF0004Description),
+        nameof(Resources.SE0004Description),
         Resources.ResourceManager,
         typeof(Resources)
     );
 
     private static readonly LocalizableString MessageFormat =
         new LocalizableResourceString(
-            nameof(Resources.NF0004MessageFormat),
+            nameof(Resources.SE0004MessageFormat),
             Resources.ResourceManager,
             typeof(Resources)
         );
@@ -230,20 +230,20 @@ file static class InvalidArgumentConfiguration
     private const string Category = "Unions";
 
     private static readonly LocalizableString Title = new LocalizableResourceString(
-        nameof(Resources.NF0005Title),
+        nameof(Resources.SE0005Title),
         Resources.ResourceManager,
         typeof(Resources)
     );
 
     private static readonly LocalizableString Description = new LocalizableResourceString(
-        nameof(Resources.NF0005Description),
+        nameof(Resources.SE0005Description),
         Resources.ResourceManager,
         typeof(Resources)
     );
 
     private static readonly LocalizableString MessageFormat =
         new LocalizableResourceString(
-            nameof(Resources.NF0005MessageFormat),
+            nameof(Resources.SE0005MessageFormat),
             Resources.ResourceManager,
             typeof(Resources)
         );

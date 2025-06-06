@@ -73,20 +73,20 @@ file static class Configuration
     private const string Category = "Unkown";
 
     private static readonly LocalizableString Title = new LocalizableResourceString(
-        nameof(Resources.NF0003Title),
+        nameof(Resources.SE0003Title),
         Resources.ResourceManager,
         typeof(Resources)
     );
 
     private static readonly LocalizableString Description = new LocalizableResourceString(
-        nameof(Resources.NF0003Description),
+        nameof(Resources.SE0003Description),
         Resources.ResourceManager,
         typeof(Resources)
     );
 
     private static readonly LocalizableString MessageFormat =
         new LocalizableResourceString(
-            nameof(Resources.NF0003MessageFormat),
+            nameof(Resources.SE0003MessageFormat),
             Resources.ResourceManager,
             typeof(Resources)
         );

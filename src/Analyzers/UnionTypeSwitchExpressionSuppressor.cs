@@ -9,7 +9,7 @@ namespace SharperExtensions.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class UnionTypeSwitchExpressionSuppressor : DiagnosticSuppressor
 {
-    private const string SuppressorId = "NF0001S";
+    private const string SuppressorId = "SE0001S";
     internal const string SuppressedDiagnosticId = "CS8509";
 
     private static readonly SuppressionDescriptor Rule = new(

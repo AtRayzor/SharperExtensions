@@ -13,20 +13,20 @@ public class ClosedUnionTypeDeclarationAnalyzer : DiagnosticAnalyzer
     private const string Category = "Naming";
 
     private static readonly LocalizableString Title = new LocalizableResourceString(
-        nameof(Resources.NF0002Title),
+        nameof(Resources.SE0002Title),
         Resources.ResourceManager,
         typeof(Resources)
     );
 
     private static readonly LocalizableString MessageFormat =
         new LocalizableResourceString(
-            nameof(Resources.NF0002MessageFormat),
+            nameof(Resources.SE0002MessageFormat),
             Resources.ResourceManager,
             typeof(Resources)
         );
 
     private static readonly LocalizableString Description = new LocalizableResourceString(
-        nameof(Resources.NF0002Description),
+        nameof(Resources.SE0002Description),
         Resources.ResourceManager,
         typeof(Resources)
     );

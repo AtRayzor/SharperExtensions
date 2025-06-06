@@ -12,20 +12,20 @@ public class UnionTypeSwitchAnalyzer : DiagnosticAnalyzer
     private const string DiagnosticId = "NF0001";
 
     private static readonly LocalizableString Title = new LocalizableResourceString(
-        nameof(Resources.NF0001Title),
+        nameof(Resources.SE0001Title),
         Resources.ResourceManager,
         typeof(Resources)
     );
 
     private static readonly LocalizableString MessageFormat =
         new LocalizableResourceString(
-            nameof(Resources.NF0001MessageFormat),
+            nameof(Resources.SE0001MessageFormat),
             Resources.ResourceManager,
             typeof(Resources)
         );
 
     private static readonly LocalizableString Description = new LocalizableResourceString(
-        nameof(Resources.NF0001Description),
+        nameof(Resources.SE0001Description),
         Resources.ResourceManager,
         typeof(Resources)
     );

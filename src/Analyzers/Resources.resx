@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <root>
-    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"
                 id="root"
                 xmlns="">
         <xsd:element name="root" msdata:IsDataSet="true">
@@ -15,69 +16,71 @@
         <value>1.3</value>
     </resheader>
     <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0,
+            Culture=neutral,
             PublicKeyToken=b77a5c561934e089
         </value>
     </resheader>
     <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0,
+            Culture=neutral,
             PublicKeyToken=b77a5c561934e089
         </value>
     </resheader>
-    <data name="NF0001Title" xml:space="preserve">
+    <data name="SE0001Title" xml:space="preserve">
         <value>The types have not ben exhausted</value>
     </data>
-    <data name="NF0001Description" xml:space="preserve">
+    <data name="SE0001Description" xml:space="preserve">
         <value>The types have not ben exhausted.</value>
         <comment>An error when not all DU types have been included.</comment>
     </data>
-    <data name="NF0001MessageFormat" xml:space="preserve">
+    <data name="SE0001MessageFormat" xml:space="preserve">
         <value>Not all subtypes of {0} were included</value>
         <comment>The format-able message displayed when a DU switch expression is not complete.</comment>
     </data>
-    <data name="NF0002Title" xml:space="preserve">
+    <data name="SE0002Title" xml:space="preserve">
         <value>Closed union type must be abstract</value>
     </data>
-    <data name="NF0002Description" xml:space="preserve">
+    <data name="SE0002Description" xml:space="preserve">
         <value>Type declarations marked with the 'Closed' attribute are required to be abstract.</value>
         <comment>An error when Discriminated Union cases are not readonly record structs.</comment>
     </data>
-    <data name="NF0002MessageFormat" xml:space="preserve">
+    <data name="SE0002MessageFormat" xml:space="preserve">
         <value>The non-abstract {0} '{1}' has been marked as closed. All closed union type are required to be abstract.</value>
         <comment>Message by diagnostic.</comment>
     </data>
-    <data name="NF0002CodeFixTitle" xml:space="preserve">
+    <data name="SE0002CodeFixTitle" xml:space="preserve">
         <value>Change case declaration to 'readonly record struct'</value>
         <comment>The title of the code fix.</comment>
     </data>
-    <data name="NF0003Title" xml:space="preserve">
+    <data name="SE0003Title" xml:space="preserve">
         <value>Discriminated Union case declared outside of file</value>
     </data>
-    <data name="NF0003Description" xml:space="preserve">
+    <data name="SE0003Description" xml:space="preserve">
         <value>Discriminated Union case declared outside of file.</value>
         <comment>An error discriminated union cases are not declare in the same file as the base interface.</comment>
     </data>
-    <data name="NF0003MessageFormat" xml:space="preserve">
+    <data name="SE0003MessageFormat" xml:space="preserve">
         <value>The case '{0}' was defined in a different file than the discriminated union type '{1}'. All cases are required to be defined inside the same file a the base interface.</value>
         <comment>The format-able message displayed when a DU switch expression is not complete.</comment>
     </data>
-    <data name="NF0004Title" xml:space="preserve">
+    <data name="SE0004Title" xml:space="preserve">
         <value>Union parameters are required to be of type 'System,object'</value>
     </data>
-    <data name="NF0004Description" xml:space="preserve">
+    <data name="SE0004Description" xml:space="preserve">
         <value>Union parameters required to be of type 'System.Object'.</value>
     </data>
-    <data name="NF0004MessageFormat" xml:space="preserve">
+    <data name="SE0004MessageFormat" xml:space="preserve">
         <value>The type '{0}' is not valid for a union parameter. A type of 'System.object' is required.</value>
         <comment>The format-able message displayed when a type other than 'System.object is used for union parameter.' .</comment>
     </data>
-    <data name="NF0005Title" xml:space="preserve">
+    <data name="SE0005Title" xml:space="preserve">
         <value>Argument type does not match the union type list</value>
     </data>
-    <data name="NF0005Description" xml:space="preserve">
+    <data name="SE0005Description" xml:space="preserve">
         <value>The given argument type does not match any of the allowed types.</value>
     </data>
-    <data name="NF0005MessageFormat" xml:space="preserve">
+    <data name="SE0005MessageFormat" xml:space="preserve">
         <value>The given type {0} is does not match any of the allowed union types</value>
         <comment>The format-able message displayed when a type other than 'System.object is used for union parameter.' .</comment>
     </data>
